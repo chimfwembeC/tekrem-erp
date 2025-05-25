@@ -14,6 +14,12 @@ Route::get('/about', [WebsiteController::class, 'about'])->name('about');
 
 Route::get('/services', [WebsiteController::class, 'services'])->name('services');
 
+// Individual Service Detail Pages
+Route::get('/services/web-development', [WebsiteController::class, 'webDevelopment'])->name('services.web-development');
+Route::get('/services/mobile-apps', [WebsiteController::class, 'mobileApps'])->name('services.mobile-apps');
+Route::get('/services/ai-solutions', [WebsiteController::class, 'aiSolutions'])->name('services.ai-solutions');
+Route::get('/services/cloud-services', [WebsiteController::class, 'cloudServices'])->name('services.cloud-services');
+
 Route::get('/portfolio', [WebsiteController::class, 'portfolio'])->name('portfolio');
 
 Route::get('/contact', [WebsiteController::class, 'contact'])->name('contact');

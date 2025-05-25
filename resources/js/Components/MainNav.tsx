@@ -28,33 +28,35 @@ export default function MainNav({ settings }: MainNavProps) {
     <NavigationMenu className="hidden md:flex">
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link href={route('home')}>
-            <NavigationMenuLink 
+          <NavigationMenuLink asChild>
+            <Link
+              href={route('home')}
               className={cn(
                 navigationMenuTriggerStyle(),
                 isActive(route('home'), true) ? 'bg-accent text-accent-foreground font-medium' : ''
               )}
             >
               Home
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        
+
         <NavigationMenuItem>
-          <Link href={route('about')}>
-            <NavigationMenuLink 
+          <NavigationMenuLink asChild>
+            <Link
+              href={route('about')}
               className={cn(
                 navigationMenuTriggerStyle(),
                 isActive(route('about')) ? 'bg-accent text-accent-foreground font-medium' : ''
               )}
             >
               About
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        
+
         <NavigationMenuItem>
-          <NavigationMenuTrigger 
+          <NavigationMenuTrigger
             className={cn(
               isActive(route('services')) ? 'bg-accent text-accent-foreground font-medium' : ''
             )}
@@ -78,46 +80,48 @@ export default function MainNav({ settings }: MainNavProps) {
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="#" title="Web Development">
+              <ListItem href={route('services.web-development')} title="Web Development">
                 Custom websites and web applications
               </ListItem>
-              <ListItem href="#" title="Mobile Apps">
+              <ListItem href={route('services.mobile-apps')} title="Mobile Apps">
                 Native and cross-platform mobile solutions
               </ListItem>
-              <ListItem href="#" title="AI Solutions">
+              <ListItem href={route('services.ai-solutions')} title="AI Solutions">
                 Intelligent automation and data analysis
               </ListItem>
-              <ListItem href="#" title="Cloud Services">
+              <ListItem href={route('services.cloud-services')} title="Cloud Services">
                 Scalable and secure cloud infrastructure
               </ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        
+
         <NavigationMenuItem>
-          <Link href={route('portfolio')}>
-            <NavigationMenuLink 
+          <NavigationMenuLink asChild>
+            <Link
+              href={route('portfolio')}
               className={cn(
                 navigationMenuTriggerStyle(),
                 isActive(route('portfolio')) ? 'bg-accent text-accent-foreground font-medium' : ''
               )}
             >
               Portfolio
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        
+
         <NavigationMenuItem>
-          <Link href={route('contact')}>
-            <NavigationMenuLink 
+          <NavigationMenuLink asChild>
+            <Link
+              href={route('contact')}
               className={cn(
                 navigationMenuTriggerStyle(),
                 isActive(route('contact')) ? 'bg-accent text-accent-foreground font-medium' : ''
               )}
             >
               Contact
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
