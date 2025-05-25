@@ -66,7 +66,6 @@ function SortableItem({ message, index, onNavigateToMessage, getInitials }: Sort
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={`bg-white dark:bg-gray-800 rounded-md p-2 border border-amber-200 dark:border-amber-700 shadow-sm cursor-pointer hover:shadow-md transition-all duration-200 ${
         index > 0 ? 'absolute' : 'relative'
       } ${isDragging ? 'opacity-50' : ''}`}
@@ -97,7 +96,7 @@ function SortableItem({ message, index, onNavigateToMessage, getInitials }: Sort
             {getInitials(message.user?.name || 'U')}
           </AvatarFallback>
         </Avatar>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 mb-1">
             <span className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
@@ -111,7 +110,7 @@ function SortableItem({ message, index, onNavigateToMessage, getInitials }: Sort
             {message.message}
           </p>
         </div>
-        
+
         <Pin className="h-3 w-3 text-amber-500 flex-shrink-0" />
       </div>
     </div>
@@ -160,7 +159,7 @@ export default function PinnedMessages({ pinnedMessages, onRefresh }: PinnedMess
 
   const handleDragEnd = async (event: DragEndEvent) => {
     setIsReordering(false);
-    
+
     const { active, over } = event;
 
     if (active.id !== over?.id) {
@@ -219,7 +218,7 @@ export default function PinnedMessages({ pinnedMessages, onRefresh }: PinnedMess
           • Drag to reorder
         </span>
       </div>
-      
+
       {/* Stacked Cards Layout with Drag and Drop */}
       <div className="relative">
         <DndContext
@@ -240,7 +239,7 @@ export default function PinnedMessages({ pinnedMessages, onRefresh }: PinnedMess
             ))}
           </SortableContext>
         </DndContext>
-        
+
         {/* Add spacing for stacked cards */}
         {messages.length > 1 && (
           <div style={{ height: `${(messages.length - 1) * 4}px` }} />
