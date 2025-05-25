@@ -1,0 +1,122 @@
+{
+  "app": {
+    "name": "TekRem ERP",
+    "tagline": "Technology Remedies Innovations"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register",
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "portfolio": "Portfolio",
+    "contact": "Contact"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot your password?",
+    "login": "Login",
+    "register": "Register",
+    "name": "Name",
+    "confirm_password": "Confirm Password",
+    "already_registered": "Already registered?",
+    "reset_password": "Reset Password",
+    "verify_email": "Verify Email",
+    "resend_verification_email": "Resend Verification Email",
+    "verification_link_sent": "A new verification link has been sent to your email address."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to your dashboard",
+    "stats": "Stats",
+    "recent_activity": "Recent Activity",
+    "quick_actions": "Quick Actions"
+  },
+  "admin": {
+    "users": "Users",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "settings": "Settings",
+    "logs": "Logs",
+    "system": "System"
+  },
+  "crm": {
+    "title": "CRM",
+    "clients": "Clients",
+    "leads": "Leads",
+    "communications": "Communications",
+    "opportunities": "Opportunities",
+    "chats": "Chats"
+  },
+  "finance": {
+    "invoices": "Invoices",
+    "payments": "Payments",
+    "expenses": "Expenses",
+    "reports": "Reports"
+  },
+  "hr": {
+    "employees": "Employees",
+    "leave": "Leave",
+    "attendance": "Attendance",
+    "performance": "Performance"
+  },
+  "projects": {
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "timelines": "Timelines",
+    "resources": "Resources"
+  },
+  "support": {
+    "tickets": "Tickets",
+    "knowledge_base": "Knowledge Base",
+    "faq": "FAQ"
+  },
+  "analytics": {
+    "reports": "Reports",
+    "kpi": "KPIs",
+    "charts": "Charts",
+    "data": "Data"
+  },
+  "common": {
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "time": "Time",
+    "description": "Description",
+    "details": "Details",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "zip": "ZIP/Postal Code",
+    "submit": "Submit",
+    "reset": "Reset",
+    "loading": "Loading...",
+    "no_results": "No results found",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "language": "Language"
+  }
+}
