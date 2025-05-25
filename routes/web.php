@@ -26,6 +26,16 @@ Route::prefix('guest-chat')->name('guest-chat.')->group(function () {
     Route::get('/messages', [App\Http\Controllers\GuestChatController::class, 'getMessages'])->name('messages');
 });
 
+// AI Service Test Route (for development/testing)
+Route::post('/test-ai-service', function(\Illuminate\Http\Request $request) {
+    $aiService = new \App\Services\AIService();
+    $response = $aiService->generateGuestChatResponse(
+        $request->input('message', 'Hello, I need help with web development services.'),
+        []
+    );
+    return response()->json(['response' => $response]);
+})->name('test-ai-service');
+
 // Authentication & Dashboard Routes
 Route::middleware([
     'auth:sanctum',
@@ -97,6 +107,24 @@ Route::middleware([
             Route::post('/messages/{message}/comments', [\App\Http\Controllers\CRM\LiveChatController::class, 'addComment'])->name('messages.comments.store');
             Route::delete('/comments/{comment}', [\App\Http\Controllers\CRM\LiveChatController::class, 'deleteComment'])->name('comments.destroy');
         });
+
+        // Analytics routes
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\CRM\AnalyticsController::class, 'index'])->name('dashboard');
+            Route::get('/reports', [\App\Http\Controllers\CRM\AnalyticsController::class, 'reports'])->name('reports');
+            Route::post('/export', [\App\Http\Controllers\CRM\AnalyticsController::class, 'export'])->name('export');
+            Route::post('/generate-report', [\App\Http\Controllers\CRM\AnalyticsController::class, 'generateReport'])->name('generate-report');
+        });
+
+        // AI Conversation Export routes (Admin only)
+        Route::prefix('ai-conversations')->name('ai-conversations.')->middleware('role:admin')->group(function () {
+            Route::get('/export', function () {
+                return \Inertia\Inertia::render('Settings/AIConversationExport');
+            })->name('export.index');
+            Route::post('/export', [\App\Http\Controllers\CRM\AIConversationExportController::class, 'export'])->name('export');
+            Route::get('/statistics', [\App\Http\Controllers\CRM\AIConversationExportController::class, 'statistics'])->name('statistics');
+            Route::post('/preview', [\App\Http\Controllers\CRM\AIConversationExportController::class, 'preview'])->name('preview');
+        });
     });
 
     // Settings routes - Admin only
@@ -115,6 +143,9 @@ Route::middleware([
         Route::put('/advanced/security', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateSecurity'])->name('advanced.security.update');
         Route::put('/advanced/performance', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updatePerformance'])->name('advanced.performance.update');
         Route::put('/advanced/integrations', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateIntegrations'])->name('advanced.integrations.update');
+        Route::put('/advanced/social-platforms', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateSocialPlatforms'])->name('advanced.social-platforms.update');
+        Route::put('/advanced/ai-services', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateAIServices'])->name('advanced.ai-services.update');
+        Route::post('/advanced/test-connection', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'testConnection'])->name('advanced.test-connection');
 
         // System Maintenance
         Route::post('/maintenance/cache-clear', [\App\Http\Controllers\Settings\MaintenanceController::class, 'clearCache'])->name('maintenance.cache.clear');

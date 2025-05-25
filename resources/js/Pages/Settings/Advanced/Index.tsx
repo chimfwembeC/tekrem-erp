@@ -10,13 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { Separator } from '@/Components/ui/separator';
 import { Badge } from '@/Components/ui/badge';
-import { 
-  ArrowLeft, 
-  Settings, 
-  Save, 
-  Shield, 
-  Zap, 
-  Plug, 
+import {
+  ArrowLeft,
+  Settings,
+  Save,
+  Shield,
+  Zap,
+  Plug,
   Server,
   Database,
   Trash2,
@@ -24,7 +24,17 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle,
-  Info
+  Info,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  Bot,
+  Eye,
+  EyeOff,
+  TestTube,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import useRoute from '@/Hooks/useRoute';
@@ -37,28 +47,49 @@ interface AdvancedSettingsProps {
   systemInfo: any;
 }
 
-export default function AdvancedSettings({ 
-  systemSettings, 
-  securitySettings, 
-  performanceSettings, 
+export default function AdvancedSettings({
+  systemSettings,
+  securitySettings,
+  performanceSettings,
   integrationSettings,
-  systemInfo 
+  systemInfo
 }: AdvancedSettingsProps) {
   const route = useRoute();
   const [activeTab, setActiveTab] = useState('system');
   const [isMaintenanceRunning, setIsMaintenanceRunning] = useState(false);
 
+  // Integration state
+  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
+  const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
+  const [testingConnection, setTestingConnection] = useState<Record<string, boolean>>({});
+
   // System settings form
   const systemForm = useForm(systemSettings);
-  
+
   // Security settings form
   const securityForm = useForm(securitySettings);
-  
+
   // Performance settings form
   const performanceForm = useForm(performanceSettings);
-  
+
   // Integration settings form
   const integrationForm = useForm(integrationSettings);
+
+  // Social platform forms
+  const socialPlatformForms = {
+    facebook: useForm(integrationSettings.social_platforms?.facebook || {}),
+    twitter: useForm(integrationSettings.social_platforms?.twitter || {}),
+    instagram: useForm(integrationSettings.social_platforms?.instagram || {}),
+    linkedin: useForm(integrationSettings.social_platforms?.linkedin || {}),
+    whatsapp: useForm(integrationSettings.social_platforms?.whatsapp || {}),
+  };
+
+  // AI service forms
+  const aiServiceForms = {
+    mistral: useForm(integrationSettings.ai_services?.mistral || {}),
+    openai: useForm(integrationSettings.ai_services?.openai || {}),
+    anthropic: useForm(integrationSettings.ai_services?.anthropic || {}),
+  };
 
   const handleSystemSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,7 +157,7 @@ export default function AdvancedSettings({
 
   const handleMaintenanceAction = async (action: string) => {
     setIsMaintenanceRunning(true);
-    
+
     try {
       const response = await fetch(route(`settings.maintenance.${action}`), {
         method: 'POST',
@@ -151,6 +182,142 @@ export default function AdvancedSettings({
       });
     } finally {
       setIsMaintenanceRunning(false);
+    }
+  };
+
+  // Helper functions for integrations
+  const toggleApiKeyVisibility = (service: string) => {
+    setShowApiKeys(prev => ({
+      ...prev,
+      [service]: !prev[service]
+    }));
+  };
+
+  const handleSocialPlatformSubmit = (platform: string) => {
+    const form = socialPlatformForms[platform as keyof typeof socialPlatformForms];
+    const { enabled, ...settings } = form.data;
+
+    router.put(route('settings.advanced.social-platforms.update'), {
+      platform,
+      enabled,
+      settings
+    }, {
+      onSuccess: () => {
+        toast.success(`${platform.charAt(0).toUpperCase() + platform.slice(1)} integration updated!`, {
+          description: 'Social platform settings have been saved successfully.'
+        });
+      },
+      onError: () => {
+        toast.error('Failed to update social platform settings', {
+          description: 'Please check the form for errors and try again.'
+        });
+      }
+    });
+  };
+
+  const handleAIServiceSubmit = (service: string) => {
+    const form = aiServiceForms[service as keyof typeof aiServiceForms];
+    const { enabled, ...settings } = form.data;
+
+    router.put(route('settings.advanced.ai-services.update'), {
+      service,
+      enabled,
+      settings
+    }, {
+      onSuccess: () => {
+        toast.success(`${service.charAt(0).toUpperCase() + service.slice(1)} AI service updated!`, {
+          description: 'AI service settings have been saved successfully.'
+        });
+      },
+      onError: () => {
+        toast.error('Failed to update AI service settings', {
+          description: 'Please check the form for errors and try again.'
+        });
+      }
+    });
+  };
+
+  const testConnection = async (type: 'social' | 'ai', service: string) => {
+    const key = `${type}-${service}`;
+    setTestingConnection(prev => ({ ...prev, [key]: true }));
+
+    try {
+      const form = type === 'social'
+        ? socialPlatformForms[service as keyof typeof socialPlatformForms]
+        : aiServiceForms[service as keyof typeof aiServiceForms];
+
+      const { enabled, ...settings } = form.data;
+
+      const response = await fetch(route('settings.advanced.test-connection'), {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type,
+          service,
+          settings
+        }),
+      });
+
+      const result = await response.json();
+
+      setConnectionStatus(prev => ({
+        ...prev,
+        [key]: result.status
+      }));
+
+      if (result.status === 'connected') {
+        toast.success('Connection successful!', {
+          description: result.message
+        });
+      } else {
+        toast.error('Connection failed', {
+          description: result.message
+        });
+      }
+    } catch (error) {
+      setConnectionStatus(prev => ({
+        ...prev,
+        [key]: 'error'
+      }));
+      toast.error('Connection test failed', {
+        description: 'Please try again or check your settings.'
+      });
+    } finally {
+      setTestingConnection(prev => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const getConnectionStatusBadge = (type: 'social' | 'ai', service: string) => {
+    const key = `${type}-${service}`;
+    const status = connectionStatus[key] || 'disconnected';
+
+    switch (status) {
+      case 'connected':
+        return <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">Connected</Badge>;
+      case 'error':
+        return <Badge variant="destructive">Error</Badge>;
+      default:
+        return <Badge variant="secondary">Disconnected</Badge>;
+    }
+  };
+
+  const getSocialPlatformIcon = (platform: string) => {
+    switch (platform) {
+      case 'facebook':
+        return <Facebook className="h-5 w-5 text-blue-600" />;
+      case 'twitter':
+        return <Twitter className="h-5 w-5 text-blue-400" />;
+      case 'instagram':
+        return <Instagram className="h-5 w-5 text-pink-600" />;
+      case 'linkedin':
+        return <Linkedin className="h-5 w-5 text-blue-700" />;
+      case 'whatsapp':
+        return <MessageCircle className="h-5 w-5 text-green-600" />;
+      default:
+        return <Plug className="h-5 w-5" />;
     }
   };
 
@@ -235,7 +402,7 @@ export default function AdvancedSettings({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <Button
                 variant="outline"
                 className="h-auto p-4 flex flex-col items-center gap-2"
@@ -270,6 +437,14 @@ export default function AdvancedSettings({
               >
                 <Database className="h-5 w-5" />
                 <span className="text-sm">System Info</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2"
+                onClick={() => router.visit(route('crm.ai-conversations.export.index'))}
+              >
+                <Bot className="h-5 w-5 text-purple-600" />
+                <span className="text-sm">AI Export</span>
               </Button>
             </div>
           </CardContent>
@@ -338,8 +513,8 @@ export default function AdvancedSettings({
 
                       <div className="space-y-2">
                         <Label htmlFor="log_level">Log Level</Label>
-                        <Select 
-                          value={systemForm.data.log_level} 
+                        <Select
+                          value={systemForm.data.log_level}
                           onValueChange={(value) => systemForm.setData('log_level', value)}
                         >
                           <SelectTrigger>
@@ -417,8 +592,8 @@ export default function AdvancedSettings({
 
                       <div className="space-y-2">
                         <Label htmlFor="auto_backup_frequency">Backup Frequency</Label>
-                        <Select 
-                          value={systemForm.data.auto_backup_frequency} 
+                        <Select
+                          value={systemForm.data.auto_backup_frequency}
                           onValueChange={(value) => systemForm.setData('auto_backup_frequency', value)}
                         >
                           <SelectTrigger>
@@ -447,8 +622,8 @@ export default function AdvancedSettings({
                   </div>
 
                   <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={systemForm.processing}
                       className="flex items-center gap-2"
                     >
@@ -479,10 +654,10 @@ export default function AdvancedSettings({
                   <div className="text-center py-8 text-gray-500">
                     Security settings form content coming soon...
                   </div>
-                  
+
                   <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={securityForm.processing}
                       className="flex items-center gap-2"
                     >
@@ -513,10 +688,10 @@ export default function AdvancedSettings({
                   <div className="text-center py-8 text-gray-500">
                     Performance settings form content coming soon...
                   </div>
-                  
+
                   <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={performanceForm.processing}
                       className="flex items-center gap-2"
                     >
@@ -531,36 +706,428 @@ export default function AdvancedSettings({
 
           {/* Integration Settings Tab */}
           <TabsContent value="integrations">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plug className="h-5 w-5" />
-                  Integration Configuration
-                </CardTitle>
-                <CardDescription>
-                  Configure third-party integrations and API settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleIntegrationSubmit} className="space-y-6">
-                  {/* Integration settings form content will be added here */}
-                  <div className="text-center py-8 text-gray-500">
-                    Integration settings form content coming soon...
+            <div className="space-y-6">
+              {/* Social Platform Integrations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageCircle className="h-5 w-5" />
+                    Social Platform Integrations
+                  </CardTitle>
+                  <CardDescription>
+                    Connect with major social media platforms for enhanced customer engagement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {Object.entries(integrationSettings.social_platforms || {}).map(([platform, config]) => (
+                      <div key={platform} className="border rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            {getSocialPlatformIcon(platform)}
+                            <div>
+                              <h4 className="font-medium capitalize">{platform}</h4>
+                              <p className="text-sm text-gray-500">
+                                {platform === 'facebook' && 'Connect with Facebook Pages and Messenger'}
+                                {platform === 'twitter' && 'Integrate with Twitter/X for social engagement'}
+                                {platform === 'instagram' && 'Connect Instagram Business accounts'}
+                                {platform === 'linkedin' && 'Integrate with LinkedIn for professional networking'}
+                                {platform === 'whatsapp' && 'Connect WhatsApp Business API'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {getConnectionStatusBadge('social', platform)}
+                            <Switch
+                              checked={socialPlatformForms[platform as keyof typeof socialPlatformForms]?.data?.enabled || false}
+                              onCheckedChange={(checked) =>
+                                socialPlatformForms[platform as keyof typeof socialPlatformForms]?.setData('enabled', checked)
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {socialPlatformForms[platform as keyof typeof socialPlatformForms]?.data?.enabled && (
+                          <div className="space-y-4 border-t pt-4">
+                            {/* Platform-specific configuration fields */}
+                            {platform === 'facebook' && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_app_id`}>App ID</Label>
+                                  <Input
+                                    id={`${platform}_app_id`}
+                                    value={socialPlatformForms.facebook.data.app_id || ''}
+                                    onChange={(e) => socialPlatformForms.facebook.setData('app_id', e.target.value)}
+                                    placeholder="Enter Facebook App ID"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_app_secret`}>App Secret</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_app_secret`}
+                                      type={showApiKeys[`${platform}_app_secret`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.facebook.data.app_secret || ''}
+                                      onChange={(e) => socialPlatformForms.facebook.setData('app_secret', e.target.value)}
+                                      placeholder="Enter Facebook App Secret"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_app_secret`)}
+                                    >
+                                      {showApiKeys[`${platform}_app_secret`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_page_access_token`}>Page Access Token</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_page_access_token`}
+                                      type={showApiKeys[`${platform}_page_access_token`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.facebook.data.page_access_token || ''}
+                                      onChange={(e) => socialPlatformForms.facebook.setData('page_access_token', e.target.value)}
+                                      placeholder="Enter Page Access Token"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_page_access_token`)}
+                                    >
+                                      {showApiKeys[`${platform}_page_access_token`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_webhook_verify_token`}>Webhook Verify Token</Label>
+                                  <Input
+                                    id={`${platform}_webhook_verify_token`}
+                                    value={socialPlatformForms.facebook.data.webhook_verify_token || ''}
+                                    onChange={(e) => socialPlatformForms.facebook.setData('webhook_verify_token', e.target.value)}
+                                    placeholder="Enter Webhook Verify Token"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {platform === 'twitter' && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_api_key`}>API Key</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_api_key`}
+                                      type={showApiKeys[`${platform}_api_key`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.twitter.data.api_key || ''}
+                                      onChange={(e) => socialPlatformForms.twitter.setData('api_key', e.target.value)}
+                                      placeholder="Enter Twitter API Key"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_api_key`)}
+                                    >
+                                      {showApiKeys[`${platform}_api_key`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_api_secret`}>API Secret</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_api_secret`}
+                                      type={showApiKeys[`${platform}_api_secret`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.twitter.data.api_secret || ''}
+                                      onChange={(e) => socialPlatformForms.twitter.setData('api_secret', e.target.value)}
+                                      placeholder="Enter Twitter API Secret"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_api_secret`)}
+                                    >
+                                      {showApiKeys[`${platform}_api_secret`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_access_token`}>Access Token</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_access_token`}
+                                      type={showApiKeys[`${platform}_access_token`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.twitter.data.access_token || ''}
+                                      onChange={(e) => socialPlatformForms.twitter.setData('access_token', e.target.value)}
+                                      placeholder="Enter Access Token"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_access_token`)}
+                                    >
+                                      {showApiKeys[`${platform}_access_token`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor={`${platform}_access_token_secret`}>Access Token Secret</Label>
+                                  <div className="relative">
+                                    <Input
+                                      id={`${platform}_access_token_secret`}
+                                      type={showApiKeys[`${platform}_access_token_secret`] ? 'text' : 'password'}
+                                      value={socialPlatformForms.twitter.data.access_token_secret || ''}
+                                      onChange={(e) => socialPlatformForms.twitter.setData('access_token_secret', e.target.value)}
+                                      placeholder="Enter Access Token Secret"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                      onClick={() => toggleApiKeyVisibility(`${platform}_access_token_secret`)}
+                                    >
+                                      {showApiKeys[`${platform}_access_token_secret`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Add similar configurations for other platforms */}
+                            {(platform === 'instagram' || platform === 'linkedin' || platform === 'whatsapp') && (
+                              <div className="text-center py-4 text-gray-500">
+                                Configuration fields for {platform} will be added here...
+                              </div>
+                            )}
+
+                            <div className="flex justify-between items-center pt-4 border-t">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => testConnection('social', platform)}
+                                disabled={testingConnection[`social-${platform}`]}
+                                className="flex items-center gap-2"
+                              >
+                                {testingConnection[`social-${platform}`] ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <TestTube className="h-4 w-4" />
+                                )}
+                                Test Connection
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={() => handleSocialPlatformSubmit(platform)}
+                                className="flex items-center gap-2"
+                              >
+                                <Save className="h-4 w-4" />
+                                Save {platform.charAt(0).toUpperCase() + platform.slice(1)} Settings
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                  
-                  <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
-                      disabled={integrationForm.processing}
-                      className="flex items-center gap-2"
-                    >
-                      <Save className="h-4 w-4" />
-                      {integrationForm.processing ? 'Saving...' : 'Save Integration Settings'}
-                    </Button>
+                </CardContent>
+              </Card>
+
+              {/* AI Service Integrations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bot className="h-5 w-5" />
+                    AI Service Integrations
+                  </CardTitle>
+                  <CardDescription>
+                    Configure AI services for enhanced automation and intelligent features
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {Object.entries(integrationSettings.ai_services || {}).map(([service, config]) => (
+                      <div key={service} className="border rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Bot className="h-5 w-5 text-purple-600" />
+                            <div>
+                              <h4 className="font-medium capitalize flex items-center gap-2">
+                                {service}
+                                {service === 'mistral' && (
+                                  <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200">
+                                    Default
+                                  </Badge>
+                                )}
+                              </h4>
+                              <p className="text-sm text-gray-500">
+                                {service === 'mistral' && 'Mistral AI - Advanced language model for intelligent responses'}
+                                {service === 'openai' && 'OpenAI GPT - Powerful AI for natural language processing'}
+                                {service === 'anthropic' && 'Anthropic Claude - Safe and helpful AI assistant'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {getConnectionStatusBadge('ai', service)}
+                            <Switch
+                              checked={aiServiceForms[service as keyof typeof aiServiceForms]?.data?.enabled || false}
+                              onCheckedChange={(checked) =>
+                                aiServiceForms[service as keyof typeof aiServiceForms]?.setData('enabled', checked)
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {aiServiceForms[service as keyof typeof aiServiceForms]?.data?.enabled && (
+                          <div className="space-y-4 border-t pt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor={`${service}_api_key`}>API Key</Label>
+                                <div className="relative">
+                                  <Input
+                                    id={`${service}_api_key`}
+                                    type={showApiKeys[`${service}_api_key`] ? 'text' : 'password'}
+                                    value={aiServiceForms[service as keyof typeof aiServiceForms]?.data?.api_key || ''}
+                                    onChange={(e) =>
+                                      aiServiceForms[service as keyof typeof aiServiceForms]?.setData('api_key', e.target.value)
+                                    }
+                                    placeholder={`Enter ${service.charAt(0).toUpperCase() + service.slice(1)} API Key`}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                                    onClick={() => toggleApiKeyVisibility(`${service}_api_key`)}
+                                  >
+                                    {showApiKeys[`${service}_api_key`] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`${service}_model`}>Model</Label>
+                                <Select
+                                  value={aiServiceForms[service as keyof typeof aiServiceForms]?.data?.model || ''}
+                                  onValueChange={(value) =>
+                                    aiServiceForms[service as keyof typeof aiServiceForms]?.setData('model', value)
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select model" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {service === 'mistral' && (
+                                      <>
+                                        <SelectItem value="mistral-large-latest">Mistral Large (Latest)</SelectItem>
+                                        <SelectItem value="mistral-medium-latest">Mistral Medium (Latest)</SelectItem>
+                                        <SelectItem value="mistral-small-latest">Mistral Small (Latest)</SelectItem>
+                                      </>
+                                    )}
+                                    {service === 'openai' && (
+                                      <>
+                                        <SelectItem value="gpt-4">GPT-4</SelectItem>
+                                        <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                                        <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                                      </>
+                                    )}
+                                    {service === 'anthropic' && (
+                                      <>
+                                        <SelectItem value="claude-3-sonnet-20240229">Claude 3 Sonnet</SelectItem>
+                                        <SelectItem value="claude-3-haiku-20240307">Claude 3 Haiku</SelectItem>
+                                        <SelectItem value="claude-2.1">Claude 2.1</SelectItem>
+                                      </>
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`${service}_max_tokens`}>Max Tokens</Label>
+                                <Input
+                                  id={`${service}_max_tokens`}
+                                  type="number"
+                                  min="1"
+                                  max="8192"
+                                  value={aiServiceForms[service as keyof typeof aiServiceForms]?.data?.max_tokens || 4096}
+                                  onChange={(e) =>
+                                    aiServiceForms[service as keyof typeof aiServiceForms]?.setData('max_tokens', parseInt(e.target.value))
+                                  }
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Label htmlFor={`${service}_temperature`}>Temperature</Label>
+                                <Input
+                                  id={`${service}_temperature`}
+                                  type="number"
+                                  min="0"
+                                  max="2"
+                                  step="0.1"
+                                  value={aiServiceForms[service as keyof typeof aiServiceForms]?.data?.temperature || 0.7}
+                                  onChange={(e) =>
+                                    aiServiceForms[service as keyof typeof aiServiceForms]?.setData('temperature', parseFloat(e.target.value))
+                                  }
+                                />
+                              </div>
+
+                              {service === 'openai' && (
+                                <div className="space-y-2 md:col-span-2">
+                                  <Label htmlFor={`${service}_organization`}>Organization ID (Optional)</Label>
+                                  <Input
+                                    id={`${service}_organization`}
+                                    value={aiServiceForms.openai?.data?.organization || ''}
+                                    onChange={(e) => aiServiceForms.openai?.setData('organization', e.target.value)}
+                                    placeholder="Enter OpenAI Organization ID"
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex justify-between items-center pt-4 border-t">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => testConnection('ai', service)}
+                                disabled={testingConnection[`ai-${service}`]}
+                                className="flex items-center gap-2"
+                              >
+                                {testingConnection[`ai-${service}`] ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <TestTube className="h-4 w-4" />
+                                )}
+                                Test Connection
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={() => handleAIServiceSubmit(service)}
+                                className="flex items-center gap-2"
+                              >
+                                <Save className="h-4 w-4" />
+                                Save {service.charAt(0).toUpperCase() + service.slice(1)} Settings
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                </form>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

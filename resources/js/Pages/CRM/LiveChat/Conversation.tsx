@@ -42,7 +42,8 @@ import {
   Minimize2,
   Expand,
   Shrink,
-  Pin
+  Pin,
+  Sparkles
 } from 'lucide-react';
 import { Conversation, ChatMessage, InertiaSharedProps } from '@/types/index';
 import MessageActions from '@/Components/LiveChat/MessageActions';
@@ -417,8 +418,65 @@ export default function ConversationView({
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const isCurrentUser = (userId: number) => {
-    return userId === conversation.creator?.id; // This should be the current user's ID
+  const isCurrentUser = (userId: number | null) => {
+    // Get the current authenticated user ID from the page props
+    const currentUserId = page.props.auth.user?.id;
+    return userId === currentUserId;
+  };
+
+  // Message type detection functions
+  const isGuestMessage = (message: ChatMessage) => {
+    return !message.user_id && !isAIMessage(message);
+  };
+
+  const isAIMessage = (message: ChatMessage) => {
+    return message.metadata?.is_ai_response === true;
+  };
+
+  const isHumanAgentMessage = (message: ChatMessage) => {
+    return message.user_id && !isAIMessage(message);
+  };
+
+  const getMessageSender = (message: ChatMessage) => {
+    if (isAIMessage(message)) {
+      return 'TekRem AI Assistant';
+    }
+    if (isHumanAgentMessage(message)) {
+      return message.user?.name || 'Agent';
+    }
+    if (isGuestMessage(message)) {
+      const guestName = message.metadata?.guest_name;
+      const guestEmail = message.metadata?.guest_email;
+
+      if (guestName && guestEmail) {
+        return `${guestName} (${guestEmail})`;
+      }
+      if (guestName) {
+        return guestName;
+      }
+      if (guestEmail) {
+        return guestEmail;
+      }
+      return 'Guest';
+    }
+    return 'Unknown';
+  };
+
+  const getMessageSenderInitials = (message: ChatMessage) => {
+    if (isAIMessage(message)) {
+      return 'AI';
+    }
+    if (isHumanAgentMessage(message)) {
+      return getInitials(message.user?.name || 'Agent');
+    }
+    if (isGuestMessage(message)) {
+      const guestName = message.metadata?.guest_name;
+      if (guestName) {
+        return getInitials(guestName);
+      }
+      return 'G';
+    }
+    return 'U';
   };
 
   // Handler functions for message actions
@@ -586,13 +644,27 @@ export default function ConversationView({
               <div
                 key={msg.id}
                 id={`message-${msg.id}`}
-                className={`group flex ${isCurrentUser(msg.user_id) ? 'justify-end' : 'justify-start'} transition-colors duration-500`}
+                className={`group flex ${
+                  isCurrentUser(msg.user_id) ? 'justify-end' :
+                  isGuestMessage(msg) ? 'justify-start' :
+                  'justify-start'
+                } transition-colors duration-500`}
               >
-                <div className={`flex gap-2 max-w-[70%] ${isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <Avatar className="h-8 w-8">
+                <div className={`flex gap-2 max-w-[70%] ${
+                  isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'
+                }`}>
+                  <Avatar className={`h-8 w-8 ${
+                    isAIMessage(msg) ? 'bg-purple-100 border-purple-200' :
+                    isGuestMessage(msg) ? 'bg-blue-100 border-blue-200' :
+                    ''
+                  }`}>
                     <AvatarImage src={msg.user?.profile_photo_url || undefined} />
-                    <AvatarFallback>
-                      {getInitials(msg.user?.name || 'U')}
+                    <AvatarFallback className={
+                      isAIMessage(msg) ? 'bg-purple-100 text-purple-600' :
+                      isGuestMessage(msg) ? 'bg-blue-100 text-blue-600' :
+                      ''
+                    }>
+                      {getMessageSenderInitials(msg)}
                     </AvatarFallback>
                   </Avatar>
 
@@ -621,9 +693,35 @@ export default function ConversationView({
                         className={`rounded-lg px-3 py-2 ${
                           isCurrentUser(msg.user_id)
                             ? 'bg-blue-600 text-white'
+                            : isAIMessage(msg)
+                            ? 'bg-purple-50 border border-purple-200 text-gray-900'
+                            : isGuestMessage(msg)
+                            ? 'bg-blue-50 border border-blue-200 text-gray-900'
                             : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                         }`}
                       >
+                        {/* Message sender header for non-current user messages */}
+                        {!isCurrentUser(msg.user_id) && (
+                          <div className="flex items-center gap-1 mb-1">
+                            {isAIMessage(msg) ? (
+                              <>
+                                <Sparkles className="w-3 h-3 text-purple-600" />
+                                <span className="text-xs font-medium text-purple-600">TekRem AI Assistant</span>
+                              </>
+                            ) : isGuestMessage(msg) ? (
+                              <>
+                                <User className="w-3 h-3 text-blue-600" />
+                                <span className="text-xs font-medium text-blue-600">{getMessageSender(msg)}</span>
+                              </>
+                            ) : (
+                              <>
+                                <User className="w-3 h-3 text-gray-600" />
+                                <span className="text-xs font-medium text-gray-600">{msg.user?.name || 'Agent'}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+
                         {/* Internal note indicator */}
                         {msg.is_internal_note && (
                           <div className="text-xs opacity-75 mb-1">

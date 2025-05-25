@@ -27,7 +27,7 @@ export default function GuestLayout({
   // Get settings from Inertia shared props
   const settings = page.props.settings || {};
 
-  console.log(settings);
+  // console.log(settings);
   return (
     <AppProvider>
       <div className={`min-h-screen bg-background ${settings.font_family || 'font-sans'}`}>

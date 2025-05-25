@@ -7,6 +7,7 @@ use App\Models\Chat;
 use App\Models\Conversation;
 use App\Models\GuestSession;
 use App\Models\User;
+use App\Services\AIService;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,9 +33,9 @@ class GuestChatController extends Controller
             $conversation = $this->createGuestConversation($guestSession);
         }
 
-        // Get messages without trying to load user for guest messages
+        // Get messages in chronological order (oldest first) for proper chat display
         $messages = $conversation->messages()
-            ->latest()
+            ->orderBy('created_at', 'asc')
             ->take(50)
             ->get()
             ->map(function ($message) {
@@ -43,9 +44,7 @@ class GuestChatController extends Controller
                     $message->load('user');
                 }
                 return $message;
-            })
-            ->reverse()
-            ->values();
+            });
 
         return response()->json([
             'session' => $guestSession,
@@ -151,7 +150,15 @@ class GuestChatController extends Controller
         // Notify available staff members
         $this->notifyAvailableStaff($conversation, $message, $guestSession);
 
-        return response()->json(['message' => $message]);
+        // Check if AI auto-response should be triggered
+        $aiResponse = $this->handleAIAutoResponse($conversation, $message, $guestSession);
+
+        $response = ['message' => $message];
+        if ($aiResponse) {
+            $response['ai_response'] = $aiResponse;
+        }
+
+        return response()->json($response);
     }
 
     /**
@@ -168,7 +175,7 @@ class GuestChatController extends Controller
 
         $conversation = $guestSession->conversation;
         $messages = $conversation->messages()
-            ->latest()
+            ->orderBy('created_at', 'asc')
             ->take(50)
             ->get()
             ->map(function ($message) {
@@ -177,9 +184,7 @@ class GuestChatController extends Controller
                     $message->load('user');
                 }
                 return $message;
-            })
-            ->reverse()
-            ->values();
+            });
 
         $guestSession->updateActivity();
 
@@ -245,5 +250,130 @@ class GuestChatController extends Controller
                 route('crm.livechat.show', $conversation->id)
             );
         }
+    }
+
+    /**
+     * Handle AI auto-response for guest messages.
+     */
+    private function handleAIAutoResponse(Conversation $conversation, Chat $guestMessage, GuestSession $guestSession): ?Chat
+    {
+        // Check if AI auto-response should be triggered
+        if (!$this->shouldTriggerAIResponse($conversation)) {
+            return null;
+        }
+
+        $aiService = new AIService();
+
+        if (!$aiService->isAutoResponseEnabled()) {
+            return null;
+        }
+
+        // Get conversation history for context
+        $conversationHistory = $this->getConversationHistoryForAI($conversation);
+
+        // Generate AI response
+        $aiResponseData = $aiService->generateGuestChatResponse(
+            $guestMessage->message,
+            $conversationHistory
+        );
+
+        if (!$aiResponseData) {
+            return null;
+        }
+
+        // Create AI response message
+        $aiMessage = Chat::create([
+            'conversation_id' => $conversation->id,
+            'message' => $aiResponseData['message'],
+            'message_type' => 'text',
+            'status' => 'sent',
+            'chattable_type' => GuestSession::class,
+            'chattable_id' => $guestSession->id,
+            'user_id' => null, // AI messages have no user_id
+            'metadata' => [
+                'is_ai_response' => true,
+                'ai_service' => $aiResponseData['service'],
+                'ai_model' => $aiResponseData['model'],
+                'guest_session_id' => $guestSession->id,
+                'guest_name' => $guestSession->guest_name,
+                'guest_email' => $guestSession->guest_email,
+                'reply_to_message_id' => $guestMessage->id,
+                'generated_at' => now()->toISOString(),
+            ],
+        ]);
+
+        // Update conversation
+        $conversation->update([
+            'last_message_at' => now(),
+        ]);
+
+        // Broadcast AI response to guest
+        broadcast(new ChatMessageSent($aiMessage))->toOthers();
+
+        return $aiMessage;
+    }
+
+    /**
+     * Determine if AI auto-response should be triggered.
+     */
+    private function shouldTriggerAIResponse(Conversation $conversation): bool
+    {
+        // Check if there are any active human agents in the conversation
+        if ($this->hasActiveHumanAgents($conversation)) {
+            return false;
+        }
+
+        // Check if there's been a recent AI response (avoid spam)
+        $recentAIResponse = $conversation->messages()
+            ->where('metadata->is_ai_response', true)
+            ->where('created_at', '>', now()->subMinutes(2))
+            ->exists();
+
+        if ($recentAIResponse) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if there are active human agents in the conversation.
+     */
+    private function hasActiveHumanAgents(Conversation $conversation): bool
+    {
+        // Check if conversation is assigned to a human agent
+        if ($conversation->assigned_to) {
+            return true;
+        }
+
+        // Check for recent human messages (within last 10 minutes)
+        $recentHumanMessage = $conversation->messages()
+            ->whereNotNull('user_id')
+            ->where('metadata->is_ai_response', '!=', true)
+            ->where('created_at', '>', now()->subMinutes(10))
+            ->exists();
+
+        return $recentHumanMessage;
+    }
+
+    /**
+     * Get conversation history for AI context.
+     */
+    private function getConversationHistoryForAI(Conversation $conversation): array
+    {
+        $messages = $conversation->messages()
+            ->orderBy('created_at', 'asc')
+            ->take(10) // Last 10 messages for context
+            ->get();
+
+        return $messages->map(function ($message) {
+            return [
+                'message' => $message->message,
+                'is_guest' => $message->user_id === null && ($message->metadata['is_ai_response'] ?? false) === false,
+                'is_ai' => $message->metadata['is_ai_response'] ?? false,
+                'is_human_agent' => $message->user_id !== null,
+                'created_at' => $message->created_at->toISOString(),
+            ];
+        })->toArray();
     }
 }

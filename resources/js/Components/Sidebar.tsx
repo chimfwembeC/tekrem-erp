@@ -11,7 +11,8 @@ import {
   ChevronDown,
   ChevronRight,
   Settings,
-  Cog
+  Cog,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -84,6 +85,12 @@ export default function Sidebar({ settings }: SidebarProps) {
       label: t('crm.chat', 'Chat'),
       icon: <MessageCircle className="h-5 w-5" />,
       active: route().current('crm.livechat.*')
+    },
+    {
+      href: route('crm.analytics.dashboard'),
+      label: t('crm.analytics', 'Analytics'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('crm.analytics.*')
     },
   ] : [];
 

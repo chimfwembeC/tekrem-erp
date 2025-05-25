@@ -65,10 +65,10 @@ class ChatMessageSent implements ShouldBroadcast
             'chattable_type' => $this->chat->chattable_type,
             'chattable_id' => $this->chat->chattable_id,
             'created_at' => $this->chat->created_at,
-            'user' => [
+            'user' => $this->chat->user ? [
                 'id' => $this->chat->user->id,
                 'name' => $this->chat->user->name,
-            ],
+            ] : null,
         ];
     }
 }

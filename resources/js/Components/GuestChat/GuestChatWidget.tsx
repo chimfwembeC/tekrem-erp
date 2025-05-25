@@ -197,6 +197,14 @@ export default function GuestChatWidget() {
         setMessages(prev => [...prev, data.message]);
         setNewMessage('');
 
+        // Handle AI response if present
+        if (data.ai_response) {
+          // Add AI response to messages after a short delay for better UX
+          setTimeout(() => {
+            setMessages(prev => [...prev, data.ai_response]);
+          }, 1000);
+        }
+
         // Update conversation last message time
         if (conversation) {
           setConversation(prev => prev ? { ...prev, last_message_at: new Date().toISOString() } : null);
@@ -251,7 +259,7 @@ export default function GuestChatWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      <Card className={`w-80 shadow-2xl transition-all duration-200 ${isMinimized ? 'h-16' : 'h-[calc(100vh-3rem)]'}`}>
+      <Card className={`w-96 shadow-2xl rounded-t-lg transition-all duration-200 ${isMinimized ? 'h-16' : 'h-[calc(100vh-3rem)]'}`}>
         <GuestChatHeader
           guestSession={guestSession}
           conversation={conversation}

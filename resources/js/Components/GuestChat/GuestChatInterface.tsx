@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Paperclip, Image, User, Bot } from 'lucide-react';
+import { Send, Paperclip, Image, User, Bot, Sparkles } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
@@ -87,7 +87,49 @@ export default function GuestChatInterface({
   };
 
   const isGuestMessage = (message: Message) => {
-    return !message.user; // Guest messages have no user
+    // Guest messages have no user_id and are not AI responses
+    return !message.user && !isAIMessage(message);
+  };
+
+  const isAIMessage = (message: Message) => {
+    return message.metadata?.is_ai_response === true;
+  };
+
+  const isHumanAgentMessage = (message: Message) => {
+    return message.user && !isAIMessage(message);
+  };
+
+  const getMessageSender = (message: Message) => {
+    if (isAIMessage(message)) {
+      return 'TekRem AI Assistant';
+    }
+    if (isHumanAgentMessage(message)) {
+      return message.user?.name || 'Agent';
+    }
+    // For guest messages, show guest name if available
+    if (isGuestMessage(message)) {
+      const guestName = message.metadata?.guest_name || guestSession?.guest_name;
+      return guestName || 'You';
+    }
+    return 'Unknown';
+  };
+
+  const getGuestDisplayInfo = (message: Message) => {
+    if (!isGuestMessage(message)) return null;
+
+    const guestName = message.metadata?.guest_name || guestSession?.guest_name;
+    const guestEmail = message.metadata?.guest_email || guestSession?.guest_email;
+
+    if (guestName && guestEmail) {
+      return `${guestName} (${guestEmail})`;
+    }
+    if (guestName) {
+      return guestName;
+    }
+    if (guestEmail) {
+      return guestEmail;
+    }
+    return 'You';
   };
 
   // Guest Information Form
@@ -204,9 +246,11 @@ export default function GuestChatInterface({
             >
               <div className={`flex space-x-2 max-w-[80%] ${isGuestMessage(message) ? 'flex-row-reverse space-x-reverse' : ''}`}>
                 <Avatar className="w-6 h-6 flex-shrink-0">
-                  <AvatarFallback className="text-xs">
+                  <AvatarFallback className={`text-xs ${isAIMessage(message) ? 'bg-purple-100 text-purple-600' : ''}`}>
                     {isGuestMessage(message) ? (
                       <User className="w-3 h-3" />
+                    ) : isAIMessage(message) ? (
+                      <Bot className="w-3 h-3" />
                     ) : (
                       message.user?.name?.charAt(0) || 'S'
                     )}
@@ -216,13 +260,47 @@ export default function GuestChatInterface({
                 <div className={`rounded-lg px-3 py-2 ${
                   isGuestMessage(message)
                     ? 'bg-primary text-primary-foreground'
+                    : isAIMessage(message)
+                    ? 'bg-purple-50 border border-purple-200'
                     : 'bg-muted'
                 }`}>
-                  <p className="text-sm">{message.message}</p>
+                  {/* Message Header - Show sender info for non-guest messages */}
+                  {!isGuestMessage(message) && (
+                    <div className="flex items-center gap-1 mb-1">
+                      {isAIMessage(message) ? (
+                        <>
+                          <Sparkles className="w-3 h-3 text-purple-600" />
+                          <span className="text-xs font-medium text-purple-600">TekRem AI Assistant</span>
+                        </>
+                      ) : isHumanAgentMessage(message) ? (
+                        <>
+                          <User className="w-3 h-3 text-blue-600" />
+                          <span className="text-xs font-medium text-blue-600">{message.user?.name || 'Agent'}</span>
+                        </>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {/* Guest message header - show guest info when available */}
+                  {isGuestMessage(message) && (message.metadata?.guest_name || guestSession?.guest_name) && (
+                    <div className="flex items-center gap-1 mb-1">
+                      <User className="w-3 h-3 text-primary-foreground/70" />
+                      <span className="text-xs font-medium text-primary-foreground/90">
+                        {getGuestDisplayInfo(message)}
+                      </span>
+                    </div>
+                  )}
+
+                  <p className={`text-sm ${isAIMessage(message) ? 'text-gray-800' : ''}`}>
+                    {message.message}
+                  </p>
+
                   <div className="flex items-center justify-between mt-1">
                     <span className={`text-xs ${
                       isGuestMessage(message)
                         ? 'text-primary-foreground/70'
+                        : isAIMessage(message)
+                        ? 'text-purple-600/70'
                         : 'text-muted-foreground'
                     }`}>
                       {formatTime(message.created_at)}
@@ -234,6 +312,11 @@ export default function GuestChatInterface({
                           : 'text-primary-foreground/50'
                       }`}>
                         {message.status === 'read' ? '✓✓' : '✓'}
+                      </span>
+                    )}
+                    {isAIMessage(message) && (
+                      <span className="text-xs text-purple-600/70">
+                        AI Response
                       </span>
                     )}
                   </div>
@@ -248,14 +331,14 @@ export default function GuestChatInterface({
 
       {/* Message Input */}
       <div className="border-t p-3 flex-shrink-0">
-        <div className="flex space-x-2">
+        <div className="flex justify-between items-center gap-2">
           <div className="flex-1">
             <Textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={onKeyPress}
               placeholder="Type your message..."
-              className="min-h-[40px] max-h-[80px] resize-none"
+              className="min-h-[20px] max-h-[40px] resize-none"
               disabled={isLoading}
             />
           </div>
@@ -277,9 +360,15 @@ export default function GuestChatInterface({
             You're chatting with {conversation.assignee.name}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Waiting for an agent to join...
-          </p>
+          <div className="my-2 text-center">
+            <p className="text-xs text-muted-foreground">
+              Waiting for an agent to join...
+            </p>
+            <div className="flex items-center justify-center gap-1 mt-1">
+              <Bot className="w-3 h-3 text-purple-600" />
+              <span className="text-xs text-purple-600">AI Assistant is helping you</span>
+            </div>
+          </div>
         )}
       </div>
     </div>

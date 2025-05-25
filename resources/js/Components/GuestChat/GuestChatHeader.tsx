@@ -82,7 +82,7 @@ export default function GuestChatHeader({
   };
 
   return (
-    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-primary text-primary-foreground">
+    <CardHeader className="flex flex-row items-center rounded-t-lg justify-between space-y-0 pb-2 bg-primary text-primary-foreground">
       <div className="flex items-center space-x-3 flex-1 min-w-0">
         {/* Company Logo/Icon */}
         <div className="flex-shrink-0">

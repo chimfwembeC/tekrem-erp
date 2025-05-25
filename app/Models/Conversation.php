@@ -73,11 +73,11 @@ class Conversation extends Model
     }
 
     /**
-     * Get all messages in this conversation.
+     * Get all messages in this conversation in chronological order (oldest first).
      */
     public function messages(): HasMany
     {
-        return $this->hasMany(Chat::class, 'conversation_id')->orderBy('created_at');
+        return $this->hasMany(Chat::class, 'conversation_id')->orderBy('created_at', 'asc');
     }
 
     /**
