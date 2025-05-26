@@ -34,8 +34,8 @@ resources/js/Pages/
 ├── Customer/     // Customer dashboard, requests
 ├── CRM/          // Client management, leads, comms
 ├── Finance/      // Billing, invoices, payments
-├── HR/           // Team, leave, roles
-├── Projects/     // Tasks, timelines, PM
+├── HR/           // Team, leave, roles, users
+├── Projects/     // Tasks, timelines, PM, dnd boards
 ├── Support/      // Tickets, knowledge base
 ├── Analytics/    // Graphs, KPIs, reports
 ```
