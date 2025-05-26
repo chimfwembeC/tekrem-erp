@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Run the CRM seeder
         $this->call(CrmSeeder::class);
+
+        // Run the CMS seeder
+        $this->call(CMSSeeder::class);
     }
 }

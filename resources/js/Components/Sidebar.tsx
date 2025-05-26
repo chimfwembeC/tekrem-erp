@@ -24,7 +24,15 @@ import {
   HelpCircle,
   BookOpen,
   LifeBuoy,
-  Ticket
+  Ticket,
+  Globe,
+  FileEdit,
+  Image,
+  Layout,
+  Navigation,
+  Link2,
+  Folder,
+  Palette
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -210,6 +218,52 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
+  // CMS navigation items - only visible to admin and staff
+  const cmsItems = hasCrmAccess() ? [
+    {
+      href: route('cms.dashboard'),
+      label: t('cms.dashboard', 'Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('cms.dashboard')
+    },
+    {
+      href: route('cms.pages.index'),
+      label: t('cms.pages', 'Pages'),
+      icon: <FileEdit className="h-5 w-5" />,
+      active: route().current('cms.pages.*')
+    },
+    {
+      href: route('cms.media.index'),
+      label: t('cms.media', 'Media Library'),
+      icon: <Image className="h-5 w-5" />,
+      active: route().current('cms.media.*')
+    },
+    {
+      href: route('cms.templates.index'),
+      label: t('cms.templates', 'Templates'),
+      icon: <Layout className="h-5 w-5" />,
+      active: route().current('cms.templates.*')
+    },
+    {
+      href: route('cms.menus.index'),
+      label: t('cms.menus', 'Menus'),
+      icon: <Navigation className="h-5 w-5" />,
+      active: route().current('cms.menus.*')
+    },
+    {
+      href: route('cms.redirects.index'),
+      label: t('cms.redirects', 'Redirects'),
+      icon: <Link2 className="h-5 w-5" />,
+      active: route().current('cms.redirects.*')
+    },
+    {
+      href: route('cms.analytics'),
+      label: t('cms.analytics', 'Analytics'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('cms.analytics.*')
+    },
+  ] : [];
+
   // Sidebar content component to avoid duplication
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -323,6 +377,41 @@ export default function Sidebar({ settings }: SidebarProps) {
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 mt-1 space-y-1">
               {supportItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* CMS Navigation - Only visible to admin and staff */}
+        {hasCrmAccess() && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('cms.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <Globe className="h-5 w-5" />
+                <span>{t('cms.title', 'CMS')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {cmsItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

@@ -12,27 +12,47 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            // Add metadata column for AI analysis results
-            $table->json('metadata')->nullable()->after('tags');
-            
+            // Check if metadata column exists before adding it
+            if (!Schema::hasColumn('tickets', 'metadata')) {
+                $table->json('metadata')->nullable()->after('tags');
+            }
+
             // Add AI processing flags
-            $table->boolean('ai_processed')->default(false)->after('metadata');
-            $table->timestamp('ai_processed_at')->nullable()->after('ai_processed');
-            
+            if (!Schema::hasColumn('tickets', 'ai_processed')) {
+                $table->boolean('ai_processed')->default(false)->after('metadata');
+            }
+            if (!Schema::hasColumn('tickets', 'ai_processed_at')) {
+                $table->timestamp('ai_processed_at')->nullable()->after('ai_processed');
+            }
+
             // Add AI confidence scores
-            $table->integer('ai_category_confidence')->nullable()->after('ai_processed_at');
-            $table->integer('ai_priority_confidence')->nullable()->after('ai_category_confidence');
-            
+            if (!Schema::hasColumn('tickets', 'ai_category_confidence')) {
+                $table->integer('ai_category_confidence')->nullable()->after('ai_processed_at');
+            }
+            if (!Schema::hasColumn('tickets', 'ai_priority_confidence')) {
+                $table->integer('ai_priority_confidence')->nullable()->after('ai_category_confidence');
+            }
+
             // Add AI predictions
-            $table->integer('ai_predicted_resolution_minutes')->nullable()->after('ai_priority_confidence');
-            $table->string('ai_sentiment')->nullable()->after('ai_predicted_resolution_minutes');
-            $table->string('ai_urgency_level')->nullable()->after('ai_sentiment');
-            
+            if (!Schema::hasColumn('tickets', 'ai_predicted_resolution_minutes')) {
+                $table->integer('ai_predicted_resolution_minutes')->nullable()->after('ai_priority_confidence');
+            }
+            if (!Schema::hasColumn('tickets', 'ai_sentiment')) {
+                $table->string('ai_sentiment')->nullable()->after('ai_predicted_resolution_minutes');
+            }
+            if (!Schema::hasColumn('tickets', 'ai_urgency_level')) {
+                $table->string('ai_urgency_level')->nullable()->after('ai_sentiment');
+            }
+
             // Add escalation risk
-            $table->string('ai_escalation_risk')->nullable()->after('ai_urgency_level');
-            
+            if (!Schema::hasColumn('tickets', 'ai_escalation_risk')) {
+                $table->string('ai_escalation_risk')->nullable()->after('ai_urgency_level');
+            }
+
             // Add auto-response flag
-            $table->boolean('ai_auto_responded')->default(false)->after('ai_escalation_risk');
+            if (!Schema::hasColumn('tickets', 'ai_auto_responded')) {
+                $table->boolean('ai_auto_responded')->default(false)->after('ai_escalation_risk');
+            }
         });
 
         // Add index for AI processing
@@ -49,12 +69,25 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->dropIndex(['ai_processed', 'created_at']);
-            $table->dropIndex(['ai_sentiment', 'ai_urgency_level']);
-            $table->dropIndex(['ai_escalation_risk']);
-            
-            $table->dropColumn([
-                'metadata',
+            // Drop indexes if they exist
+            try {
+                $table->dropIndex(['ai_processed', 'created_at']);
+            } catch (\Exception $e) {
+                // Index might not exist
+            }
+            try {
+                $table->dropIndex(['ai_sentiment', 'ai_urgency_level']);
+            } catch (\Exception $e) {
+                // Index might not exist
+            }
+            try {
+                $table->dropIndex(['ai_escalation_risk']);
+            } catch (\Exception $e) {
+                // Index might not exist
+            }
+
+            // Drop columns that were added by this migration
+            $columnsToCheck = [
                 'ai_processed',
                 'ai_processed_at',
                 'ai_category_confidence',
@@ -64,7 +97,15 @@ return new class extends Migration
                 'ai_urgency_level',
                 'ai_escalation_risk',
                 'ai_auto_responded',
-            ]);
+            ];
+
+            foreach ($columnsToCheck as $column) {
+                if (Schema::hasColumn('tickets', $column)) {
+                    $table->dropColumn($column);
+                }
+            }
+
+            // Note: We don't drop 'metadata' column as it might have been created by another migration
         });
     }
 };

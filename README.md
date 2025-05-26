@@ -27,6 +27,7 @@ TekRem ERP is a comprehensive enterprise resource planning system built with Lar
 
 ## Modules
 
+- **CMS** (Content Management System)
 - Website (Public pages)
 - Admin Panel
 - Customer Portal
@@ -34,7 +35,7 @@ TekRem ERP is a comprehensive enterprise resource planning system built with Lar
 - Finance (Billing, Invoices)
 - HR (Team Management)
 - Projects (Enterprise Project Management with AI)
-- Support (Ticketing)
+- Support (Ticketing with AI)
 - Analytics (Reports, KPIs)
 
 ## Setup Instructions
@@ -109,6 +110,99 @@ The system uses n8n for workflow automation, including:
 - Timesheet reporting
 - Automated invoicing
 - Daily backups
+
+### Content Management System (CMS)
+- **Directory**: `CMS/`
+- **Description**: Enterprise-grade content management system for creating, managing, and publishing website content with advanced features and AI-powered optimization.
+
+- **Core Content Management**:
+  - **Advanced Page Editor**: Rich WYSIWYG editor with real-time preview, markdown support, and custom content blocks
+  - **Content Versioning**: Complete revision history with diff viewing, rollback capabilities, and approval workflows
+  - **Multi-language Support**: Full internationalization with translation management and language-specific content
+  - **Publishing Workflows**: Draft, scheduled, and approval-based publishing with role-based permissions
+  - **Content Hierarchy**: Parent/child page relationships with automatic breadcrumb generation
+  - **Custom Fields**: Flexible field system for different content types and templates
+
+- **SEO & Optimization**:
+  - **Real-time SEO Analysis**: Built-in SEO analyzer with scoring and recommendations
+  - **Meta Tag Management**: Comprehensive meta tags, Open Graph, and Twitter Card support
+  - **URL Management**: SEO-friendly URLs, custom slugs, and automatic redirect management
+  - **Sitemap Generation**: Automatic XML sitemap creation and submission
+  - **Schema Markup**: Structured data support for better search engine understanding
+  - **Performance Optimization**: Image optimization, lazy loading, and CDN integration
+
+- **Media Management**:
+  - **Advanced Media Library**: Comprehensive file management with folder organization
+  - **Image Processing**: Automatic resizing, optimization, and multiple format support
+  - **CDN Integration**: Cloud storage support with automatic URL generation
+  - **Media Variants**: Multiple image sizes and formats for responsive design
+  - **Bulk Operations**: Mass upload, tagging, and organization capabilities
+  - **Usage Tracking**: Media usage analytics and cleanup tools
+
+- **Template System**:
+  - **Flexible Templates**: Custom template engine with Blade integration
+  - **Page Builder**: Drag-and-drop interface for creating custom layouts
+  - **Component Library**: Reusable content blocks and widgets
+  - **Template Inheritance**: Master layouts with customizable sections
+  - **Mobile Responsive**: Automatic responsive design with mobile preview
+  - **Theme Management**: Multiple themes with easy switching capabilities
+
+- **Navigation & Menus**:
+  - **Dynamic Menus**: Hierarchical menu system with drag-and-drop ordering
+  - **Menu Locations**: Multiple menu positions (header, footer, sidebar)
+  - **Conditional Display**: Role-based and permission-based menu visibility
+  - **Breadcrumb System**: Automatic breadcrumb generation for all pages
+  - **Custom Links**: External links and custom navigation items
+  - **Mobile Navigation**: Responsive menu design for mobile devices
+
+- **AI-Powered Features** (using Mistral AI):
+  - **Content Suggestions**: AI-generated content recommendations and improvements
+  - **SEO Optimization**: Automated SEO suggestions and meta tag generation
+  - **Content Analysis**: Readability analysis and content quality scoring
+  - **Auto-tagging**: Intelligent content categorization and tagging
+  - **Translation Assistance**: AI-powered translation suggestions for multi-language content
+  - **Content Planning**: AI-driven content calendar and publishing recommendations
+
+- **Advanced Features**:
+  - **Custom Post Types**: Flexible content types beyond standard pages
+  - **Taxonomy Management**: Categories, tags, and custom taxonomies
+  - **Content Scheduling**: Advanced scheduling with timezone support
+  - **Redirect Management**: 301/302 redirects with hit tracking and analytics
+  - **Form Builder**: Custom forms with validation and submission handling
+  - **Comment System**: Built-in commenting with moderation capabilities
+  - **Search Functionality**: Full-text search with filtering and faceted search
+
+- **Analytics & Insights**:
+  - **Content Analytics**: Page views, engagement metrics, and performance tracking
+  - **SEO Monitoring**: Search engine ranking and optimization tracking
+  - **User Behavior**: Content interaction and user journey analysis
+  - **Performance Metrics**: Page load times and optimization recommendations
+  - **Content Audit**: Content quality assessment and improvement suggestions
+  - **Conversion Tracking**: Goal tracking and conversion optimization
+
+- **Integration & API**:
+  - **REST API**: Full API access for headless CMS functionality
+  - **Webhook Support**: Real-time notifications for content changes
+  - **Third-party Integration**: Social media, email marketing, and analytics tools
+  - **Import/Export**: Content migration tools and backup capabilities
+  - **Plugin System**: Extensible architecture for custom functionality
+  - **Developer Tools**: CLI commands and development utilities
+
+- **Security & Performance**:
+  - **Role-based Access**: Granular permissions for content management
+  - **Content Approval**: Multi-level approval workflows for publishing
+  - **Backup System**: Automated content backups with restoration capabilities
+  - **Cache Management**: Intelligent caching for optimal performance
+  - **Security Scanning**: Content security analysis and threat detection
+  - **Performance Monitoring**: Real-time performance tracking and optimization
+
+- **User Experience**:
+  - **Intuitive Interface**: Modern, responsive admin interface using shadcn/ui
+  - **Real-time Collaboration**: Multi-user editing with conflict resolution
+  - **Keyboard Shortcuts**: Power-user features and productivity enhancements
+  - **Bulk Operations**: Mass content management and editing capabilities
+  - **Preview System**: Live preview with device simulation
+  - **Accessibility**: WCAG compliance and accessibility features
 
 ### CRM / Client Management
 - **Directory**: `CRM/`

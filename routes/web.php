@@ -300,6 +300,60 @@ Route::middleware([
         });
     });
 
+    // CMS Routes
+    Route::prefix('cms')->name('cms.')->middleware(['auth', 'verified'])->group(function () {
+        // Pages Management
+        Route::resource('pages', \App\Http\Controllers\CMS\PageController::class);
+        Route::post('pages/{page}/publish', [\App\Http\Controllers\CMS\PageController::class, 'publish'])->name('pages.publish');
+        Route::post('pages/{page}/unpublish', [\App\Http\Controllers\CMS\PageController::class, 'unpublish'])->name('pages.unpublish');
+        Route::post('pages/{page}/schedule', [\App\Http\Controllers\CMS\PageController::class, 'schedule'])->name('pages.schedule');
+        Route::post('pages/{page}/duplicate', [\App\Http\Controllers\CMS\PageController::class, 'duplicate'])->name('pages.duplicate');
+        Route::post('pages/{page}/restore-revision', [\App\Http\Controllers\CMS\PageController::class, 'restoreRevision'])->name('pages.restore-revision');
+        Route::get('pages/{page}/preview', [\App\Http\Controllers\CMS\PageController::class, 'preview'])->name('pages.preview');
+        Route::get('pages/{page}/seo-analysis', [\App\Http\Controllers\CMS\PageController::class, 'seoAnalysis'])->name('pages.seo-analysis');
+        Route::get('pages/search', [\App\Http\Controllers\CMS\PageController::class, 'search'])->name('pages.search');
+        Route::post('pages/bulk-action', [\App\Http\Controllers\CMS\PageController::class, 'bulkAction'])->name('pages.bulk-action');
+
+        // Media Management
+        Route::get('media', [\App\Http\Controllers\CMS\MediaController::class, 'index'])->name('media.index');
+        Route::post('media/upload', [\App\Http\Controllers\CMS\MediaController::class, 'upload'])->name('media.upload');
+        Route::get('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'show'])->name('media.show');
+        Route::put('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'update'])->name('media.update');
+        Route::delete('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'destroy'])->name('media.destroy');
+        Route::get('media/search', [\App\Http\Controllers\CMS\MediaController::class, 'search'])->name('media.search');
+        Route::get('media/picker', [\App\Http\Controllers\CMS\MediaController::class, 'picker'])->name('media.picker');
+        Route::post('media/bulk-action', [\App\Http\Controllers\CMS\MediaController::class, 'bulkAction'])->name('media.bulk-action');
+        Route::post('media/{media}/variants', [\App\Http\Controllers\CMS\MediaController::class, 'generateVariants'])->name('media.variants');
+        Route::post('media/cleanup', [\App\Http\Controllers\CMS\MediaController::class, 'cleanup'])->name('media.cleanup');
+
+        // Media Folders
+        Route::post('media/folders', [\App\Http\Controllers\CMS\MediaController::class, 'createFolder'])->name('media.folders.create');
+        Route::put('media/folders/{folder}', [\App\Http\Controllers\CMS\MediaController::class, 'updateFolder'])->name('media.folders.update');
+        Route::delete('media/folders/{folder}', [\App\Http\Controllers\CMS\MediaController::class, 'destroyFolder'])->name('media.folders.destroy');
+
+        // Templates Management
+        Route::resource('templates', \App\Http\Controllers\CMS\TemplateController::class);
+        Route::post('templates/{template}/set-default', [\App\Http\Controllers\CMS\TemplateController::class, 'setDefault'])->name('templates.set-default');
+        Route::post('templates/{template}/duplicate', [\App\Http\Controllers\CMS\TemplateController::class, 'duplicate'])->name('templates.duplicate');
+
+        // Menus Management
+        Route::resource('menus', \App\Http\Controllers\CMS\MenuController::class);
+        Route::resource('menus.items', \App\Http\Controllers\CMS\MenuItemController::class)->except(['index', 'show']);
+        Route::post('menu-items/{item}/move', [\App\Http\Controllers\CMS\MenuItemController::class, 'move'])->name('menu-items.move');
+        Route::post('menu-items/reorder', [\App\Http\Controllers\CMS\MenuItemController::class, 'reorder'])->name('menu-items.reorder');
+
+        // Redirects Management
+        Route::resource('redirects', \App\Http\Controllers\CMS\RedirectController::class);
+        Route::post('redirects/bulk-action', [\App\Http\Controllers\CMS\RedirectController::class, 'bulkAction'])->name('redirects.bulk-action');
+        Route::get('redirects/statistics', [\App\Http\Controllers\CMS\RedirectController::class, 'statistics'])->name('redirects.statistics');
+
+        // CMS Dashboard
+        Route::get('dashboard', [\App\Http\Controllers\CMS\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('analytics', [\App\Http\Controllers\CMS\AnalyticsController::class, 'index'])->name('analytics');
+        Route::get('sitemap', [\App\Http\Controllers\CMS\SitemapController::class, 'index'])->name('sitemap');
+        Route::post('sitemap/generate', [\App\Http\Controllers\CMS\SitemapController::class, 'generate'])->name('sitemap.generate');
+    });
+
     // Customer Support Portal
     Route::prefix('customer/support')->name('customer.support.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
