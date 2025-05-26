@@ -33,7 +33,7 @@ TekRem ERP is a comprehensive enterprise resource planning system built with Lar
 - CRM (Client Management)
 - Finance (Billing, Invoices)
 - HR (Team Management)
-- Projects (Task Management)
+- Projects (Enterprise Project Management with AI)
 - Support (Ticketing)
 - Analytics (Reports, KPIs)
 
@@ -142,22 +142,81 @@ The system uses n8n for workflow automation, including:
   - Role-based conditional navigation
   - Mailtrap email configuration
 
-### Project Management Service
+### Projects Module - Enterprise Project Management with AI
 - **Directory**: `Projects/`
-- **Description**: Manages projects, tasks, and time tracking.
-- **Features**:
-  - Project CRUD operations
-  - Task management with status tracking
-  - Time logging and reporting
-  - Project dashboard with progress visualization
-  - Team member assignment
-  - Project templates
-  - Gantt chart view
-  - Kanban board view
-  - File attachments
-  - Task comments and discussions
-  - Deadline notifications
-  - Project reporting
+- **Description**: Comprehensive, enterprise-grade project management system with AI assistance capabilities, similar to GitHub Projects but enhanced with advanced features.
+- **Core Features**:
+  - **Interactive Kanban Boards**: Drag-and-drop functionality with customizable columns, swimlanes, and WIP limits
+  - **Multiple Project Views**: Board (Kanban), List, Timeline (Gantt), Calendar, and Table views with real-time switching
+  - **Project Templates**: Pre-built templates for Software Development, Marketing Campaigns, Event Planning, Product Launch, etc.
+  - **Hierarchical Structure**: Parent/child relationships, project portfolios, and cross-project dependencies
+  - **Project Cloning**: Duplication capabilities for rapid project setup
+
+- **Advanced Task & Issue Management**:
+  - **Rich Task Creation**: WYSIWYG descriptions, acceptance criteria, custom fields, and metadata
+  - **Issue Tracking**: Categorized bug reports, feature requests, enhancements, and technical debt
+  - **Complex Dependencies**: Predecessor/successor relationships, blocking dependencies, circular dependency detection
+  - **Multi-level Subtasks**: Hierarchical task breakdown with automatic progress rollup
+  - **Task Templates**: Reusable templates and checklists for standardized workflows
+  - **Priority Management**: Custom priority levels and urgency indicators
+
+- **Timeline & Progress Management**:
+  - **Advanced Milestones**: Deadlines, success criteria, deliverables, and milestone dependencies
+  - **Interactive Timelines**: Critical path analysis, resource allocation, and schedule optimization
+  - **Progress Tracking**: Real-time burndown/burnup charts, velocity tracking, and forecasting
+  - **Agile Support**: Sprint planning with story points, velocity calculations, and iteration management
+  - **Health Indicators**: Project health dashboards and risk assessment
+
+- **Team Collaboration & Assignment**:
+  - **Role-Based Access**: Project Owner, Admin, Contributor, Reviewer, Viewer with custom permissions
+  - **Intelligent Assignment**: Workload balancing, skill matching, and availability consideration
+  - **Self-Assignment**: Marketplace for team members to claim available tasks
+  - **Capacity Planning**: Workload visualization and overallocation warnings
+  - **Collaboration Tools**: @mention system, discussion threads, and collaboration spaces
+
+- **Document & Asset Management**:
+  - **File Attachments**: Comprehensive file system supporting projects, tasks, milestones, and comments
+  - **Version Control**: Built-in document version control with diff viewing and rollback capabilities
+  - **Multi-format Support**: Inline preview for images, PDFs, documents, code files, and media
+  - **Collaborative Editing**: File commenting and annotation system
+  - **Project Wikis**: Integrated wikis with markdown support and knowledge base functionality
+
+- **AI-Powered Assistance** (using existing Mistral AI integration):
+  - **Intelligent Task Creation**: Natural language descriptions with automatic field population
+  - **Project Planning**: Timeline estimation and resource recommendations
+  - **Smart Prioritization**: Based on project goals, deadlines, and team capacity
+  - **Progress Insights**: Bottleneck identification with resolution suggestions
+  - **Automated Reporting**: AI-generated summaries, status reports, and stakeholder communications
+  - **Predictive Analytics**: Project completion dates, budget forecasts, and risk assessment
+  - **Natural Language Queries**: Query interface for project data and reporting
+  - **Code Review Assistance**: AI-assisted code review and technical task analysis
+
+- **Enterprise Features**:
+  - **Custom Fields**: Fully customizable field system with multiple field types
+  - **Automation Engine**: Trigger-based workflows with conditional logic and custom actions
+  - **Time Tracking**: Manual entry, timer functionality, and timesheet integration
+  - **Advanced Analytics**: Customizable dashboards, KPI tracking, and executive reporting
+  - **API Integration**: REST API and webhook support for third-party tools (Slack, GitHub, Jira)
+  - **Advanced Search**: Full-text indexing, saved searches, and intelligent filtering
+  - **Project Archiving**: Data retention policies and restoration capabilities
+  - **Audit Logging**: Change history tracking and compliance features
+
+- **Performance & User Experience**:
+  - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+  - **Real-time Collaboration**: WebSocket connections, live cursors, and instant updates
+  - **Keyboard Shortcuts**: Comprehensive shortcuts and power-user features
+  - **Bulk Operations**: Mass editing, assignment, and status changes
+  - **Export Capabilities**: PDF reports, Excel/CSV data, JSON API, project archives
+  - **Offline Support**: Offline capability with sync when connection is restored
+  - **Performance Optimization**: Handles large projects (1000+ tasks) with virtual scrolling
+
+- **Integration with TekRem ERP**:
+  - **CRM Integration**: Client project tracking and billing
+  - **Finance Integration**: Project budgeting, expense tracking, and invoicing
+  - **User Management**: Existing role and permission system integration
+  - **Consistent UI/UX**: shadcn/ui components and established design patterns
+  - **Multi-language Support**: Using existing useTranslate hook
+  - **Notification System**: Integration with existing notification infrastructure
 
 
 ### Finance Service

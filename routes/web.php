@@ -177,28 +177,28 @@ Route::middleware([
             Route::get('export', [\App\Http\Controllers\Finance\AnalyticsController::class, 'export'])->name('export');
         });
 
-        // Templates
-        Route::resource('templates', \App\Http\Controllers\Finance\TemplateController::class);
-        Route::post('templates/{template}/duplicate', [\App\Http\Controllers\Finance\TemplateController::class, 'duplicate'])->name('templates.duplicate');
-        Route::post('templates/{template}/set-default', [\App\Http\Controllers\Finance\TemplateController::class, 'setDefault'])->name('templates.set-default');
+        // Templates (Commented out - Controller not implemented yet)
+        // Route::resource('templates', \App\Http\Controllers\Finance\TemplateController::class);
+        // Route::post('templates/{template}/duplicate', [\App\Http\Controllers\Finance\TemplateController::class, 'duplicate'])->name('templates.duplicate');
+        // Route::post('templates/{template}/set-default', [\App\Http\Controllers\Finance\TemplateController::class, 'setDefault'])->name('templates.set-default');
 
-        // Email Management
-        Route::prefix('emails')->name('emails.')->group(function () {
-            Route::post('quotations/{quotation}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotation'])->name('quotations.send');
-            Route::post('quotations/{quotation}/reminder', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotationReminder'])->name('quotations.reminder');
-            Route::post('invoices/{invoice}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoice'])->name('invoices.send');
-            Route::post('invoices/{invoice}/followup', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoiceFollowUp'])->name('invoices.followup');
-            Route::get('preview/{type}/{id}', [\App\Http\Controllers\Finance\EmailController::class, 'preview'])->name('preview');
-        });
+        // Email Management (Commented out - Controller not implemented yet)
+        // Route::prefix('emails')->name('emails.')->group(function () {
+        //     Route::post('quotations/{quotation}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotation'])->name('quotations.send');
+        //     Route::post('quotations/{quotation}/reminder', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotationReminder'])->name('quotations.reminder');
+        //     Route::post('invoices/{invoice}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoice'])->name('invoices.send');
+        //     Route::post('invoices/{invoice}/followup', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoiceFollowUp'])->name('invoices.followup');
+        //     Route::get('preview/{type}/{id}', [\App\Http\Controllers\Finance\EmailController::class, 'preview'])->name('preview');
+        // });
 
-        // Approval Workflows
-        Route::prefix('approvals')->name('approvals.')->group(function () {
-            Route::resource('workflows', \App\Http\Controllers\Finance\ApprovalWorkflowController::class);
-            Route::resource('requests', \App\Http\Controllers\Finance\ApprovalRequestController::class)->only(['index', 'show']);
-            Route::post('requests/{request}/approve', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'approve'])->name('requests.approve');
-            Route::post('requests/{request}/reject', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'reject'])->name('requests.reject');
-            Route::post('requests/{request}/cancel', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'cancel'])->name('requests.cancel');
-        });
+        // Approval Workflows (Commented out - Controllers not implemented yet)
+        // Route::prefix('approvals')->name('approvals.')->group(function () {
+        //     Route::resource('workflows', \App\Http\Controllers\Finance\ApprovalWorkflowController::class);
+        //     Route::resource('requests', \App\Http\Controllers\Finance\ApprovalRequestController::class)->only(['index', 'show']);
+        //     Route::post('requests/{request}/approve', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'approve'])->name('requests.approve');
+        //     Route::post('requests/{request}/reject', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'reject'])->name('requests.reject');
+        //     Route::post('requests/{request}/cancel', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'cancel'])->name('requests.cancel');
+        // });
 
         // Expenses
         Route::resource('expenses', \App\Http\Controllers\Finance\ExpenseController::class);
@@ -215,6 +215,116 @@ Route::middleware([
         // Reports
         Route::resource('reports', \App\Http\Controllers\Finance\ReportController::class);
         Route::get('reports/{report}/download', [\App\Http\Controllers\Finance\ReportController::class, 'download'])->name('reports.download');
+    });
+
+    // Support routes
+    Route::prefix('support')->name('support.')->group(function () {
+        // Dashboard
+        Route::get('/', [\App\Http\Controllers\Support\DashboardController::class, 'index'])->name('dashboard');
+
+        // Tickets
+        Route::resource('tickets', \App\Http\Controllers\Support\TicketController::class);
+        Route::post('tickets/{ticket}/assign', [\App\Http\Controllers\Support\TicketController::class, 'assign'])->name('tickets.assign');
+        Route::post('tickets/{ticket}/escalate', [\App\Http\Controllers\Support\TicketController::class, 'escalate'])->name('tickets.escalate');
+        Route::post('tickets/{ticket}/close', [\App\Http\Controllers\Support\TicketController::class, 'close'])->name('tickets.close');
+        Route::post('tickets/{ticket}/reopen', [\App\Http\Controllers\Support\TicketController::class, 'reopen'])->name('tickets.reopen');
+        Route::post('tickets/{ticket}/comments', [\App\Http\Controllers\Support\TicketController::class, 'addComment'])->name('tickets.comments.store');
+        Route::post('tickets/ai-suggestions', [\App\Http\Controllers\Support\TicketController::class, 'aiSuggestions'])->name('tickets.ai-suggestions');
+
+        // Knowledge Base
+        Route::resource('knowledge-base', \App\Http\Controllers\Support\KnowledgeBaseController::class);
+        Route::post('knowledge-base/{article}/publish', [\App\Http\Controllers\Support\KnowledgeBaseController::class, 'publish'])->name('knowledge-base.publish');
+        Route::post('knowledge-base/{article}/unpublish', [\App\Http\Controllers\Support\KnowledgeBaseController::class, 'unpublish'])->name('knowledge-base.unpublish');
+        Route::post('knowledge-base/{article}/helpful', [\App\Http\Controllers\Support\KnowledgeBaseController::class, 'markHelpful'])->name('knowledge-base.helpful');
+        Route::post('knowledge-base/{article}/not-helpful', [\App\Http\Controllers\Support\KnowledgeBaseController::class, 'markNotHelpful'])->name('knowledge-base.not-helpful');
+
+        // FAQ
+        Route::resource('faq', \App\Http\Controllers\Support\FAQController::class);
+        Route::post('faq/{faq}/publish', [\App\Http\Controllers\Support\FAQController::class, 'publish'])->name('faq.publish');
+        Route::post('faq/{faq}/helpful', [\App\Http\Controllers\Support\FAQController::class, 'markHelpful'])->name('faq.helpful');
+        Route::post('faq/{faq}/not-helpful', [\App\Http\Controllers\Support\FAQController::class, 'markNotHelpful'])->name('faq.not-helpful');
+
+        // Categories
+        Route::resource('categories', \App\Http\Controllers\Support\CategoryController::class);
+
+        // Analytics
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Support\AnalyticsController::class, 'index'])->name('dashboard');
+            Route::get('/reports', [\App\Http\Controllers\Support\AnalyticsController::class, 'reports'])->name('reports');
+            Route::post('/export', [\App\Http\Controllers\Support\AnalyticsController::class, 'export'])->name('export');
+        });
+
+        // SLA Management (Admin only)
+        Route::middleware(['role:admin'])->prefix('sla')->name('sla.')->group(function () {
+            Route::resource('/', \App\Http\Controllers\Support\SLAController::class)->parameters(['' => 'sla']);
+            Route::post('{sla}/activate', [\App\Http\Controllers\Support\SLAController::class, 'activate'])->name('activate');
+        });
+
+        // Automation Rules (Admin only)
+        Route::middleware(['role:admin'])->prefix('automation')->name('automation.')->group(function () {
+            Route::resource('/', \App\Http\Controllers\Support\AutomationController::class)->parameters(['' => 'automation']);
+            Route::post('{automation}/toggle', [\App\Http\Controllers\Support\AutomationController::class, 'toggle'])->name('toggle');
+            Route::post('{automation}/test', [\App\Http\Controllers\Support\AutomationController::class, 'test'])->name('test');
+            Route::post('{automation}/duplicate', [\App\Http\Controllers\Support\AutomationController::class, 'duplicate'])->name('duplicate');
+            Route::get('{automation}/logs', [\App\Http\Controllers\Support\AutomationController::class, 'logs'])->name('logs');
+            Route::get('export', [\App\Http\Controllers\Support\AutomationController::class, 'export'])->name('export');
+            Route::post('import', [\App\Http\Controllers\Support\AutomationController::class, 'import'])->name('import');
+        });
+
+        // AI Analysis Routes
+        Route::prefix('ai')->name('ai.')->group(function () {
+            Route::get('dashboard', [\App\Http\Controllers\Support\AIAnalysisController::class, 'getInsightsDashboard'])->name('dashboard');
+            Route::get('tickets/{ticket}/suggestions', [\App\Http\Controllers\Support\AIAnalysisController::class, 'getTicketSuggestions'])->name('tickets.suggestions');
+            Route::post('tickets/{ticket}/categorize', [\App\Http\Controllers\Support\AIAnalysisController::class, 'categorizeTicket'])->name('tickets.categorize');
+            Route::post('tickets/{ticket}/priority', [\App\Http\Controllers\Support\AIAnalysisController::class, 'determinePriority'])->name('tickets.priority');
+            Route::post('tickets/{ticket}/auto-response', [\App\Http\Controllers\Support\AIAnalysisController::class, 'generateAutoResponse'])->name('tickets.auto-response');
+            Route::post('tickets/{ticket}/sentiment', [\App\Http\Controllers\Support\AIAnalysisController::class, 'analyzeSentiment'])->name('tickets.sentiment');
+            Route::post('tickets/{ticket}/resolution-time', [\App\Http\Controllers\Support\AIAnalysisController::class, 'predictResolutionTime'])->name('tickets.resolution-time');
+            Route::get('tickets/{ticket}/escalation', [\App\Http\Controllers\Support\AIAnalysisController::class, 'getEscalationRecommendations'])->name('tickets.escalation');
+            Route::post('bulk-analyze', [\App\Http\Controllers\Support\AIAnalysisController::class, 'bulkAnalyze'])->name('bulk-analyze');
+            Route::post('articles/suggestions', [\App\Http\Controllers\Support\AIAnalysisController::class, 'generateArticleSuggestions'])->name('articles.suggestions');
+            Route::post('articles/{article}/improve', [\App\Http\Controllers\Support\AIAnalysisController::class, 'improveArticleContent'])->name('articles.improve');
+            Route::post('faq/generate', [\App\Http\Controllers\Support\AIAnalysisController::class, 'generateFAQFromTickets'])->name('faq.generate');
+            Route::post('search', [\App\Http\Controllers\Support\AIAnalysisController::class, 'smartSearch'])->name('search');
+            Route::get('test', [\App\Http\Controllers\Support\AIAnalysisController::class, 'testAIService'])->name('test');
+        });
+
+        // AI Chatbot Routes
+        Route::prefix('chatbot')->name('chatbot.')->group(function () {
+            Route::post('chat', [\App\Http\Controllers\Support\ChatbotController::class, 'chat'])->name('chat');
+            Route::get('conversation', [\App\Http\Controllers\Support\ChatbotController::class, 'getConversation'])->name('conversation');
+            Route::post('create-ticket', [\App\Http\Controllers\Support\ChatbotController::class, 'createTicketFromChat'])->name('create-ticket');
+            Route::get('suggestions', [\App\Http\Controllers\Support\ChatbotController::class, 'getSuggestions'])->name('suggestions');
+            Route::post('rate', [\App\Http\Controllers\Support\ChatbotController::class, 'rateResponse'])->name('rate');
+            Route::post('escalate', [\App\Http\Controllers\Support\ChatbotController::class, 'escalateToHuman'])->name('escalate');
+        });
+    });
+
+    // Customer Support Portal
+    Route::prefix('customer/support')->name('customer.support.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Customer\SupportController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Customer\SupportController::class, 'store'])->name('store');
+
+        // Ticket management
+        Route::prefix('tickets')->name('tickets.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
+            Route::get('{ticket}', [\App\Http\Controllers\Customer\SupportController::class, 'show'])->name('show');
+            Route::post('{ticket}/comments', [\App\Http\Controllers\Customer\SupportController::class, 'addComment'])->name('comments.store');
+            Route::post('{ticket}/close', [\App\Http\Controllers\Customer\SupportController::class, 'close'])->name('close');
+            Route::post('{ticket}/reopen', [\App\Http\Controllers\Customer\SupportController::class, 'reopen'])->name('reopen');
+        });
+
+        // Knowledge Base
+        Route::prefix('knowledge-base')->name('knowledge-base.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'searchKnowledgeBase'])->name('index');
+            Route::get('{article}', [\App\Http\Controllers\Customer\SupportController::class, 'viewArticle'])->name('show');
+            Route::post('{article}/helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleHelpful'])->name('helpful');
+            Route::post('{article}/not-helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleNotHelpful'])->name('not-helpful');
+        });
+
+        // FAQ
+        Route::get('/faq', [\App\Http\Controllers\Customer\SupportController::class, 'viewFAQ'])->name('faq');
     });
 
     // Settings routes - Admin only

@@ -29,6 +29,25 @@ class AIService
     }
 
     /**
+     * Generate response for general prompts.
+     */
+    public function generateResponse(string $prompt): ?string
+    {
+        $serviceConfig = $this->getDefaultService();
+
+        if (!$serviceConfig) {
+            return null;
+        }
+
+        try {
+            return $this->callAIService($serviceConfig, $prompt);
+        } catch (\Exception $e) {
+            Log::error('AI service error for general response: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Get configuration for a specific AI service.
      */
     public function getServiceConfig(string $service): array
