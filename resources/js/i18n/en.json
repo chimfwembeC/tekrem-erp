@@ -14,7 +14,8 @@
     "about": "About",
     "services": "Services",
     "portfolio": "Portfolio",
-    "contact": "Contact"
+    "contact": "Contact",
+    "notifications": "Notifications"
   },
   "auth": {
     "email": "Email",
@@ -52,36 +53,65 @@
     "leads": "Leads",
     "communications": "Communications",
     "opportunities": "Opportunities",
-    "chats": "Chats"
+    "chats": "Chats",
+    "chat": "LiveChat",
+    "conversation": "Conversation",
+    "analytics": "Analytics",
+    "dashboard": "Dashboard"
   },
   "finance": {
+    "title": "Finance",
+    "accounts": "Accounts",
+    "transactions": "Transactions",
     "invoices": "Invoices",
     "payments": "Payments",
+    "quotations": "Quotations",
     "expenses": "Expenses",
-    "reports": "Reports"
+    "budgets": "Budgets",
+    "categories": "Categories",
+    "reports": "Reports",
+    "income_statement": "Income Statement",
+    "cash_flow": "Cash Flow",
+    "balance_sheet": "Balance Sheet",
+    "expense_report": "Expense Report",
+    "total_balance": "Total Balance",
+    "monthly_income": "Monthly Income",
+    "monthly_expenses": "Monthly Expenses",
+    "net_income": "Net Income",
+    "pending_invoices": "Pending Invoices",
+    "overdue_invoices": "Overdue Invoices"
   },
   "hr": {
+    "title": "HR",
     "employees": "Employees",
     "leave": "Leave",
     "attendance": "Attendance",
     "performance": "Performance"
   },
   "projects": {
+    "title": "Projects",
     "projects": "Projects",
     "tasks": "Tasks",
     "timelines": "Timelines",
     "resources": "Resources"
   },
   "support": {
+    "title": "Support",
     "tickets": "Tickets",
     "knowledge_base": "Knowledge Base",
     "faq": "FAQ"
   },
   "analytics": {
+    "title": "Analytics",
     "reports": "Reports",
     "kpi": "KPIs",
     "charts": "Charts",
     "data": "Data"
+  },
+  "settings": {
+    "general": "General",
+    "users": "Users",
+    "advanced": "Advanced"
   },
   "common": {
     "create": "Create",
@@ -117,6 +147,7 @@
     "error": "Error",
     "warning": "Warning",
     "info": "Information",
-    "language": "Language"
+    "language": "Language",
+    "reports": "Reports"
   }
 }

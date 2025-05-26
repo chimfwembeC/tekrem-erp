@@ -12,7 +12,15 @@ import {
   ChevronRight,
   Settings,
   Cog,
-  BarChart3
+  BarChart3,
+  DollarSign,
+  CreditCard,
+  Receipt,
+  Wallet,
+  TrendingUp,
+  PieChart,
+  Tag,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -94,6 +102,70 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
+  // Finance navigation items - only visible to admin and staff
+  const financeItems = hasCrmAccess() ? [
+    {
+      href: route('finance.dashboard'),
+      label: t('finance.dashboard', 'Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('finance.dashboard')
+    },
+    {
+      href: route('finance.accounts.index'),
+      label: t('finance.accounts', 'Accounts'),
+      icon: <Wallet className="h-5 w-5" />,
+      active: route().current('finance.accounts.*')
+    },
+    {
+      href: route('finance.transactions.index'),
+      label: t('finance.transactions', 'Transactions'),
+      icon: <CreditCard className="h-5 w-5" />,
+      active: route().current('finance.transactions.*')
+    },
+    {
+      href: route('finance.invoices.index'),
+      label: t('finance.invoices', 'Invoices'),
+      icon: <Receipt className="h-5 w-5" />,
+      active: route().current('finance.invoices.*')
+    },
+    {
+      href: route('finance.payments.index'),
+      label: t('finance.payments', 'Payments'),
+      icon: <DollarSign className="h-5 w-5" />,
+      active: route().current('finance.payments.*')
+    },
+    {
+      href: route('finance.quotations.index'),
+      label: t('finance.quotations', 'Quotations'),
+      icon: <FileText className="h-5 w-5" />,
+      active: route().current('finance.quotations.*')
+    },
+    {
+      href: route('finance.expenses.index'),
+      label: t('finance.expenses', 'Expenses'),
+      icon: <TrendingUp className="h-5 w-5" />,
+      active: route().current('finance.expenses.*')
+    },
+    {
+      href: route('finance.budgets.index'),
+      label: t('finance.budgets', 'Budgets'),
+      icon: <PieChart className="h-5 w-5" />,
+      active: route().current('finance.budgets.*')
+    },
+    {
+      href: route('finance.categories.index'),
+      label: t('finance.categories', 'Categories'),
+      icon: <Tag className="h-5 w-5" />,
+      active: route().current('finance.categories.*')
+    },
+    {
+      href: route('finance.reports.index'),
+      label: t('finance.reports', 'Reports'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('finance.reports.*')
+    },
+  ] : [];
+
   // Sidebar content component to avoid duplication
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -137,6 +209,41 @@ export default function Sidebar({ settings }: SidebarProps) {
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 mt-1 space-y-1">
               {crmItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* Finance Navigation - Only visible to admin and staff */}
+        {hasCrmAccess() && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('finance.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <DollarSign className="h-5 w-5" />
+                <span>{t('finance.title', 'Finance')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {financeItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

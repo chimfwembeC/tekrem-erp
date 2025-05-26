@@ -55,7 +55,7 @@ export default function TopNav({ settings }: TopNavProps) {
     router.post(route('logout'));
   }
 
-  console.log('page',page);
+  
   return (
     <div className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 md:pl-[calc(256px+24px)]">
       {/* Page Title */}

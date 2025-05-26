@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -69,6 +70,14 @@ class Lead extends Model
     public function communications(): MorphMany
     {
         return $this->morphMany(Communication::class, 'communicable');
+    }
+
+    /**
+     * Get the quotations for the lead.
+     */
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(\App\Models\Finance\Quotation::class);
     }
 
     /**

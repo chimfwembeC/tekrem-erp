@@ -37,7 +37,7 @@ export default function NotificationComponent({ className = '' }: NotificationCo
   const notifications = notificationsData?.recent || [];
   const unreadCount = notificationsData?.unreadCount || 0;
 
-  console.log('notificationsData',notificationsData);
+  // console.log('notificationsData',notificationsData);
   const handleMarkAsRead = (id: number) => {
     router.post(route('notifications.mark-as-read', id), {}, {
       preserveScroll: true,
@@ -173,7 +173,7 @@ export default function NotificationComponent({ className = '' }: NotificationCo
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="w-96">
         <DropdownMenuLabel className="flex justify-between items-center">
           <span>Notifications</span>
           {unreadCount > 0 && (
@@ -194,7 +194,7 @@ export default function NotificationComponent({ className = '' }: NotificationCo
         ) : (
           <div className="max-h-[300px] overflow-y-auto">
             {notifications.map((notification) => (
-              <DropdownMenuItem key={notification.id} className={`flex flex-col items-start p-3 cursor-default border-l-4 ${!notification.is_read ? 'bg-muted/30' : ''}`} style={{ borderLeftColor: !notification.is_read ? getNotificationBorderColor(notification.type) : 'transparent' }}>
+              <DropdownMenuItem key={notification.id} className={`mb-2 flex flex-col items-start p-3 cursor-default border-l-4 ${!notification.is_read ? 'bg-muted/30' : ''}`} style={{ borderLeftColor: !notification.is_read ? getNotificationBorderColor(notification.type) : 'transparent' }}>
                 <div className="flex w-full justify-between">
                   <div className="flex items-start gap-3">
                     <div className="flex items-center gap-1">

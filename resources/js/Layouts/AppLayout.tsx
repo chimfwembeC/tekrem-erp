@@ -4,6 +4,7 @@ import useTypedPage from '@/Hooks/useTypedPage';
 import Banner from '@/Components/Banner';
 import Sidebar from '@/Components/Sidebar';
 import TopNav from '@/Components/TopNav';
+import BreadcrumbNavigation from '@/Components/BreadcrumbNavigation';
 import AppProvider from '@/Providers/AppProvider';
 import { Toaster } from '@/Components/ui/sonner';
 
@@ -48,6 +49,8 @@ export default function AppLayout({
           {/* Page Content */}
           <main className="flex-1 p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
+              {/* Breadcrumb Navigation */}
+              <BreadcrumbNavigation className="mb-6" />
               {children}
             </div>
           </main>

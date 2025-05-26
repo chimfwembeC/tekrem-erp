@@ -2,16 +2,16 @@ import { useTranslation } from 'react-i18next';
 
 /**
  * Custom hook for translations with fallback support
- * 
+ *
  * This hook wraps the useTranslation hook from react-i18next and provides
  * additional functionality like fallback values and interpolation.
  */
-export default function useTranslate() {
+function useTranslate() {
   const { t, i18n } = useTranslation();
-  
+
   /**
    * Translate a key with fallback and interpolation support
-   * 
+   *
    * @param key - The translation key
    * @param fallback - Optional fallback text if the key is not found
    * @param options - Optional interpolation values
@@ -22,16 +22,16 @@ export default function useTranslate() {
     if (i18n.exists(key)) {
       return t(key, options);
     }
-    
+
     // If a fallback is provided, use it
     if (fallback) {
       return fallback;
     }
-    
+
     // Otherwise, return the key itself (this helps identify missing translations)
     return key;
   };
-  
+
   return {
     t: translate,
     i18n,
@@ -40,3 +40,7 @@ export default function useTranslate() {
     languages: i18n.languages,
   };
 }
+
+// Export both as named and default export for flexibility
+export { useTranslate };
+export default useTranslate;

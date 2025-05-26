@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),
+        'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
+    ],
+
+    'mistral' => [
+        'api_key' => env('MISTRAL_API_KEY'),
+        'api_url' => env('MISTRAL_API_URL', 'https://api.mistral.ai/v1/chat/completions'),
+        'model' => env('MISTRAL_MODEL', 'mistral-small'),
+    ],
+
 ];

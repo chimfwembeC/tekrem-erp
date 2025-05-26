@@ -14,7 +14,8 @@
     "about": "Palwa Ifwe",
     "services": "Imilimo",
     "portfolio": "Incito Shesu",
-    "contact": "Tukumane"
+    "contact": "Tukumane",
+    "notifications": "Amashiwiko"
   },
   "auth": {
     "email": "Email",
@@ -52,36 +53,65 @@
     "leads": "Abalefwaya",
     "communications": "Ukwishibana",
     "opportunities": "Amashuko",
-    "chats": "Ukulanshanya"
+    "chats": "Ukulanshanya",
+    "chat": "LiveChat",
+    "conversation": "Ukulanshanya",
+    "analytics": "Ukusala",
+    "dashboard": "Dashbodi"
   },
   "finance": {
+    "title": "Amali",
+    "accounts": "Amaaccount",
+    "transactions": "Amatransaction",
     "invoices": "Amainvoice",
     "payments": "Ukulipila",
+    "quotations": "Amaquotation",
     "expenses": "Inkongole",
-    "reports": "Amalipoti"
+    "budgets": "Amabudget",
+    "categories": "Amacategory",
+    "reports": "Amalipoti",
+    "income_statement": "Ilyashi lya Income",
+    "cash_flow": "Ukuya kwa Mali",
+    "balance_sheet": "Balance Sheet",
+    "expense_report": "Ilipoti lya Inkongole",
+    "total_balance": "Balance Yonse",
+    "monthly_income": "Income ya Mweshi",
+    "monthly_expenses": "Inkongole sha Mweshi",
+    "net_income": "Net Income",
+    "pending_invoices": "Amainvoice Ayalindila",
+    "overdue_invoices": "Amainvoice Ayacila"
   },
   "hr": {
+    "title": "HR",
     "employees": "Ababomfi",
     "leave": "Ukuya",
     "attendance": "Ukwisa",
     "performance": "Incito"
   },
   "projects": {
+    "title": "Imipango",
     "projects": "Imipango",
     "tasks": "Incito",
     "timelines": "Inshita",
     "resources": "Ifipe"
   },
   "support": {
+    "title": "Ukufwila",
     "tickets": "Amaticket",
     "knowledge_base": "Ukwishiba",
     "faq": "Amepusho Ayatuntulu"
   },
   "analytics": {
+    "title": "Ukusala",
     "reports": "Amalipoti",
     "kpi": "KPIs",
     "charts": "Ifilangililo",
     "data": "Ifintu"
+  },
+  "settings": {
+    "general": "Fyonse",
+    "users": "Abomfwi",
+    "advanced": "Fyakusuma"
   },
   "common": {
     "create": "Panga",
@@ -117,6 +147,7 @@
     "error": "Icilubo",
     "warning": "Icenjelo",
     "info": "Ilyashi",
-    "language": "Ululimi"
+    "language": "Ululimi",
+    "reports": "Amalipoti"
   }
 }

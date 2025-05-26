@@ -133,6 +133,83 @@ Route::middleware([
         });
     });
 
+    // Finance routes
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Finance\DashboardController::class, 'index'])->name('dashboard');
+
+        // Accounts
+        Route::resource('accounts', \App\Http\Controllers\Finance\AccountController::class);
+
+        // Transactions
+        Route::resource('transactions', \App\Http\Controllers\Finance\TransactionController::class);
+        Route::post('transactions/ai-suggestions', [\App\Http\Controllers\Finance\TransactionController::class, 'aiSuggestions'])->name('transactions.ai-suggestions');
+
+        // Invoices
+        Route::resource('invoices', \App\Http\Controllers\Finance\InvoiceController::class);
+        Route::post('invoices/{invoice}/send', [\App\Http\Controllers\Finance\InvoiceController::class, 'send'])->name('invoices.send');
+        Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\Finance\InvoiceController::class, 'pdf'])->name('invoices.pdf');
+        Route::post('invoices/generate-items', [\App\Http\Controllers\Finance\InvoiceController::class, 'generateItems'])->name('invoices.generate-items');
+
+        // Payments
+        Route::resource('payments', \App\Http\Controllers\Finance\PaymentController::class);
+
+        // Quotations
+        Route::resource('quotations', \App\Http\Controllers\Finance\QuotationController::class);
+        Route::post('quotations/{quotation}/send', [\App\Http\Controllers\Finance\QuotationController::class, 'send'])->name('quotations.send');
+        Route::post('quotations/{quotation}/accept', [\App\Http\Controllers\Finance\QuotationController::class, 'accept'])->name('quotations.accept');
+        Route::post('quotations/{quotation}/reject', [\App\Http\Controllers\Finance\QuotationController::class, 'reject'])->name('quotations.reject');
+        Route::post('quotations/{quotation}/convert-to-invoice', [\App\Http\Controllers\Finance\QuotationController::class, 'convertToInvoice'])->name('quotations.convert-to-invoice');
+        Route::get('quotations/{quotation}/pdf', [\App\Http\Controllers\Finance\QuotationController::class, 'pdf'])->name('quotations.pdf');
+
+        // Analytics
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('dashboard', [\App\Http\Controllers\Finance\AnalyticsController::class, 'dashboard'])->name('dashboard');
+            Route::get('quotations', [\App\Http\Controllers\Finance\AnalyticsController::class, 'quotations'])->name('quotations');
+            Route::get('invoices', [\App\Http\Controllers\Finance\AnalyticsController::class, 'invoices'])->name('invoices');
+            Route::get('revenue', [\App\Http\Controllers\Finance\AnalyticsController::class, 'revenue'])->name('revenue');
+            Route::get('export', [\App\Http\Controllers\Finance\AnalyticsController::class, 'export'])->name('export');
+        });
+
+        // Templates
+        Route::resource('templates', \App\Http\Controllers\Finance\TemplateController::class);
+        Route::post('templates/{template}/duplicate', [\App\Http\Controllers\Finance\TemplateController::class, 'duplicate'])->name('templates.duplicate');
+        Route::post('templates/{template}/set-default', [\App\Http\Controllers\Finance\TemplateController::class, 'setDefault'])->name('templates.set-default');
+
+        // Email Management
+        Route::prefix('emails')->name('emails.')->group(function () {
+            Route::post('quotations/{quotation}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotation'])->name('quotations.send');
+            Route::post('quotations/{quotation}/reminder', [\App\Http\Controllers\Finance\EmailController::class, 'sendQuotationReminder'])->name('quotations.reminder');
+            Route::post('invoices/{invoice}/send', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoice'])->name('invoices.send');
+            Route::post('invoices/{invoice}/followup', [\App\Http\Controllers\Finance\EmailController::class, 'sendInvoiceFollowUp'])->name('invoices.followup');
+            Route::get('preview/{type}/{id}', [\App\Http\Controllers\Finance\EmailController::class, 'preview'])->name('preview');
+        });
+
+        // Approval Workflows
+        Route::prefix('approvals')->name('approvals.')->group(function () {
+            Route::resource('workflows', \App\Http\Controllers\Finance\ApprovalWorkflowController::class);
+            Route::resource('requests', \App\Http\Controllers\Finance\ApprovalRequestController::class)->only(['index', 'show']);
+            Route::post('requests/{request}/approve', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'approve'])->name('requests.approve');
+            Route::post('requests/{request}/reject', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'reject'])->name('requests.reject');
+            Route::post('requests/{request}/cancel', [\App\Http\Controllers\Finance\ApprovalRequestController::class, 'cancel'])->name('requests.cancel');
+        });
+
+        // Expenses
+        Route::resource('expenses', \App\Http\Controllers\Finance\ExpenseController::class);
+        Route::post('expenses/{expense}/approve', [\App\Http\Controllers\Finance\ExpenseController::class, 'approve'])->name('expenses.approve');
+        Route::post('expenses/{expense}/reject', [\App\Http\Controllers\Finance\ExpenseController::class, 'reject'])->name('expenses.reject');
+        Route::post('expenses/process-receipt', [\App\Http\Controllers\Finance\ExpenseController::class, 'processReceipt'])->name('expenses.process-receipt');
+
+        // Budgets
+        Route::resource('budgets', \App\Http\Controllers\Finance\BudgetController::class);
+
+        // Categories
+        Route::resource('categories', \App\Http\Controllers\Finance\CategoryController::class);
+
+        // Reports
+        Route::resource('reports', \App\Http\Controllers\Finance\ReportController::class);
+        Route::get('reports/{report}/download', [\App\Http\Controllers\Finance\ReportController::class, 'download'])->name('reports.download');
+    });
+
     // Settings routes - Admin only
     Route::middleware(['role:admin'])->prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Settings\SettingsController::class, 'index'])->name('index');
