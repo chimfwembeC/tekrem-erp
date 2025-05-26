@@ -156,8 +156,8 @@ export default function AISuggestions({ suggestions, onApplySuggestion, onDismis
                 <CheckCircle className="h-4 w-4 text-green-600" />
               )}
               <span className="font-medium text-sm">Duplicate Check</span>
-              <Badge 
-                className={getConfidenceColor(suggestions.duplicate_check.confidence)} 
+              <Badge
+                className={getConfidenceColor(suggestions.duplicate_check.confidence)}
                 variant="secondary"
               >
                 {getConfidenceText(suggestions.duplicate_check.confidence)} ({Math.round(suggestions.duplicate_check.confidence * 100)}%)
@@ -170,7 +170,9 @@ export default function AISuggestions({ suggestions, onApplySuggestion, onDismis
                     <strong>Potential duplicate detected!</strong> This transaction appears similar to {suggestions.duplicate_check.similar_transactions.length} recent transaction(s).
                   </>
                 ) : (
-                  <strong>No duplicates found.</strong> This transaction appears to be unique.
+                  <>
+                    <strong>No duplicates found.</strong> This transaction appears to be unique.
+                  </>
                 )}
                 <br />
                 <span className="text-xs text-muted-foreground mt-1 block">

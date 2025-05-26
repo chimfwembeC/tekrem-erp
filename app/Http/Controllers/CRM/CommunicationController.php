@@ -8,8 +8,10 @@ use App\Models\Communication;
 use App\Models\Lead;
 use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\CRMAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -194,6 +196,87 @@ class CommunicationController extends Controller
         } else {
             return redirect()->route('crm.communications.index')
                 ->with('success', 'Communication deleted successfully.');
+        }
+    }
+
+    /**
+     * Analyze communication sentiment.
+     */
+    public function analyzeSentiment(Request $request, CRMAIService $crmAI)
+    {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|max:10000',
+            'type' => 'nullable|string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $analysis = $crmAI->analyzeCommunication(
+                $request->content,
+                $request->type ?? 'general'
+            );
+
+            if ($analysis) {
+                return response()->json([
+                    'success' => true,
+                    'analysis' => $analysis,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not analyze communication sentiment',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to analyze sentiment',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate email template for communication.
+     */
+    public function generateEmailTemplate(Request $request, CRMAIService $crmAI)
+    {
+        $validator = Validator::make($request->all(), [
+            'purpose' => 'required|string|max:255',
+            'context' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $template = $crmAI->generateLeadEmail(
+                $request->purpose,
+                [],
+                $request->context ?? []
+            );
+
+            if ($template) {
+                return response()->json([
+                    'success' => true,
+                    'template' => $template,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not generate email template',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate email template',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

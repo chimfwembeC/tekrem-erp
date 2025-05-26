@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Communication;
 use App\Services\NotificationService;
+use App\Services\CRMAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -143,5 +144,33 @@ class ClientController extends Controller
 
         return redirect()->route('crm.clients.index')
             ->with('success', 'Client deleted successfully.');
+    }
+
+    /**
+     * Analyze client health and satisfaction.
+     */
+    public function healthAnalysis(Client $client, CRMAIService $crmAI)
+    {
+        try {
+            $analysis = $crmAI->analyzeClientHealth($client);
+
+            if ($analysis) {
+                return response()->json([
+                    'success' => true,
+                    'analysis' => $analysis,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not analyze client health',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to analyze client health',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

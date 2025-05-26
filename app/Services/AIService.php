@@ -203,6 +203,118 @@ class AIService
     }
 
     /**
+     * Score and qualify a lead based on provided information.
+     */
+    public function scoreAndQualifyLead(array $leadData): ?array
+    {
+        $serviceConfig = $this->getDefaultService();
+
+        if (!$serviceConfig) {
+            return null;
+        }
+
+        try {
+            $prompt = $this->buildLeadScoringPrompt($leadData);
+            $response = $this->callAIService($serviceConfig, $prompt);
+
+            if ($response) {
+                $result = json_decode($response, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $result;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('AI service error for lead scoring: ' . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Enrich company information from basic details.
+     */
+    public function enrichCompanyInfo(string $companyName, ?string $website = null, ?string $industry = null): ?array
+    {
+        $serviceConfig = $this->getDefaultService();
+
+        if (!$serviceConfig) {
+            return null;
+        }
+
+        try {
+            $prompt = $this->buildCompanyEnrichmentPrompt($companyName, $website, $industry);
+            $response = $this->callAIService($serviceConfig, $prompt);
+
+            if ($response) {
+                $result = json_decode($response, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $result;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('AI service error for company enrichment: ' . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Generate email template based on context.
+     */
+    public function generateEmailTemplate(string $purpose, array $context = []): ?array
+    {
+        $serviceConfig = $this->getDefaultService();
+
+        if (!$serviceConfig) {
+            return null;
+        }
+
+        try {
+            $prompt = $this->buildEmailTemplatePrompt($purpose, $context);
+            $response = $this->callAIService($serviceConfig, $prompt);
+
+            if ($response) {
+                $result = json_decode($response, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $result;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('AI service error for email template generation: ' . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Analyze communication sentiment and provide insights.
+     */
+    public function analyzeCommunicationSentiment(string $content, string $type = 'general'): ?array
+    {
+        $serviceConfig = $this->getDefaultService();
+
+        if (!$serviceConfig) {
+            return null;
+        }
+
+        try {
+            $prompt = $this->buildSentimentAnalysisPrompt($content, $type);
+            $response = $this->callAIService($serviceConfig, $prompt);
+
+            if ($response) {
+                $result = json_decode($response, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $result;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('AI service error for sentiment analysis: ' . $e->getMessage());
+        }
+
+        return null;
+    }
+
+    /**
      * Build prompt for guest chat AI response.
      */
     private function buildGuestChatPrompt(string $guestMessage, array $conversationHistory = []): string
@@ -361,6 +473,169 @@ Guidelines:
         $prompt .= "}\n\n";
 
         $prompt .= "If any information is unclear or missing, use null for that field.";
+
+        return $prompt;
+    }
+
+    /**
+     * Build prompt for lead scoring and qualification.
+     */
+    private function buildLeadScoringPrompt(array $leadData): string
+    {
+        $prompt = "You are a CRM AI assistant specialized in lead scoring and qualification. Analyze the following lead information and provide a comprehensive assessment.\n\n";
+
+        $prompt .= "Lead Information:\n";
+        $prompt .= "Name: {$leadData['name']}\n";
+        $prompt .= "Company: " . ($leadData['company'] ?? 'Not provided') . "\n";
+        $prompt .= "Position: " . ($leadData['position'] ?? 'Not provided') . "\n";
+        $prompt .= "Email: " . ($leadData['email'] ?? 'Not provided') . "\n";
+        $prompt .= "Phone: " . ($leadData['phone'] ?? 'Not provided') . "\n";
+        $prompt .= "Source: " . ($leadData['source'] ?? 'Not provided') . "\n";
+        $prompt .= "Notes: " . ($leadData['notes'] ?? 'Not provided') . "\n";
+
+        $prompt .= "\nAnalyze this lead based on:\n";
+        $prompt .= "- Contact information completeness\n";
+        $prompt .= "- Company size and industry indicators\n";
+        $prompt .= "- Position/title authority level\n";
+        $prompt .= "- Lead source quality\n";
+        $prompt .= "- Engagement potential\n";
+        $prompt .= "- Conversion likelihood\n\n";
+
+        $prompt .= "Respond with JSON:\n";
+        $prompt .= "{\n";
+        $prompt .= '  "score": 85,'."\n";
+        $prompt .= '  "grade": "A|B|C|D",'."\n";
+        $prompt .= '  "qualification": "hot|warm|cold",'."\n";
+        $prompt .= '  "conversion_probability": 0.75,'."\n";
+        $prompt .= '  "strengths": ["strength 1", "strength 2"],'."\n";
+        $prompt .= '  "weaknesses": ["weakness 1", "weakness 2"],'."\n";
+        $prompt .= '  "recommendations": ["action 1", "action 2"],'."\n";
+        $prompt .= '  "next_steps": ["step 1", "step 2"],'."\n";
+        $prompt .= '  "priority": "high|medium|low",'."\n";
+        $prompt .= '  "reasoning": "detailed explanation of the scoring"'."\n";
+        $prompt .= "}\n";
+
+        return $prompt;
+    }
+
+    /**
+     * Build prompt for company enrichment.
+     */
+    private function buildCompanyEnrichmentPrompt(string $companyName, ?string $website, ?string $industry): string
+    {
+        $prompt = "You are a business intelligence AI assistant. Provide enriched information about the following company based on publicly available knowledge.\n\n";
+
+        $prompt .= "Company Details:\n";
+        $prompt .= "Name: {$companyName}\n";
+        if ($website) {
+            $prompt .= "Website: {$website}\n";
+        }
+        if ($industry) {
+            $prompt .= "Industry: {$industry}\n";
+        }
+
+        $prompt .= "\nProvide enriched information including:\n";
+        $prompt .= "- Industry classification\n";
+        $prompt .= "- Estimated company size\n";
+        $prompt .= "- Business model\n";
+        $prompt .= "- Key services/products\n";
+        $prompt .= "- Market position\n";
+        $prompt .= "- Potential pain points\n";
+        $prompt .= "- Technology stack (if known)\n\n";
+
+        $prompt .= "Respond with JSON:\n";
+        $prompt .= "{\n";
+        $prompt .= '  "industry": "specific industry",'."\n";
+        $prompt .= '  "sub_industry": "sub-category",'."\n";
+        $prompt .= '  "company_size": "startup|small|medium|large|enterprise",'."\n";
+        $prompt .= '  "employee_range": "1-10|11-50|51-200|201-1000|1000+",'."\n";
+        $prompt .= '  "business_model": "B2B|B2C|B2B2C|marketplace|etc",'."\n";
+        $prompt .= '  "key_services": ["service 1", "service 2"],'."\n";
+        $prompt .= '  "technologies": ["tech 1", "tech 2"],'."\n";
+        $prompt .= '  "pain_points": ["pain point 1", "pain point 2"],'."\n";
+        $prompt .= '  "opportunities": ["opportunity 1", "opportunity 2"],'."\n";
+        $prompt .= '  "decision_makers": ["typical roles"],'."\n";
+        $prompt .= '  "sales_approach": "recommended approach",'."\n";
+        $prompt .= '  "confidence": 0.85'."\n";
+        $prompt .= "}\n\n";
+
+        $prompt .= "Note: Only provide information you're confident about. Use 'unknown' for uncertain fields.";
+
+        return $prompt;
+    }
+
+    /**
+     * Build prompt for email template generation.
+     */
+    private function buildEmailTemplatePrompt(string $purpose, array $context): string
+    {
+        $prompt = "You are a professional email writing AI assistant. Generate an email template for the specified purpose.\n\n";
+
+        $prompt .= "Email Purpose: {$purpose}\n\n";
+
+        if (!empty($context)) {
+            $prompt .= "Context Information:\n";
+            foreach ($context as $key => $value) {
+                $prompt .= "- {$key}: {$value}\n";
+            }
+            $prompt .= "\n";
+        }
+
+        $prompt .= "Generate a professional email template that is:\n";
+        $prompt .= "- Personalized and engaging\n";
+        $prompt .= "- Clear and concise\n";
+        $prompt .= "- Action-oriented\n";
+        $prompt .= "- Professional in tone\n";
+        $prompt .= "- Includes placeholders for customization\n\n";
+
+        $prompt .= "Respond with JSON:\n";
+        $prompt .= "{\n";
+        $prompt .= '  "subject": "email subject line",'."\n";
+        $prompt .= '  "body": "email body with placeholders like {{name}}, {{company}}",'."\n";
+        $prompt .= '  "tone": "professional|friendly|formal|casual",'."\n";
+        $prompt .= '  "call_to_action": "main CTA",'."\n";
+        $prompt .= '  "placeholders": ["{{name}}", "{{company}}", "{{position}}"],'."\n";
+        $prompt .= '  "follow_up_suggestions": ["suggestion 1", "suggestion 2"],'."\n";
+        $prompt .= '  "best_send_time": "recommended sending time"'."\n";
+        $prompt .= "}\n";
+
+        return $prompt;
+    }
+
+    /**
+     * Build prompt for sentiment analysis.
+     */
+    private function buildSentimentAnalysisPrompt(string $content, string $type): string
+    {
+        $prompt = "You are a communication analysis AI assistant. Analyze the sentiment and tone of the following {$type} communication.\n\n";
+
+        $prompt .= "Communication Content:\n{$content}\n\n";
+
+        $prompt .= "Analyze for:\n";
+        $prompt .= "- Overall sentiment (positive, negative, neutral)\n";
+        $prompt .= "- Emotional tone\n";
+        $prompt .= "- Urgency level\n";
+        $prompt .= "- Customer satisfaction indicators\n";
+        $prompt .= "- Key concerns or interests\n";
+        $prompt .= "- Buying signals\n";
+        $prompt .= "- Risk indicators\n\n";
+
+        $prompt .= "Respond with JSON:\n";
+        $prompt .= "{\n";
+        $prompt .= '  "sentiment": "positive|negative|neutral",'."\n";
+        $prompt .= '  "sentiment_score": 0.75,'."\n";
+        $prompt .= '  "tone": "friendly|professional|frustrated|excited|concerned",'."\n";
+        $prompt .= '  "urgency": "high|medium|low",'."\n";
+        $prompt .= '  "satisfaction": "satisfied|neutral|dissatisfied",'."\n";
+        $prompt .= '  "key_emotions": ["emotion 1", "emotion 2"],'."\n";
+        $prompt .= '  "concerns": ["concern 1", "concern 2"],'."\n";
+        $prompt .= '  "interests": ["interest 1", "interest 2"],'."\n";
+        $prompt .= '  "buying_signals": ["signal 1", "signal 2"],'."\n";
+        $prompt .= '  "risk_indicators": ["risk 1", "risk 2"],'."\n";
+        $prompt .= '  "recommended_response": "suggested response approach",'."\n";
+        $prompt .= '  "priority": "high|medium|low",'."\n";
+        $prompt .= '  "confidence": 0.90'."\n";
+        $prompt .= "}\n";
 
         return $prompt;
     }

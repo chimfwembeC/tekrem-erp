@@ -7,9 +7,11 @@ use App\Models\Client;
 use App\Models\Lead;
 use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\CRMAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -215,6 +217,140 @@ class LeadController extends Controller
             DB::rollBack();
             return redirect()->route('crm.leads.show', $lead)
                 ->with('error', 'Failed to convert lead to client: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get AI insights for a lead.
+     */
+    public function aiInsights(Request $request, CRMAIService $crmAI)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'position' => 'nullable|string|max:255',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string|max:20',
+            'source' => 'nullable|string|max:255',
+            'status' => 'nullable|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $insights = $crmAI->getLeadInsights($request->all());
+
+            return response()->json([
+                'success' => true,
+                'insights' => $insights,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get AI insights',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate email template for lead.
+     */
+    public function generateEmail(Request $request, CRMAIService $crmAI)
+    {
+        $validator = Validator::make($request->all(), [
+            'purpose' => 'required|string|max:255',
+            'lead_data' => 'required|array',
+            'context' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $emailTemplate = $crmAI->generateLeadEmail(
+                $request->purpose,
+                $request->lead_data,
+                $request->context ?? []
+            );
+
+            if ($emailTemplate) {
+                return response()->json([
+                    'success' => true,
+                    'template' => $emailTemplate,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not generate email template',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate email template',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get follow-up recommendations for a lead.
+     */
+    public function followUpRecommendations(Lead $lead, CRMAIService $crmAI)
+    {
+        try {
+            $recommendations = $crmAI->getFollowUpRecommendations($lead);
+
+            if ($recommendations) {
+                return response()->json([
+                    'success' => true,
+                    'recommendations' => $recommendations,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not generate follow-up recommendations',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get follow-up recommendations',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Predict lead conversion probability.
+     */
+    public function conversionPrediction(Lead $lead, CRMAIService $crmAI)
+    {
+        try {
+            $prediction = $crmAI->predictConversion($lead);
+
+            if ($prediction) {
+                return response()->json([
+                    'success' => true,
+                    'prediction' => $prediction,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Could not generate conversion prediction',
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get conversion prediction',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Button } from '@/Components/ui/button';
@@ -8,7 +8,10 @@ import { Label } from '@/Components/ui/label';
 import { Textarea } from '@/Components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/Components/ui/radio-group';
-import { ArrowLeft, Save } from 'lucide-react';
+import EmailTemplateGenerator from '@/Components/CRM/EmailTemplateGenerator';
+import SentimentAnalysis from '@/Components/CRM/SentimentAnalysis';
+import useCRMAI from '@/Hooks/useCRMAI';
+import { ArrowLeft, Save, Bot, Heart } from 'lucide-react';
 import { Client, Lead, InertiaSharedProps } from '@/types/index';
 import useRoute from '@/Hooks/useRoute';
 
@@ -21,6 +24,11 @@ interface CommunicationCreateProps extends InertiaSharedProps {
 
 export default function CommunicationCreate({ auth, clients, leads, communicableType, communicableId }: CommunicationCreateProps) {
   const route = useRoute();
+  const { analyzeSentiment, generateCommunicationEmailTemplate, loading: aiLoading } = useCRMAI();
+
+  const [showEmailGenerator, setShowEmailGenerator] = useState(false);
+  const [showSentimentAnalysis, setShowSentimentAnalysis] = useState(false);
+  const [sentimentAnalysis, setSentimentAnalysis] = useState(null);
 
   const { data, setData, post, processing, errors } = useForm({
     type: 'note',
@@ -36,6 +44,32 @@ export default function CommunicationCreate({ auth, clients, leads, communicable
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     post(route('crm.communications.store'));
+  };
+
+  const handleAnalyzeSentiment = async () => {
+    if (!data.content.trim()) {
+      return;
+    }
+
+    const analysis = await analyzeSentiment(data.content, data.type);
+    if (analysis) {
+      setSentimentAnalysis(analysis);
+      setShowSentimentAnalysis(true);
+    }
+  };
+
+  const handleEmailTemplateGenerated = (template: any) => {
+    setData('subject', template.subject);
+    setData('content', template.body);
+  };
+
+  const getSelectedContact = () => {
+    if (data.communicable_type === 'App\\Models\\Client' && data.communicable_id) {
+      return clients.find(c => c.id.toString() === data.communicable_id.toString());
+    } else if (data.communicable_type === 'App\\Models\\Lead' && data.communicable_id) {
+      return leads.find(l => l.id.toString() === data.communicable_id.toString());
+    }
+    return null;
   };
 
   return (
@@ -64,12 +98,60 @@ export default function CommunicationCreate({ auth, clients, leads, communicable
           <Card>
             <form onSubmit={handleSubmit}>
               <CardHeader>
-                <CardTitle>Add New Communication</CardTitle>
-                <CardDescription>
-                  Record a new communication with a client or lead
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Add New Communication</CardTitle>
+                    <CardDescription>
+                      Record a new communication with a client or lead
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    {data.type === 'email' && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEmailGenerator(true)}
+                        className="text-green-600 border-green-200 hover:bg-green-50"
+                      >
+                        <Bot className="h-4 w-4 mr-1" />
+                        Generate Email
+                      </Button>
+                    )}
+                    {data.content.trim() && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAnalyzeSentiment}
+                        disabled={aiLoading}
+                        className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                      >
+                        <Heart className="h-4 w-4 mr-1" />
+                        Analyze Sentiment
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* AI Components */}
+                {showEmailGenerator && (
+                  <EmailTemplateGenerator
+                    onTemplateGenerated={handleEmailTemplateGenerated}
+                    onClose={() => setShowEmailGenerator(false)}
+                    leadData={getSelectedContact()}
+                    context={{ communication_type: data.type }}
+                  />
+                )}
+
+                {showSentimentAnalysis && sentimentAnalysis && (
+                  <SentimentAnalysis
+                    analysis={sentimentAnalysis}
+                    onDismiss={() => setShowSentimentAnalysis(false)}
+                    loading={aiLoading}
+                  />
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="type">Communication Type <span className="text-red-500">*</span></Label>

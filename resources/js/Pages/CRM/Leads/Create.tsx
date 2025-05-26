@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AppLayout from '@/Layouts/AppLayout';
 import { Button } from '@/Components/ui/button';
@@ -7,6 +7,9 @@ import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Textarea } from '@/Components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import LeadInsights from '@/Components/CRM/LeadInsights';
+import useCRMAI from '@/Hooks/useCRMAI';
+import { Bot } from 'lucide-react';
 import { InertiaSharedProps } from '@/types';
 
 interface LeadCreateProps extends InertiaSharedProps {}
@@ -28,9 +31,30 @@ export default function LeadCreate({ auth }: LeadCreateProps) {
     status: 'new',
   });
 
+  const { getLeadInsights, loading: aiLoading } = useCRMAI();
+  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [aiInsights, setAiInsights] = useState(null);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     post(route('crm.leads.store'));
+  };
+
+  const handleGetAIInsights = async () => {
+    if (!data.name.trim()) {
+      return;
+    }
+
+    setShowAIInsights(true);
+    const insights = await getLeadInsights(data);
+    if (insights) {
+      setAiInsights(insights);
+    }
+  };
+
+  const handleDismissAI = () => {
+    setShowAIInsights(false);
+    setAiInsights(null);
   };
 
   return (
@@ -49,12 +73,35 @@ export default function LeadCreate({ auth }: LeadCreateProps) {
           <Card>
             <form onSubmit={handleSubmit}>
               <CardHeader>
-                <CardTitle>Add New Lead</CardTitle>
-                <CardDescription>
-                  Create a new lead in the CRM system
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Add New Lead</CardTitle>
+                    <CardDescription>
+                      Create a new lead in the CRM system
+                    </CardDescription>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGetAIInsights}
+                    disabled={!data.name.trim() || aiLoading}
+                    className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                  >
+                    <Bot className="h-4 w-4 mr-1" />
+                    {aiLoading ? 'Getting AI Insights...' : 'Get AI Insights'}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* AI Insights */}
+                {showAIInsights && aiInsights && (
+                  <LeadInsights
+                    insights={aiInsights}
+                    onDismiss={handleDismissAI}
+                    loading={aiLoading}
+                  />
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="name">Name <span className="text-red-500">*</span></Label>
@@ -109,8 +156,8 @@ export default function LeadCreate({ auth }: LeadCreateProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="source">Source</Label>
-                    <Select 
-                      value={data.source} 
+                    <Select
+                      value={data.source}
                       onValueChange={(value) => setData('source', value)}
                     >
                       <SelectTrigger>
@@ -130,8 +177,8 @@ export default function LeadCreate({ auth }: LeadCreateProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="status">Status <span className="text-red-500">*</span></Label>
-                    <Select 
-                      value={data.status} 
+                    <Select
+                      value={data.status}
                       onValueChange={(value) => setData('status', value)}
                     >
                       <SelectTrigger>

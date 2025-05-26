@@ -82,13 +82,20 @@ Route::middleware([
 
         // Clients
         Route::resource('clients', \App\Http\Controllers\CRM\ClientController::class);
+        Route::get('clients/{client}/health-analysis', [\App\Http\Controllers\CRM\ClientController::class, 'healthAnalysis'])->name('clients.health-analysis');
 
         // Leads
         Route::resource('leads', \App\Http\Controllers\CRM\LeadController::class);
         Route::post('leads/{lead}/convert', [\App\Http\Controllers\CRM\LeadController::class, 'convertToClient'])->name('leads.convert');
+        Route::post('leads/ai-insights', [\App\Http\Controllers\CRM\LeadController::class, 'aiInsights'])->name('leads.ai-insights');
+        Route::post('leads/generate-email', [\App\Http\Controllers\CRM\LeadController::class, 'generateEmail'])->name('leads.generate-email');
+        Route::get('leads/{lead}/follow-up-recommendations', [\App\Http\Controllers\CRM\LeadController::class, 'followUpRecommendations'])->name('leads.follow-up-recommendations');
+        Route::get('leads/{lead}/conversion-prediction', [\App\Http\Controllers\CRM\LeadController::class, 'conversionPrediction'])->name('leads.conversion-prediction');
 
         // Communications
         Route::resource('communications', \App\Http\Controllers\CRM\CommunicationController::class);
+        Route::post('communications/analyze-sentiment', [\App\Http\Controllers\CRM\CommunicationController::class, 'analyzeSentiment'])->name('communications.analyze-sentiment');
+        Route::post('communications/generate-email-template', [\App\Http\Controllers\CRM\CommunicationController::class, 'generateEmailTemplate'])->name('communications.generate-email-template');
 
         // TekRem LiveChat
         Route::prefix('livechat')->name('livechat.')->group(function () {
