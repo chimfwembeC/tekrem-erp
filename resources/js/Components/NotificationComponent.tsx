@@ -173,7 +173,7 @@ export default function NotificationComponent({ className = '' }: NotificationCo
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-96">
+      <DropdownMenuContent align="end" className="w-96 lg:w-[600px]">
         <DropdownMenuLabel className="flex justify-between items-center">
           <span>Notifications</span>
           {unreadCount > 0 && (

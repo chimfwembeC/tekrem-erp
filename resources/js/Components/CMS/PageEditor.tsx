@@ -463,7 +463,7 @@ export default function PageEditor({
                         <SelectValue placeholder={t('cms.select_parent', 'Select parent page')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">{t('cms.no_parent', 'No parent')}</SelectItem>
+                        <SelectItem value="empty">{t('cms.no_parent', 'No parent')}</SelectItem>
                         {pages.filter(p => p.id !== page?.id).map((page) => (
                           <SelectItem key={page.id} value={page.id.toString()}>
                             {page.title}
