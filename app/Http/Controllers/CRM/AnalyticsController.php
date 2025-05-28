@@ -91,7 +91,7 @@ class AnalyticsController extends Controller
     /**
      * Export analytics data.
      */
-    public function export(Request $request): JsonResponse
+    public function export(Request $request)
     {
         $format = $request->get('format', 'csv');
         $type = $request->get('type', 'overview');
@@ -114,6 +114,8 @@ class AnalyticsController extends Controller
         }
 
         // Convert to CSV
+          // Convert to CSV
+          \Log::info('Export data:', $data); // This will log the array properly          
         $csv = $this->arrayToCsv($data);
 
         return response($csv)
@@ -583,25 +585,30 @@ class AnalyticsController extends Controller
     private function arrayToCsv(array $data): string
     {
         if (empty($data)) {
-            return '';
+            // Handle empty data case
+            return response('No data available for export', 204); // Or show a message
         }
-
+    
         $output = fopen('php://temp', 'r+');
-
+    
         // Add headers
         fputcsv($output, array_keys($data[0]));
-
+    
         // Add data rows
         foreach ($data as $row) {
-            fputcsv($output, $row);
+            if (is_array($row)) {
+                fputcsv($output, $row);
+            }
         }
-
+    
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
-
+    
         return $csv;
     }
+    
+    
 
     /**
      * Generate report data based on type.

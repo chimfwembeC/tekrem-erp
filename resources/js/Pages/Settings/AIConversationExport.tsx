@@ -365,7 +365,7 @@ export default function AIConversationExport({ statistics }: AIConversationExpor
                         <SelectValue placeholder="All Services" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Services</SelectItem>
+                        <SelectItem value="empty">All Services</SelectItem>
                         <SelectItem value="mistral">Mistral AI</SelectItem>
                         <SelectItem value="openai">OpenAI</SelectItem>
                         <SelectItem value="anthropic">Anthropic</SelectItem>
@@ -394,7 +394,7 @@ export default function AIConversationExport({ statistics }: AIConversationExpor
                         <SelectValue placeholder="All Statuses" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Statuses</SelectItem>
+                        <SelectItem value="empty">All Statuses</SelectItem>
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="archived">Archived</SelectItem>
                         <SelectItem value="resolved">Resolved</SelectItem>
