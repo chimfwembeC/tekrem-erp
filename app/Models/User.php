@@ -193,4 +193,11 @@ class User extends Authenticatable
         return $this->getAllPermissions()->pluck('name')->toArray();
     }
 
+    // get user tickets
+    public function assignedTickets()
+    {
+        return $this->hasMany(\App\Models\Support\Ticket::class, 'assigned_to');
+    }
+
+
 }

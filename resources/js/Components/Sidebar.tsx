@@ -32,7 +32,10 @@ import {
   Navigation,
   Link2,
   Folder,
-  Palette
+  Palette,
+  Bot,
+  Brain,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -264,6 +267,46 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
+  // AI navigation items - only visible to admin and staff
+  const aiItems = hasCrmAccess() ? [
+    {
+      href: route('ai.dashboard'),
+      label: t('ai.dashboard', 'Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('ai.dashboard')
+    },
+    {
+      href: route('ai.services.index'),
+      label: t('ai.services', 'Services'),
+      icon: <Settings className="h-5 w-5" />,
+      active: route().current('ai.services.*')
+    },
+    {
+      href: route('ai.models.index'),
+      label: t('ai.models', 'Models'),
+      icon: <Brain className="h-5 w-5" />,
+      active: route().current('ai.models.*')
+    },
+    {
+      href: route('ai.conversations.index'),
+      label: t('ai.conversations', 'Conversations'),
+      icon: <MessageSquare className="h-5 w-5" />,
+      active: route().current('ai.conversations.*')
+    },
+    {
+      href: route('ai.prompt-templates.index'),
+      label: t('ai.prompt_templates', 'Templates'),
+      icon: <FileText className="h-5 w-5" />,
+      active: route().current('ai.prompt-templates.*')
+    },
+    {
+      href: route('ai.analytics.dashboard'),
+      label: t('ai.analytics', 'Analytics'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('ai.analytics.*')
+    },
+  ] : [];
+
   // Sidebar content component to avoid duplication
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -377,6 +420,41 @@ export default function Sidebar({ settings }: SidebarProps) {
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 mt-1 space-y-1">
               {supportItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* AI Navigation - Only visible to admin and staff */}
+        {hasCrmAccess() && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('ai.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <Bot className="h-5 w-5" />
+                <span>{t('ai.title', 'AI')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {aiItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}

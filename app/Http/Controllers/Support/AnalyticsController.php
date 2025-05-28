@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Support\Ticket;
 use App\Models\Support\TicketCategory;
 use App\Models\Support\KnowledgeBaseArticle;
+use App\Models\Support\KnowledgeBaseCategory;
 use App\Models\Support\FAQ;
 use App\Models\Support\SLA;
 use App\Models\User;
@@ -215,7 +216,8 @@ class AnalyticsController extends Controller
                         ? round(($user->tickets_resolved / $user->tickets_assigned) * 100, 2)
                         : 0,
                 ];
-            });
+            })
+            ->toArray(); 
     }
 
     /**
@@ -249,7 +251,8 @@ class AnalyticsController extends Controller
                         ? round(($category->resolved_tickets / $category->total_tickets) * 100, 2)
                         : 0,
                 ];
-            });
+            })
+            ->toArray();
     }
 
     /**
@@ -271,7 +274,8 @@ class AnalyticsController extends Controller
                 'response_time_hours' => $sla->response_time_hours,
                 'resolution_time_hours' => $sla->resolution_time_hours,
             ];
-        });
+        })
+        ->toArray();
     }
 
     /**

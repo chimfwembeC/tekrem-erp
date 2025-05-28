@@ -202,7 +202,7 @@ export default function Create({ categories, users, clients, leads, requesterTyp
                       <Label htmlFor="category">{t('support.category', 'Category')}</Label>
                       <Select value={data.category_id} onValueChange={handleCategoryChange}>
                         <SelectTrigger className={errors.category_id ? 'border-red-500' : ''}>
-                          <SelectValue placeholder={t('support.select_category', 'Select category')} />
+                          <SelectValue  placeholder={t('support.select_category', 'Select category')} />
                         </SelectTrigger>
                         <SelectContent>
                           {categories.map((category) => (
@@ -265,7 +265,7 @@ export default function Create({ categories, users, clients, leads, requesterTyp
                         <SelectValue placeholder={t('support.select_assignee', 'Select assignee (optional)')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">{t('support.unassigned', 'Unassigned')}</SelectItem>
+                        <SelectItem value="empty">{t('support.unassigned', 'Unassigned')}</SelectItem>
                         {users.map((user) => (
                           <SelectItem key={user.id} value={user.id.toString()}>
                             <div className="flex items-center gap-2">

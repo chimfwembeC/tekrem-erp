@@ -30,9 +30,17 @@ import {
   FileText,
   Folder,
   FolderPlus,
-  ArrowUp
+  ArrowUp,
+  Move,
+  Tag,
+  ChevronRight,
+  Home
 } from 'lucide-react';
 import useTranslate from '@/Hooks/useTranslate';
+import useRoute from '@/Hooks/useRoute';
+import UploadModal from '@/Components/CMS/UploadModal';
+import FolderModal from '@/Components/CMS/FolderModal';
+import BulkActionModal from '@/Components/CMS/BulkActionModal';
 
 interface Media {
   id: number;
@@ -103,10 +111,17 @@ export default function MediaIndex({
   filters
 }: Props) {
   const { t } = useTranslate();
+  const route = useRoute();
   const [selectedMedia, setSelectedMedia] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState(filters?.search || '');
   const [showUploadModal, setShowUploadModal] = useState(false);
+
+  // Additional modal states
+  const [folderModalOpen, setFolderModalOpen] = useState(false);
+  const [bulkActionModalOpen, setBulkActionModalOpen] = useState(false);
+  const [editFolder, setEditFolder] = useState<MediaFolder | undefined>();
+  const [bulkAction, setBulkAction] = useState<'move' | 'tag' | 'delete' | null>(null);
 
   const handleSearch = () => {
     router.get(route('cms.media.index'), {
@@ -138,17 +153,34 @@ export default function MediaIndex({
     });
   };
 
-  const handleBulkAction = (action: string) => {
-    if (selectedMedia.length === 0) return;
+  // Modal handlers
+  const handleUploadComplete = () => {
+    setShowUploadModal(false);
+    router.reload();
+  };
 
-    router.post(route('cms.media.bulk-action'), {
-      action,
-      media_ids: selectedMedia,
-    }, {
-      onSuccess: () => {
-        setSelectedMedia([]);
-      },
-    });
+  const handleFolderCreated = () => {
+    setFolderModalOpen(false);
+    setEditFolder(undefined);
+    router.reload();
+  };
+
+  const handleBulkActionComplete = () => {
+    setBulkActionModalOpen(false);
+    setBulkAction(null);
+    setSelectedMedia([]);
+    router.reload();
+  };
+
+  const handleEditFolder = (folder: MediaFolder) => {
+    setEditFolder(folder);
+    setFolderModalOpen(true);
+  };
+
+  const handleBulkAction = (action: 'move' | 'tag' | 'delete') => {
+    if (selectedMedia.length === 0) return;
+    setBulkAction(action);
+    setBulkActionModalOpen(true);
   };
 
   const handleMediaAction = (mediaId: number, action: string) => {
@@ -201,7 +233,7 @@ export default function MediaIndex({
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowUploadModal(true)}>
+            <Button variant="outline" onClick={() => setFolderModalOpen(true)}>
               <FolderPlus className="h-4 w-4 mr-2" />
               {t('cms.create_folder', 'Create Folder')}
             </Button>
@@ -598,6 +630,40 @@ export default function MediaIndex({
           </CardContent>
         </Card>
       </div>
+
+      {/* Modals */}
+      <UploadModal
+        open={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        folders={folders}
+        currentFolderId={currentFolder?.id}
+        onUploadComplete={handleUploadComplete}
+      />
+
+      <FolderModal
+        open={folderModalOpen}
+        onClose={() => {
+          setFolderModalOpen(false);
+          setEditFolder(undefined);
+        }}
+        folders={folders}
+        currentFolderId={currentFolder?.id}
+        editFolder={editFolder}
+        onFolderCreated={handleFolderCreated}
+      />
+
+      <BulkActionModal
+        open={bulkActionModalOpen}
+        onClose={() => {
+          setBulkActionModalOpen(false);
+          setBulkAction(null);
+        }}
+        action={bulkAction}
+        selectedCount={selectedMedia.length}
+        selectedIds={selectedMedia}
+        folders={folders}
+        onActionComplete={handleBulkActionComplete}
+      />
     </AppLayout>
   );
 }

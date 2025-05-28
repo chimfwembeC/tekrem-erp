@@ -1,0 +1,40 @@
+{
+  "validService": {
+    "name": "Test AI Service",
+    "provider": "test-provider",
+    "description": "A test AI service for Cypress testing",
+    "api_key": "test-api-key-123",
+    "api_url": "https://api.test-provider.com/v1",
+    "configuration": {
+      "timeout": 30,
+      "retries": 3
+    }
+  },
+  "invalidService": {
+    "name": "",
+    "provider": "",
+    "description": "",
+    "api_key": "",
+    "api_url": "invalid-url"
+  },
+  "updateService": {
+    "name": "Updated Test AI Service",
+    "description": "An updated test AI service for Cypress testing",
+    "configuration": {
+      "timeout": 60,
+      "retries": 5
+    }
+  },
+  "existingServices": [
+    {
+      "id": 1,
+      "name": "Mistral AI",
+      "provider": "mistral",
+      "description": "Mistral AI service for advanced language models",
+      "is_enabled": true,
+      "is_default": true,
+      "status": "active",
+      "models_count": 2
+    }
+  ]
+}

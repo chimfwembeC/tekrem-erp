@@ -97,7 +97,9 @@ class NotificationService
 
         $users = $users->merge($staffUsers);
 
-        return $users->unique('id');
+        // return $users->unique('id');
+        return new \Illuminate\Database\Eloquent\Collection($users->unique('id'));
+
     }
 
     /**

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -135,6 +136,40 @@ class MediaController extends Controller
         return Inertia::render('CMS/Media/Show', [
             'media' => $media,
         ]);
+    }
+
+    /**
+     * Download media file.
+     */
+    public function download(Media $media)
+    {
+        if (!Storage::exists($media->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        return Storage::download($media->file_path, $media->original_name);
+    }
+
+    /**
+     * Check if moving a folder would create a circular reference.
+     */
+    private function wouldCreateCircularReference(MediaFolder $folder, int $newParentId): bool
+    {
+        $newParent = MediaFolder::find($newParentId);
+        if (!$newParent) {
+            return false;
+        }
+
+        // Check if the new parent is the folder itself or a descendant
+        $current = $newParent;
+        while ($current) {
+            if ($current->id === $folder->id) {
+                return true;
+            }
+            $current = $current->parent;
+        }
+
+        return false;
     }
 
     /**

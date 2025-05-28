@@ -1,0 +1,20 @@
+{
+  "admin": {
+    "email": "admin@tekrem.com",
+    "password": "password",
+    "name": "Admin User",
+    "role": "admin"
+  },
+  "staff": {
+    "email": "staff@tekrem.com", 
+    "password": "password",
+    "name": "Staff User",
+    "role": "staff"
+  },
+  "testUser": {
+    "email": "test@example.com",
+    "password": "testpassword",
+    "name": "Test User",
+    "role": "staff"
+  }
+}

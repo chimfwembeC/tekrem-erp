@@ -472,7 +472,7 @@ export default function Show({ ticket, users, comments }: Props) {
                       <SelectValue placeholder={t('support.unassigned', 'Unassigned')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">{t('support.unassigned', 'Unassigned')}</SelectItem>
+                      <SelectItem value="empty">{t('support.unassigned', 'Unassigned')}</SelectItem>
                       {users.map((user) => (
                         <SelectItem key={user.id} value={user.id.toString()}>
                           {user.name}

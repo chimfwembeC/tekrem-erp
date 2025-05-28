@@ -11,6 +11,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CategoryController extends Controller
 {
@@ -79,19 +81,19 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
+    
     public function show(TicketCategory $category): Response
     {
         $category->load(['defaultSlaPolicy']);
         $category->loadCount('tickets');
 
-        // Get recent tickets in this category
         $recentTickets = $category->tickets()
             ->with(['assignedTo', 'createdBy', 'requester'])
             ->latest()
             ->take(10)
             ->get();
 
-        // Get ticket statistics for this category
+        // Ticket statistics (summary counts)
         $ticketStats = [
             'total' => $category->tickets()->count(),
             'open' => $category->tickets()->where('status', 'open')->count(),
@@ -100,12 +102,61 @@ class CategoryController extends Controller
             'closed' => $category->tickets()->where('status', 'closed')->count(),
         ];
 
+        // Monthly statistics (for last 6 months)
+        $startDate = Carbon::now()->subMonths(5)->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
+
+        // Get tickets created grouped by month
+        $ticketsCreated = DB::table('tickets')
+            ->select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+                DB::raw('COUNT(*) as tickets')
+            )
+            ->where('category_id', $category->id)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Get tickets resolved grouped by month
+        $ticketsResolved = DB::table('tickets')
+            ->select(
+                DB::raw("DATE_FORMAT(updated_at, '%Y-%m') as month"),
+                DB::raw('COUNT(*) as resolved')
+            )
+            ->where('category_id', $category->id)
+            ->where('status', 'resolved')
+            ->whereBetween('updated_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Build monthlyStats array with months, tickets created and resolved counts
+        $months = [];
+        for ($i = 0; $i < 6; $i++) {
+            $monthKey = $startDate->copy()->addMonths($i)->format('Y-m');
+            $months[] = [
+                'month' => $startDate->copy()->addMonths($i)->format('M Y'),
+                'tickets' => $ticketsCreated->get($monthKey)->tickets ?? 0,
+                'resolved' => $ticketsResolved->get($monthKey)->resolved ?? 0,
+            ];
+        }
+
+        $avgResolutionTime = $category->tickets()
+    ->whereNotNull('resolved_at') // assuming you have resolved_at timestamp
+    ->avg(DB::raw('TIMESTAMPDIFF(MINUTE, created_at, resolved_at)'));
+
         return Inertia::render('Support/Categories/Show', [
             'category' => $category,
             'recentTickets' => $recentTickets,
             'ticketStats' => $ticketStats,
+            'monthlyStats' => $months,
+            'avg_resolution_time' => $avgResolutionTime ?? 0,
         ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

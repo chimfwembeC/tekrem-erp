@@ -1,0 +1,60 @@
+{
+  "validConversation": {
+    "title": "Test Conversation",
+    "context_type": "general",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello, this is a test message",
+        "timestamp": "2024-01-01T10:00:00Z"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! How can I help you today?",
+        "timestamp": "2024-01-01T10:00:05Z"
+      }
+    ]
+  },
+  "newMessage": {
+    "role": "user",
+    "content": "Can you help me with AI model configuration?"
+  },
+  "existingConversations": [
+    {
+      "id": 1,
+      "title": "CRM Lead Analysis",
+      "context_type": "crm",
+      "message_count": 5,
+      "total_tokens": 1250,
+      "total_cost": 0.25,
+      "last_message_at": "2024-01-01T10:30:00Z",
+      "is_archived": false,
+      "ai_model": {
+        "id": 1,
+        "name": "Mistral Chat Model"
+      },
+      "user": {
+        "id": 1,
+        "name": "Admin User"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Finance Report Generation",
+      "context_type": "finance",
+      "message_count": 8,
+      "total_tokens": 2100,
+      "total_cost": 0.42,
+      "last_message_at": "2024-01-01T09:15:00Z",
+      "is_archived": false,
+      "ai_model": {
+        "id": 1,
+        "name": "Mistral Chat Model"
+      },
+      "user": {
+        "id": 1,
+        "name": "Admin User"
+      }
+    }
+  ]
+}

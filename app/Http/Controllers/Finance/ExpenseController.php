@@ -295,4 +295,18 @@ class ExpenseController extends Controller
             ], 500);
         }
     }
+
+    public function approve(Expense $expense)
+    {
+        // Optional: Check if user is authorized to approve
+        if ($expense->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $expense->status = 'approved';
+        $expense->save();
+
+        return redirect()->back()->with('success', 'Expense approved successfully.');
+    }
+
 }

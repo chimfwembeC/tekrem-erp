@@ -42,7 +42,7 @@ class NotificationSeeder extends Seeder
             switch ($type) {
                 case 'chat':
                     $data['message'] = 'You have a new message from John Doe';
-                    $data['link'] = route('crm.chats.index');
+                    $data['link'] = route('crm.livechat.index');
                     break;
 
                 case 'lead':

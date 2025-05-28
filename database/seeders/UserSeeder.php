@@ -14,27 +14,39 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@tekrem.com',
-            'password' => Hash::make('password'),
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@tekrem.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+            ]
+        );
+        if (!$admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
 
         // Create staff user
-        $staff = User::create([
-            'name' => 'Staff User',
-            'email' => 'staff@tekrem.com',
-            'password' => Hash::make('password'),
-        ]);
-        $staff->assignRole('staff');
+        $staff = User::firstOrCreate(
+            ['email' => 'staff@tekrem.com'],
+            [
+                'name' => 'Staff User',
+                'password' => Hash::make('password'),
+            ]
+        );
+        if (!$staff->hasRole('staff')) {
+            $staff->assignRole('staff');
+        }
 
         // Create customer user
-        $customer = User::create([
-            'name' => 'Customer User',
-            'email' => 'customer@tekrem.com',
-            'password' => Hash::make('password'),
-        ]);
-        $customer->assignRole('customer');
+        $customer = User::firstOrCreate(
+            ['email' => 'customer@tekrem.com'],
+            [
+                'name' => 'Customer User',
+                'password' => Hash::make('password'),
+            ]
+        );
+        if (!$customer->hasRole('customer')) {
+            $customer->assignRole('customer');
+        }
     }
 }

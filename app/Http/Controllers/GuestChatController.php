@@ -152,7 +152,7 @@ class GuestChatController extends Controller
 
         // Check if AI auto-response should be triggered
         $aiResponse = $this->handleAIAutoResponse($conversation, $message, $guestSession);
-
+        
         $response = ['message' => $message];
         if ($aiResponse) {
             $response['ai_response'] = $aiResponse;
@@ -256,13 +256,13 @@ class GuestChatController extends Controller
      * Handle AI auto-response for guest messages.
      */
     private function handleAIAutoResponse(Conversation $conversation, Chat $guestMessage, GuestSession $guestSession): ?Chat
-    {
+    {       
         // Check if AI auto-response should be triggered
         if (!$this->shouldTriggerAIResponse($conversation)) {
             return null;
         }
 
-        $aiService = new AIService();
+        $aiService = new AIService();       
 
         if (!$aiService->isAutoResponseEnabled()) {
             return null;

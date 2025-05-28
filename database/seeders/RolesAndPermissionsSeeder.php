@@ -98,14 +98,14 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
-        $adminRole = Role::create(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
 
-        $staffRole = Role::create(['name' => 'staff']);
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
         $staffRole->givePermissionTo([
             'view users',
             'view clients',
@@ -135,7 +135,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view reports',
         ]);
 
-        $customerRole = Role::create(['name' => 'customer']);
+        $customerRole = Role::firstOrCreate(['name' => 'customer']);
         $customerRole->givePermissionTo([
             'view tickets',
             'create tickets',

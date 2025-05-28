@@ -103,9 +103,11 @@ export default function Show({ category, recentTickets, monthlyStats }: Props) {
     }
   };
 
-  const resolutionRate = category.tickets_count > 0 
-    ? ((category.resolved_tickets_count / category.tickets_count) * 100).toFixed(1)
-    : '0';
+  const resolutionRate = category.tickets_count > 0 && category.resolved_tickets_count != null
+  ? ((category.resolved_tickets_count / category.tickets_count) * 100).toFixed(1)
+  : '0';
+
+  const avgResolutionTimeValue = category.avg_resolution_time ?? 0;
 
   const formatTime = (minutes: number) => {
     if (minutes < 60) {
@@ -116,6 +118,8 @@ export default function Show({ category, recentTickets, monthlyStats }: Props) {
     return `${hours}h ${remainingMinutes}m`;
   };
 
+
+  console.log('monthlyStats',monthlyStats);
   return (
     <AppLayout>
       <Head title={`${t('support.category', 'Category')}: ${category.name}`} />
@@ -196,7 +200,7 @@ export default function Show({ category, recentTickets, monthlyStats }: Props) {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatTime(category.avg_resolution_time)}</div>
+            <div className="text-2xl font-bold">{formatTime(avgResolutionTimeValue)}</div>
               <p className="text-xs text-muted-foreground">
                 {t('support.average_time', 'average time')}
               </p>
@@ -277,7 +281,7 @@ export default function Show({ category, recentTickets, monthlyStats }: Props) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {monthlyStats.map((stat, index) => (
+                  {monthlyStats?.map((stat, index) => (
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
                         <Calendar className="h-4 w-4 text-muted-foreground" />

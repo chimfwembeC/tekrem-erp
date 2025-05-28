@@ -133,4 +133,13 @@ class Budget extends Model
             ->sum('amount');
         $this->save();
     }
+
+    public function getSpentAmount()
+    {
+        return Expense::where('category_id', $this->category_id)
+            ->whereBetween('expense_date', [$this->start_date, $this->end_date])
+            ->where('status', 'approved')
+            ->sum('amount');
+    }
+
 }

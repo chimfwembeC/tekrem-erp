@@ -265,7 +265,7 @@ export default function Create({ categories }: Props) {
                         <SelectValue placeholder={t('support.select_category', 'Select category')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">{t('support.no_category', 'No Category')}</SelectItem>
+                        <SelectItem value="empty">{t('support.no_category', 'No Category')}</SelectItem>
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id.toString()}>
                             <div className="flex items-center gap-2">

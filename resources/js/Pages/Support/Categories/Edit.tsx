@@ -209,7 +209,7 @@ export default function Edit({ category, slaOptions, users }: Props) {
                           <SelectValue placeholder={t('support.select_icon', 'Select icon (optional)')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">{t('support.no_icon', 'No Icon')}</SelectItem>
+                          <SelectItem value="empty">{t('support.no_icon', 'No Icon')}</SelectItem>
                           {iconOptions.map((icon) => (
                             <SelectItem key={icon.value} value={icon.value}>
                               {icon.label}
@@ -271,7 +271,7 @@ export default function Edit({ category, slaOptions, users }: Props) {
                           <SelectValue placeholder={t('support.select_sla', 'Select SLA policy (optional)')} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">{t('support.no_sla', 'No Default SLA')}</SelectItem>
+                          <SelectItem value="empty">{t('support.no_sla', 'No Default SLA')}</SelectItem>
                           {slaOptions.map((sla) => (
                             <SelectItem key={sla.id} value={sla.id.toString()}>
                               {sla.name}
@@ -289,7 +289,7 @@ export default function Edit({ category, slaOptions, users }: Props) {
                         <SelectValue placeholder={t('support.select_user', 'Select user (optional)')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">{t('support.no_auto_assign', 'No Auto Assignment')}</SelectItem>
+                        <SelectItem value="empty">{t('support.no_auto_assign', 'No Auto Assignment')}</SelectItem>
                         {users.map((user) => (
                           <SelectItem key={user.id} value={user.id.toString()}>
                             <div className="flex items-center gap-2">

@@ -11,13 +11,19 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
 
 class ChatbotController extends Controller
 {
     public function __construct(
         private SupportAIService $aiService
     ) {}
-
+    
+    public function index()
+    {
+        // Return a blade view that will load your React app container
+        return Inertia::render("Support/Chatbot/Index");
+    }
     /**
      * Handle chatbot conversation.
      */

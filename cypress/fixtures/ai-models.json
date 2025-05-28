@@ -1,0 +1,63 @@
+{
+  "validModel": {
+    "name": "Test AI Model",
+    "slug": "test-ai-model",
+    "model_identifier": "test-model-v1",
+    "type": "chat",
+    "description": "A test AI model for Cypress testing",
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "cost_per_input_token": 0.0001,
+    "cost_per_output_token": 0.0002,
+    "capabilities": ["text-generation", "conversation"]
+  },
+  "invalidModel": {
+    "name": "",
+    "slug": "",
+    "model_identifier": "",
+    "type": "",
+    "description": "",
+    "max_tokens": -1,
+    "temperature": 2.0,
+    "cost_per_input_token": -0.1,
+    "cost_per_output_token": -0.1
+  },
+  "updateModel": {
+    "name": "Updated Test AI Model",
+    "description": "An updated test AI model for Cypress testing",
+    "max_tokens": 8192,
+    "temperature": 0.8
+  },
+  "existingModels": [
+    {
+      "id": 1,
+      "name": "Mistral Chat Model",
+      "slug": "mistral-chat",
+      "model_identifier": "mistral-7b-instruct",
+      "type": "chat",
+      "description": "Mistral 7B Instruct model for chat conversations",
+      "is_enabled": true,
+      "is_default": true,
+      "service": {
+        "id": 1,
+        "name": "Mistral AI",
+        "provider": "mistral"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Mistral Completion Model",
+      "slug": "mistral-completion",
+      "model_identifier": "mistral-7b-completion",
+      "type": "completion",
+      "description": "Mistral 7B model for text completion",
+      "is_enabled": true,
+      "is_default": false,
+      "service": {
+        "id": 1,
+        "name": "Mistral AI",
+        "provider": "mistral"
+      }
+    }
+  ]
+}

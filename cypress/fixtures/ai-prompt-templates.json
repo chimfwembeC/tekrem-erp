@@ -1,0 +1,76 @@
+{
+  "validTemplate": {
+    "name": "Test Prompt Template",
+    "slug": "test-prompt-template",
+    "description": "A test prompt template for Cypress testing",
+    "category": "general",
+    "template": "Hello {{name}}, how can I help you with {{topic}}?",
+    "variables": [
+      {
+        "name": "name",
+        "type": "string",
+        "description": "User's name",
+        "required": true
+      },
+      {
+        "name": "topic",
+        "type": "string", 
+        "description": "Topic of discussion",
+        "required": true
+      }
+    ],
+    "is_active": true
+  },
+  "invalidTemplate": {
+    "name": "",
+    "slug": "",
+    "description": "",
+    "category": "",
+    "template": "",
+    "variables": []
+  },
+  "updateTemplate": {
+    "name": "Updated Test Prompt Template",
+    "description": "An updated test prompt template for Cypress testing",
+    "template": "Hi {{name}}, I'm here to assist you with {{topic}}. What specific help do you need?"
+  },
+  "renderData": {
+    "name": "John Doe",
+    "topic": "AI model configuration"
+  },
+  "existingTemplates": [
+    {
+      "id": 1,
+      "name": "CRM Lead Analysis",
+      "slug": "crm-lead-analysis",
+      "description": "Template for analyzing CRM leads",
+      "category": "crm",
+      "usage_count": 25,
+      "average_rating": 4.5,
+      "is_active": true,
+      "created_at": "2024-01-01T08:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Finance Report Generation",
+      "slug": "finance-report-generation", 
+      "description": "Template for generating finance reports",
+      "category": "finance",
+      "usage_count": 18,
+      "average_rating": 4.2,
+      "is_active": true,
+      "created_at": "2024-01-01T08:30:00Z"
+    },
+    {
+      "id": 3,
+      "name": "Support Ticket Analysis",
+      "slug": "support-ticket-analysis",
+      "description": "Template for analyzing support tickets",
+      "category": "support",
+      "usage_count": 32,
+      "average_rating": 4.7,
+      "is_active": true,
+      "created_at": "2024-01-01T09:00:00Z"
+    }
+  ]
+}

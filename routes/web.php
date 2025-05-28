@@ -291,6 +291,7 @@ Route::middleware([
 
         // AI Chatbot Routes
         Route::prefix('chatbot')->name('chatbot.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Support\ChatbotController::class, 'index'])->name('support.chatbot.index');
             Route::post('chat', [\App\Http\Controllers\Support\ChatbotController::class, 'chat'])->name('chat');
             Route::get('conversation', [\App\Http\Controllers\Support\ChatbotController::class, 'getConversation'])->name('conversation');
             Route::post('create-ticket', [\App\Http\Controllers\Support\ChatbotController::class, 'createTicketFromChat'])->name('create-ticket');
@@ -298,6 +299,48 @@ Route::middleware([
             Route::post('rate', [\App\Http\Controllers\Support\ChatbotController::class, 'rateResponse'])->name('rate');
             Route::post('escalate', [\App\Http\Controllers\Support\ChatbotController::class, 'escalateToHuman'])->name('escalate');
         });
+    });
+
+    // AI Module Routes
+    Route::prefix('ai')->name('ai.')->middleware(['auth', 'verified', 'role:admin|staff'])->group(function () {
+        // Dashboard
+        Route::get('dashboard', [\App\Http\Controllers\AI\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('dashboard/service-status', [\App\Http\Controllers\AI\DashboardController::class, 'serviceStatus'])->name('dashboard.service-status');
+        Route::get('dashboard/analytics', [\App\Http\Controllers\AI\DashboardController::class, 'analytics'])->name('dashboard.analytics');
+        Route::get('dashboard/quick-stats', [\App\Http\Controllers\AI\DashboardController::class, 'quickStats'])->name('dashboard.quick-stats');
+        Route::post('dashboard/test-connection', [\App\Http\Controllers\AI\DashboardController::class, 'testConnection'])->name('dashboard.test-connection');
+
+        // Services Management
+        Route::resource('services', \App\Http\Controllers\AI\ServiceController::class);
+        Route::post('services/{service}/test-connection', [\App\Http\Controllers\AI\ServiceController::class, 'testConnection'])->name('services.test-connection');
+        Route::post('services/{service}/set-default', [\App\Http\Controllers\AI\ServiceController::class, 'setDefault'])->name('services.set-default');
+        Route::post('services/{service}/toggle-status', [\App\Http\Controllers\AI\ServiceController::class, 'toggleStatus'])->name('services.toggle-status');
+
+        // Models Management
+        Route::resource('models', \App\Http\Controllers\AI\ModelController::class);
+        Route::post('models/{model}/set-default', [\App\Http\Controllers\AI\ModelController::class, 'setDefault'])->name('models.set-default');
+        Route::post('models/{model}/toggle-status', [\App\Http\Controllers\AI\ModelController::class, 'toggleStatus'])->name('models.toggle-status');
+
+        // Conversations Management
+        Route::resource('conversations', \App\Http\Controllers\AI\ConversationController::class);
+        Route::post('conversations/{conversation}/archive', [\App\Http\Controllers\AI\ConversationController::class, 'archive'])->name('conversations.archive');
+        Route::post('conversations/{conversation}/unarchive', [\App\Http\Controllers\AI\ConversationController::class, 'unarchive'])->name('conversations.unarchive');
+        Route::post('conversations/{conversation}/messages', [\App\Http\Controllers\AI\ConversationController::class, 'addMessage'])->name('conversations.messages.store');
+        Route::get('conversations/export', [\App\Http\Controllers\AI\ConversationController::class, 'export'])->name('conversations.export');
+        Route::get('conversations/statistics', [\App\Http\Controllers\AI\ConversationController::class, 'statistics'])->name('conversations.statistics');
+
+        // Prompt Templates Management
+        Route::resource('prompt-templates', \App\Http\Controllers\AI\PromptTemplateController::class);
+        Route::post('prompt-templates/{template}/duplicate', [\App\Http\Controllers\AI\PromptTemplateController::class, 'duplicate'])->name('prompt-templates.duplicate');
+        Route::post('prompt-templates/{template}/rate', [\App\Http\Controllers\AI\PromptTemplateController::class, 'rate'])->name('prompt-templates.rate');
+        Route::post('prompt-templates/{template}/render', [\App\Http\Controllers\AI\PromptTemplateController::class, 'render'])->name('prompt-templates.render');
+
+        // Analytics
+        Route::get('analytics/dashboard', [\App\Http\Controllers\AI\AnalyticsController::class, 'dashboard'])->name('analytics.dashboard');
+        Route::get('analytics/usage', [\App\Http\Controllers\AI\AnalyticsController::class, 'usage'])->name('analytics.usage');
+        Route::get('analytics/costs', [\App\Http\Controllers\AI\AnalyticsController::class, 'costs'])->name('analytics.costs');
+        Route::get('analytics/performance', [\App\Http\Controllers\AI\AnalyticsController::class, 'performance'])->name('analytics.performance');
+        Route::get('analytics/export', [\App\Http\Controllers\AI\AnalyticsController::class, 'export'])->name('analytics.export');
     });
 
     // CMS Routes
@@ -317,19 +360,20 @@ Route::middleware([
         // Media Management
         Route::get('media', [\App\Http\Controllers\CMS\MediaController::class, 'index'])->name('media.index');
         Route::post('media/upload', [\App\Http\Controllers\CMS\MediaController::class, 'upload'])->name('media.upload');
-        Route::get('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'show'])->name('media.show');
-        Route::put('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'update'])->name('media.update');
-        Route::delete('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'destroy'])->name('media.destroy');
         Route::get('media/search', [\App\Http\Controllers\CMS\MediaController::class, 'search'])->name('media.search');
         Route::get('media/picker', [\App\Http\Controllers\CMS\MediaController::class, 'picker'])->name('media.picker');
+        Route::get('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'show'])->name('media.show');
+        Route::get('media/{media}/download', [\App\Http\Controllers\CMS\MediaController::class, 'download'])->name('media.download');
+        Route::put('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'update'])->name('media.update');
+        Route::delete('media/{media}', [\App\Http\Controllers\CMS\MediaController::class, 'destroy'])->name('media.destroy');
         Route::post('media/bulk-action', [\App\Http\Controllers\CMS\MediaController::class, 'bulkAction'])->name('media.bulk-action');
         Route::post('media/{media}/variants', [\App\Http\Controllers\CMS\MediaController::class, 'generateVariants'])->name('media.variants');
         Route::post('media/cleanup', [\App\Http\Controllers\CMS\MediaController::class, 'cleanup'])->name('media.cleanup');
 
-        // Media Folders
+        // Media Folder Management
         Route::post('media/folders', [\App\Http\Controllers\CMS\MediaController::class, 'createFolder'])->name('media.folders.create');
         Route::put('media/folders/{folder}', [\App\Http\Controllers\CMS\MediaController::class, 'updateFolder'])->name('media.folders.update');
-        Route::delete('media/folders/{folder}', [\App\Http\Controllers\CMS\MediaController::class, 'destroyFolder'])->name('media.folders.destroy');
+        Route::delete('media/folders/{folder}', [\App\Http\Controllers\CMS\MediaController::class, 'deleteFolder'])->name('media.folders.delete');
 
         // Templates Management
         Route::resource('templates', \App\Http\Controllers\CMS\TemplateController::class);

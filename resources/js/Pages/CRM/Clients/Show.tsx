@@ -305,7 +305,7 @@ export default function ClientShow({ auth, client, communications }: ClientShowP
                       Chat messages with {client.name}
                     </CardDescription>
                   </div>
-                  <Link href={route('crm.chats.create', {
+                  <Link href={route('crm.livechat.index', {
                     chattable_type: 'App\\Models\\Client',
                     chattable_id: client.id
                   })}>
