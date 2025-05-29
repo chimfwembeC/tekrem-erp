@@ -204,6 +204,11 @@ class Conversation extends Model
                 return "Guest Chat - {$this->conversable->display_name}";
             }
 
+            // Handle projects
+            if ($this->conversable instanceof \App\Models\Project) {
+                return "Project Chat - {$this->conversable->name}";
+            }
+
             return "Chat with {$this->conversable->name}";
         }
 

@@ -36,6 +36,13 @@ import {
   Bot,
   Brain,
   Zap,
+  FolderOpen,
+  CheckSquare,
+  User,
+  Building,
+  Calendar,
+  Clock,
+  GraduationCap,
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -60,7 +67,7 @@ export default function Sidebar({ settings }: SidebarProps) {
   const { isActive } = useActiveRoute();
   const page = useTypedPage();
   const { t } = useTranslate();
-  const { hasAnyRole } = usePermissions();
+  const { hasAnyRole, hasAnyPermission } = usePermissions();
 
   // Check if user has access to CRM
   const hasCrmAccess = (): boolean => {
@@ -267,6 +274,98 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
+  // Projects navigation items - only visible to admin and staff
+  const projectsItems = hasCrmAccess() ? [
+    {
+      href: route('projects.dashboard'),
+      label: t('projects.dashboard', 'Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('projects.dashboard')
+    },
+    {
+      href: route('projects.index'),
+      label: t('projects.projects', 'All Projects'),
+      icon: <FolderOpen className="h-5 w-5" />,
+      active: route().current('projects.index') || route().current('projects.show') || route().current('projects.edit') || route().current('projects.create')
+    },
+    {
+      href: route('projects.my-tasks'),
+      label: t('projects.my_tasks', 'My Tasks'),
+      icon: <CheckSquare className="h-5 w-5" />,
+      active: route().current('projects.my-tasks')
+    },
+    {
+      href: route('projects.tags.index'),
+      label: t('projects.tags', 'Tags'),
+      icon: <Tag className="h-5 w-5" />,
+      active: route().current('projects.tags.*')
+    },
+    {
+      href: route('projects.templates.index'),
+      label: t('projects.templates', 'Templates'),
+      icon: <Layout className="h-5 w-5" />,
+      active: route().current('projects.templates.*')
+    },
+    {
+      href: route('projects.analytics'),
+      label: t('projects.analytics', 'Analytics'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('projects.analytics.*')
+    },
+  ] : [];
+
+  // HR navigation items - only visible to admin and staff
+  const hrItems = hasCrmAccess() ? [
+    {
+      href: route('hr.dashboard'),
+      label: t('hr.dashboard', 'Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('hr.dashboard')
+    },
+    {
+      href: route('hr.employees.index'),
+      label: t('hr.employees', 'Employees'),
+      icon: <Users className="h-5 w-5" />,
+      active: route().current('hr.employees.*')
+    },
+    {
+      href: route('hr.departments.index'),
+      label: t('hr.departments', 'Departments'),
+      icon: <Building className="h-5 w-5" />,
+      active: route().current('hr.departments.*')
+    },
+    {
+      href: route('hr.leave.index'),
+      label: t('hr.leave', 'Leave Management'),
+      icon: <Calendar className="h-5 w-5" />,
+      active: route().current('hr.leave.*')
+    },
+    {
+      href: route('hr.performance.index'),
+      label: t('hr.performance', 'Performance'),
+      icon: <TrendingUp className="h-5 w-5" />,
+      active: route().current('hr.performance.*')
+    },
+    {
+      href: route('hr.attendance.index'),
+      label: t('hr.attendance', 'Attendance'),
+      icon: <Clock className="h-5 w-5" />,
+      active: route().current('hr.attendance.*')
+    },
+    {
+      href: route('hr.training.index'),
+      label: t('hr.training', 'Training'),
+      icon: <GraduationCap className="h-5 w-5" />,
+      active: route().current('hr.training.*')
+    },
+    {
+      href: route('hr.analytics.dashboard'),
+      label: t('hr.analytics', 'Analytics'),
+      icon: <BarChart3 className="h-5 w-5" />,
+      active: route().current('hr.analytics.*')
+    },
+  ] : [];
+
   // AI navigation items - only visible to admin and staff
   const aiItems = hasCrmAccess() ? [
     {
@@ -306,6 +405,29 @@ export default function Sidebar({ settings }: SidebarProps) {
       active: route().current('ai.analytics.*')
     },
   ] : [];
+
+  // Customer-only navigation
+  // const customerItems = hasAnyRole(['customer']) ? [
+  //   {
+  //     href: route('customer.orders'),
+  //     label: t('customer.orders', 'My Orders'),
+  //     icon: <Receipt className="h-5 w-5" />,
+  //     active: route().current('customer.orders')
+  //   },
+  //   {
+  //     href: route('customer.support'),
+  //     label: t('customer.support', 'Support'),
+  //     icon: <LifeBuoy className="h-5 w-5" />,
+  //     active: route().current('customer.support')
+  //   },
+  //   {
+  //     href: route('customer.billing'),
+  //     label: t('customer.billing', 'Billing'),
+  //     icon: <CreditCard className="h-5 w-5" />,
+  //     active: route().current('customer.billing')
+  //   },
+  // ] : [];
+
 
   // Sidebar content component to avoid duplication
   const SidebarContent = () => (
@@ -385,6 +507,76 @@ export default function Sidebar({ settings }: SidebarProps) {
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-4 mt-1 space-y-1">
               {financeItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* Projects Navigation - Only visible to admin and staff */}
+        {hasCrmAccess() && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('projects.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <FolderOpen className="h-5 w-5" />
+                <span>{t('projects.title', 'Projects')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {projectsItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
+        {/* HR Navigation - Only visible to admin and staff */}
+        {hasCrmAccess() && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('hr.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <Users className="h-5 w-5" />
+                <span>{t('hr.title', 'HR')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {hrItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -525,6 +717,42 @@ export default function Sidebar({ settings }: SidebarProps) {
             </Link>
           </div>
         )}
+
+        {/* Customer Navigation - Only visible to customers */}
+        {/* {hasAnyRole(['customer']) && (
+          <Collapsible className="mt-2">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('customer.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <UserPlus className="h-5 w-5" />
+                <span>{t('customer.title', 'Customer')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {customerItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )} */}
+
       </div>
     </div>
   );

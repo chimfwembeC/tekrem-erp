@@ -27,7 +27,7 @@ export default function AppLayout({
     <AppProvider>
       <div className="min-h-screen bg-background">
         <Head title={title} />
-        <Banner />
+        {/* <Banner /> */}
 
         {/* Sidebar Navigation */}
         <Sidebar settings={settings} />

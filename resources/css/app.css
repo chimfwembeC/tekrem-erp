@@ -74,3 +74,46 @@
     @apply bg-background text-foreground;
     }
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-reverse {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.animate-scroll-reverse {
+  animation: scroll-reverse 20s linear infinite;
+}
+
+/* Partner logo base style */
+.partner-logo {
+  @apply flex-shrink-0 h-20 w-40 bg-white dark:bg-gray-700 rounded-lg shadow flex items-center justify-center transition duration-300 ease-in-out;
+}
+
+.partner-logo span {
+  @apply font-semibold text-gray-500 dark:text-gray-300 transition-colors duration-300;
+}
+
+.partner-logo:hover {
+  background-color: #2563eb; /* Tailwind blue-600 */
+}
+
+.partner-logo:hover span {
+  color: white;
+}

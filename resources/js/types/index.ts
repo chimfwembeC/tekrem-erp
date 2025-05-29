@@ -225,6 +225,238 @@ export interface ChatNotification {
   timestamp: string;
 }
 
+// Projects Module Interfaces
+export interface Project {
+  id: number;
+  name: string;
+  description: string | null;
+  status: 'draft' | 'active' | 'on-hold' | 'completed' | 'cancelled';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  category: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  deadline: string | null;
+  budget: number | null;
+  spent_amount: number;
+  progress: number; // 0-100
+  client_id: number | null;
+  manager_id: number;
+  team_members: number[] | null;
+  tags: string[] | null;
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  client?: Client;
+  manager?: User;
+  team?: User[];
+  milestones?: ProjectMilestone[];
+  files?: ProjectFile[];
+  tasks?: ProjectTask[];
+  project_tags?: Tag[];
+  conversations?: Conversation[];
+  expenses?: any[]; // Finance module integration
+  invoices?: any[]; // Finance module integration
+  // Computed properties
+  status_color?: string;
+  priority_color?: string;
+  progress_color?: string;
+  is_overdue?: boolean;
+  days_remaining?: number;
+  completion_percentage?: number;
+}
+
+export interface ProjectMilestone {
+  id: number;
+  project_id: number;
+  name: string;
+  description: string | null;
+  due_date: string | null;
+  completion_date: string | null;
+  progress: number; // 0-100
+  status: 'pending' | 'in-progress' | 'completed' | 'overdue';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  assigned_to: number | null;
+  dependencies: number[] | null; // Array of milestone IDs
+  order: number;
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  project?: Project;
+  assignee?: User;
+  dependent_milestones?: ProjectMilestone[];
+  blocking_milestones?: ProjectMilestone[];
+  files?: ProjectFile[];
+  // Computed properties
+  status_color?: string;
+  is_overdue?: boolean;
+  days_remaining?: number;
+  can_start?: boolean; // Based on dependencies
+}
+
+export interface ProjectFile {
+  id: number;
+  project_id: number;
+  milestone_id: number | null;
+  name: string;
+  original_name: string;
+  file_path: string;
+  file_url: string;
+  mime_type: string;
+  file_size: number;
+  category: 'document' | 'image' | 'contract' | 'design' | 'other';
+  description: string | null;
+  version: number;
+  is_latest_version: boolean;
+  uploaded_by: number;
+  access_level: 'public' | 'team' | 'managers' | 'private';
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  project?: Project;
+  milestone?: ProjectMilestone;
+  uploader?: User;
+  versions?: ProjectFile[]; // File version history
+  // Computed properties
+  file_icon?: string;
+  file_size_formatted?: string;
+  can_access?: boolean;
+}
+
+export interface ProjectTemplate {
+  id: number;
+  name: string;
+  description: string | null;
+  category: string | null;
+  template_data: {
+    milestones?: Partial<ProjectMilestone>[];
+    default_team_roles?: string[];
+    estimated_duration?: number; // in days
+    default_budget?: number;
+    required_files?: string[];
+  };
+  is_active: boolean;
+  created_by: number;
+  usage_count: number;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  creator?: User;
+  projects?: Project[]; // Projects created from this template
+}
+
+export interface ProjectTimeLog {
+  id: number;
+  project_id: number;
+  milestone_id: number | null;
+  user_id: number;
+  description: string | null;
+  hours: number;
+  log_date: string;
+  is_billable: boolean;
+  hourly_rate: number | null;
+  status: 'draft' | 'submitted' | 'approved' | 'invoiced';
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  project?: Project;
+  milestone?: ProjectMilestone;
+  user?: User;
+  // Computed properties
+  total_amount?: number;
+  status_color?: string;
+}
+
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  color: string;
+  description: string | null;
+  type: 'project' | 'task' | 'general';
+  is_active: boolean;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  creator?: User;
+  projects?: Project[];
+  tasks?: ProjectTask[];
+  // Computed properties
+  usage_count?: number;
+}
+
+export interface ProjectTask {
+  id: number;
+  project_id: number;
+  milestone_id: number | null;
+  title: string;
+  description: string | null;
+  type: 'task' | 'issue' | 'bug' | 'feature' | 'improvement';
+  status: 'todo' | 'in-progress' | 'review' | 'testing' | 'done' | 'cancelled';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  assigned_to: number | null;
+  created_by: number;
+  due_date: string | null;
+  start_date: string | null;
+  completed_date: string | null;
+  progress: number; // 0-100
+  estimated_hours: number | null;
+  actual_hours: number;
+  dependencies: number[] | null; // Array of task IDs
+  parent_task_id: number | null;
+  order: number;
+  metadata: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+  // Relations
+  project?: Project;
+  milestone?: ProjectMilestone;
+  assignee?: User;
+  creator?: User;
+  parent_task?: ProjectTask;
+  subtasks?: ProjectTask[];
+  tags?: Tag[];
+  time_logs?: ProjectTimeLog[];
+  // Computed properties
+  status_color?: string;
+  priority_color?: string;
+  type_color?: string;
+  is_overdue?: boolean;
+  days_remaining?: number;
+  can_start?: boolean;
+}
+
+export interface ProjectAnalytics {
+  total_projects: number;
+  active_projects: number;
+  completed_projects: number;
+  overdue_projects: number;
+  total_budget: number;
+  total_spent: number;
+  average_completion_time: number;
+  team_utilization: {
+    user_id: number;
+    user_name: string;
+    active_projects: number;
+    total_hours: number;
+    utilization_percentage: number;
+  }[];
+  project_status_distribution: {
+    status: string;
+    count: number;
+    percentage: number;
+  }[];
+  monthly_completion_trend: {
+    month: string;
+    completed: number;
+    started: number;
+  }[];
+}
+
 declare global {
   interface Window {
     Echo?: {

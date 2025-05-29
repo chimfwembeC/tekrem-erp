@@ -6,7 +6,7 @@ export default function usePermissions() {
   const roles = user?.roles || [];
   const permissions = user?.permissions || [];
 
-  // console.log('user roles', roles);
+  console.log('user permissions', permissions);
   /**
    * Check if the user has the admin role
    */

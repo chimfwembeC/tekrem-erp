@@ -302,39 +302,44 @@ export default function Home({ canLogin, canRegister }: Props) {
         </div>
       </div>
 
-      {/* Partners Section */}
-      <div className="bg-gray-50 dark:bg-gray-800 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center mb-10">
-            <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Partners</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Trusted by Leading Organizations
-            </p>
-          </div>
+    {/* Partners Section */}
+<div className="bg-gray-50 dark:bg-gray-800 py-16">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="lg:text-center mb-10">
+      <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Partners</h2>
+      <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+        Trusted by Leading Organizations
+      </p>
+    </div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-6">
-            {/* Partner logos - using placeholder colored boxes with text for now */}
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 1</span>
-            </div>
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 2</span>
-            </div>
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 3</span>
-            </div>
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 4</span>
-            </div>
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 5</span>
-            </div>
-            <div className="flex items-center justify-center h-20 bg-white dark:bg-gray-700 rounded-lg shadow px-4 py-2">
-              <span className="text-gray-500 dark:text-gray-300 font-semibold">Partner 6</span>
-            </div>
+    <div className="overflow-hidden group space-y-8">
+      {/* Row 1 */}
+      <div className="flex whitespace-nowrap space-x-6 group-hover:animate-scroll">
+        {[
+          "Google", "Microsoft", "Amazon", "Apple", "IBM",
+          "Salesforce", "Oracle", "Meta", "Adobe", "Intel"
+        ].map((name, i) => (
+          <div key={i} className="partner-logo">
+            <span>{name}</span>
           </div>
-        </div>
+        ))}
       </div>
+
+      {/* Row 2 (reverse) */}
+      <div className="flex whitespace-nowrap space-x-6 group-hover:animate-scroll-reverse">
+        {[
+          "Netflix", "Cisco", "Tesla", "Spotify", "NVIDIA",
+          "Shopify", "Zoom", "Slack", "Dropbox", "Atlassian"
+        ].map((name, i) => (
+          <div key={i} className="partner-logo">
+            <span>{name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* CTA Section */}
       <div className="bg-blue-600">

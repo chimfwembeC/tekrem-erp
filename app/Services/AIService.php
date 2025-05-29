@@ -29,6 +29,111 @@ class AIService
     }
 
     /**
+     * Make an AI request to the configured service.
+     */
+    public function makeRequest(string $prompt, array $options = []): ?array
+    {
+        $service = $this->getDefaultService();
+
+        if (!$service) {
+            Log::warning('No AI service configured');
+            return null;
+        }
+
+        try {
+            switch ($service['service']) {
+                case 'mistral':
+                    return $this->makeMistralRequest($prompt, $service, $options);
+                case 'openai':
+                    return $this->makeOpenAIRequest($prompt, $service, $options);
+                case 'anthropic':
+                    return $this->makeAnthropicRequest($prompt, $service, $options);
+                default:
+                    Log::warning("Unsupported AI service: {$service['service']}");
+                    return null;
+            }
+        } catch (\Exception $e) {
+            Log::error('AI request failed: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Make a request to Mistral AI.
+     */
+    protected function makeMistralRequest(string $prompt, array $config, array $options = []): ?array
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $config['api_key'],
+            'Content-Type' => 'application/json',
+        ])->timeout(60)->post($config['endpoint'] ?? 'https://api.mistral.ai/v1/chat/completions', [
+            'model' => $options['model'] ?? 'mistral-7b-instruct',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'temperature' => $options['temperature'] ?? 0.7,
+            'max_tokens' => $options['max_tokens'] ?? 2000,
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Mistral AI request failed: ' . $response->body());
+        return null;
+    }
+
+    /**
+     * Make a request to OpenAI.
+     */
+    protected function makeOpenAIRequest(string $prompt, array $config, array $options = []): ?array
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $config['api_key'],
+            'Content-Type' => 'application/json',
+        ])->timeout(60)->post($config['endpoint'] ?? 'https://api.openai.com/v1/chat/completions', [
+            'model' => $options['model'] ?? 'gpt-3.5-turbo',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+            'temperature' => $options['temperature'] ?? 0.7,
+            'max_tokens' => $options['max_tokens'] ?? 2000,
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('OpenAI request failed: ' . $response->body());
+        return null;
+    }
+
+    /**
+     * Make a request to Anthropic.
+     */
+    protected function makeAnthropicRequest(string $prompt, array $config, array $options = []): ?array
+    {
+        $response = Http::withHeaders([
+            'x-api-key' => $config['api_key'],
+            'Content-Type' => 'application/json',
+            'anthropic-version' => '2023-06-01',
+        ])->timeout(60)->post($config['endpoint'] ?? 'https://api.anthropic.com/v1/messages', [
+            'model' => $options['model'] ?? 'claude-3-sonnet-20240229',
+            'max_tokens' => $options['max_tokens'] ?? 2000,
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt]
+            ],
+        ]);
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        Log::error('Anthropic request failed: ' . $response->body());
+        return null;
+    }
+
+    /**
      * Generate response for general prompts.
      */
     public function generateResponse(string $prompt): ?string

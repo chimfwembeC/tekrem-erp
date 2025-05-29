@@ -17,6 +17,7 @@ import {
   MoreVertical,
   Archive,
   User,
+  Users,
   Clock,
   Check,
   CheckCheck,
@@ -61,6 +62,10 @@ interface ConversationProps extends InertiaSharedProps {
   leads: any[];
   staff: any[];
   userRole: string;
+  // Project-specific props
+  project?: any;
+  teamMembers?: any[];
+  isProjectChat?: boolean;
 }
 
 export default function ConversationView({
@@ -69,7 +74,10 @@ export default function ConversationView({
   clients,
   leads,
   staff,
-  userRole
+  userRole,
+  project,
+  teamMembers = [],
+  isProjectChat = false
 }: ConversationProps) {
   const route = useRoute();
   const page = useTypedPage();
@@ -509,16 +517,21 @@ export default function ConversationView({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => router.get(route('crm.livechat.index'))}
+              onClick={() => router.get(isProjectChat ? route('projects.show', project?.id) : route('crm.livechat.index'))}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Chat
+              {isProjectChat ? 'Back to Project' : 'Back to Chat'}
             </Button>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-5 w-5 text-blue-600" />
               <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {conversation.display_title}
+                {isProjectChat ? `${project?.name} - Team Chat` : conversation.display_title}
               </h2>
+              {isProjectChat && (
+                <Badge variant="outline" className="ml-2">
+                  Project Chat
+                </Badge>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -567,16 +580,21 @@ export default function ConversationView({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => router.get(route('crm.livechat.index'))}
+                onClick={() => router.get(isProjectChat ? route('projects.show', project?.id) : route('crm.livechat.index'))}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Chat
+                {isProjectChat ? 'Back to Project' : 'Back to Chat'}
               </Button>
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-blue-600" />
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                  {conversation.display_title}
+                  {isProjectChat ? `${project?.name} - Team Chat` : conversation.display_title}
                 </h2>
+                {isProjectChat && (
+                  <Badge variant="outline" className="ml-2">
+                    Project Chat
+                  </Badge>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -1089,11 +1107,17 @@ export default function ConversationView({
                 </Button>
               </div>
 
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className={`grid w-full ${isProjectChat ? 'grid-cols-4' : 'grid-cols-3'}`}>
                 <TabsTrigger value="info" className="flex items-center gap-1">
                   <Info className="h-3 w-3" />
                   Info
                 </TabsTrigger>
+                {isProjectChat && (
+                  <TabsTrigger value="team" className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    Team
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="files" className="flex items-center gap-1">
                   <Paperclip className="h-3 w-3" />
                   Files
@@ -1147,6 +1171,40 @@ export default function ConversationView({
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {isProjectChat && (
+                <TabsContent value="team" className="p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Project Team</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {teamMembers.map((member) => (
+                        <div key={member.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={member.profile_photo_url} />
+                            <AvatarFallback>
+                              {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{member.name}</p>
+                            <p className="text-xs text-gray-500 truncate">{member.email}</p>
+                          </div>
+                          {member.id === project?.manager_id && (
+                            <Badge variant="secondary" className="text-xs">
+                              Manager
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                      {teamMembers.length === 0 && (
+                        <p className="text-sm text-gray-500">No team members assigned</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              )}
 
               <TabsContent value="files" className="p-4 h-[calc(100%-3rem)] overflow-y-auto">
                 <Card>

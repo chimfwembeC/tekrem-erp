@@ -109,60 +109,6 @@ export default function TopNav({ settings }: TopNavProps) {
         {/* Notifications */}
         <NotificationComponent />
 
-        {/* Teams Dropdown */}
-        {page.props.jetstream.hasTeamFeatures && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-1">
-                {page.props.auth.user?.current_team?.name}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60">
-              <DropdownMenuLabel>Manage Team</DropdownMenuLabel>
-
-              {/* Team Settings */}
-              <DropdownMenuItem asChild>
-                <Link
-                  href={route('teams.show', [
-                    page.props.auth.user?.current_team!,
-                  ])}
-                >
-                  Team Settings
-                </Link>
-              </DropdownMenuItem>
-
-              {page.props.jetstream.canCreateTeams && (
-                <DropdownMenuItem asChild>
-                  <Link href={route('teams.create')}>
-                    Create New Team
-                  </Link>
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuLabel>Switch Teams</DropdownMenuLabel>
-
-              {page.props.auth.user?.all_teams?.map(team => (
-                <DropdownMenuItem key={team.id} asChild>
-                  <button
-                    className="w-full flex items-center"
-                    onClick={e => switchToTeam(e, team)}
-                  >
-                    <div className="flex items-center">
-                      {team.id == page.props.auth.user?.current_team_id && (
-                        <Check className="mr-2 h-4 w-4 text-green-500" />
-                      )}
-                      <span>{team.name}</span>
-                    </div>
-                  </button>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
         {/* User Profile Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

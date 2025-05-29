@@ -140,6 +140,103 @@ Route::middleware([
         });
     });
 
+    // Projects routes
+    Route::prefix('projects')->name('projects.')->middleware('role:admin|staff')->group(function () {
+        // Dashboard
+        Route::get('/', [\App\Http\Controllers\ProjectController::class, 'dashboard'])->name('dashboard');
+        Route::get('/analytics', [\App\Http\Controllers\ProjectController::class, 'analytics'])->name('analytics');
+
+        // Projects CRUD
+        Route::get('/list', [\App\Http\Controllers\ProjectController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\ProjectController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\ProjectController::class, 'store'])->name('store');
+        Route::get('/{project}', [\App\Http\Controllers\ProjectController::class, 'show'])->name('show');
+        Route::get('/{project}/edit', [\App\Http\Controllers\ProjectController::class, 'edit'])->name('edit');
+        Route::put('/{project}', [\App\Http\Controllers\ProjectController::class, 'update'])->name('update');
+        Route::delete('/{project}', [\App\Http\Controllers\ProjectController::class, 'destroy'])->name('destroy');
+
+        // Kanban Board
+        Route::get('/{project}/kanban', [\App\Http\Controllers\ProjectController::class, 'kanban'])->name('kanban');
+
+        // Milestones
+        Route::prefix('{project}/milestones')->name('milestones.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProjectMilestoneController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProjectMilestoneController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProjectMilestoneController::class, 'store'])->name('store');
+            Route::get('/{milestone}', [\App\Http\Controllers\ProjectMilestoneController::class, 'show'])->name('show');
+            Route::get('/{milestone}/edit', [\App\Http\Controllers\ProjectMilestoneController::class, 'edit'])->name('edit');
+            Route::put('/{milestone}', [\App\Http\Controllers\ProjectMilestoneController::class, 'update'])->name('update');
+            Route::delete('/{milestone}', [\App\Http\Controllers\ProjectMilestoneController::class, 'destroy'])->name('destroy');
+            Route::patch('/{milestone}/status', [\App\Http\Controllers\ProjectMilestoneController::class, 'updateStatus'])->name('update-status');
+        });
+
+        // Files
+        Route::prefix('{project}/files')->name('files.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProjectFileController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProjectFileController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProjectFileController::class, 'store'])->name('store');
+            Route::get('/{file}', [\App\Http\Controllers\ProjectFileController::class, 'show'])->name('show');
+            Route::get('/{file}/download', [\App\Http\Controllers\ProjectFileController::class, 'download'])->name('download');
+            Route::delete('/{file}', [\App\Http\Controllers\ProjectFileController::class, 'destroy'])->name('destroy');
+            Route::post('/{file}/new-version', [\App\Http\Controllers\ProjectFileController::class, 'newVersion'])->name('new-version');
+        });
+
+        // Time Logs
+        Route::prefix('{project}/time-logs')->name('time-logs.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProjectTimeLogController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProjectTimeLogController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProjectTimeLogController::class, 'store'])->name('store');
+            Route::get('/{timeLog}', [\App\Http\Controllers\ProjectTimeLogController::class, 'show'])->name('show');
+            Route::get('/{timeLog}/edit', [\App\Http\Controllers\ProjectTimeLogController::class, 'edit'])->name('edit');
+            Route::put('/{timeLog}', [\App\Http\Controllers\ProjectTimeLogController::class, 'update'])->name('update');
+            Route::delete('/{timeLog}', [\App\Http\Controllers\ProjectTimeLogController::class, 'destroy'])->name('destroy');
+            Route::patch('/{timeLog}/submit', [\App\Http\Controllers\ProjectTimeLogController::class, 'submit'])->name('submit');
+            Route::patch('/{timeLog}/approve', [\App\Http\Controllers\ProjectTimeLogController::class, 'approve'])->name('approve');
+        });
+
+        // Templates
+        Route::prefix('templates')->name('templates.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProjectTemplateController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProjectTemplateController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProjectTemplateController::class, 'store'])->name('store');
+            Route::get('/{template}', [\App\Http\Controllers\ProjectTemplateController::class, 'show'])->name('show');
+            Route::get('/{template}/edit', [\App\Http\Controllers\ProjectTemplateController::class, 'edit'])->name('edit');
+            Route::put('/{template}', [\App\Http\Controllers\ProjectTemplateController::class, 'update'])->name('update');
+            Route::delete('/{template}', [\App\Http\Controllers\ProjectTemplateController::class, 'destroy'])->name('destroy');
+            Route::post('/{template}/duplicate', [\App\Http\Controllers\ProjectTemplateController::class, 'duplicate'])->name('duplicate');
+        });
+
+        // Tags
+        Route::prefix('tags')->name('tags.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\TagController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\TagController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\TagController::class, 'store'])->name('store');
+            Route::get('/search', [\App\Http\Controllers\TagController::class, 'search'])->name('search');
+            Route::get('/{tag}', [\App\Http\Controllers\TagController::class, 'show'])->name('show');
+            Route::get('/{tag}/edit', [\App\Http\Controllers\TagController::class, 'edit'])->name('edit');
+            Route::put('/{tag}', [\App\Http\Controllers\TagController::class, 'update'])->name('update');
+            Route::delete('/{tag}', [\App\Http\Controllers\TagController::class, 'destroy'])->name('destroy');
+        });
+
+        // Tasks
+        Route::prefix('{project}/tasks')->name('tasks.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProjectTaskController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProjectTaskController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProjectTaskController::class, 'store'])->name('store');
+            Route::get('/{task}', [\App\Http\Controllers\ProjectTaskController::class, 'show'])->name('show');
+            Route::get('/{task}/edit', [\App\Http\Controllers\ProjectTaskController::class, 'edit'])->name('edit');
+            Route::put('/{task}', [\App\Http\Controllers\ProjectTaskController::class, 'update'])->name('update');
+            Route::delete('/{task}', [\App\Http\Controllers\ProjectTaskController::class, 'destroy'])->name('destroy');
+            Route::patch('/{task}/status', [\App\Http\Controllers\ProjectTaskController::class, 'updateStatus'])->name('update-status');
+        });
+
+        // My Tasks (global route for current user's tasks)
+        Route::get('/my-tasks', [\App\Http\Controllers\ProjectTaskController::class, 'myTasks'])->name('my-tasks');
+
+        // LiveChat Integration
+        Route::get('/{project}/livechat', [\App\Http\Controllers\CRM\LiveChatController::class, 'projectChat'])->name('livechat');
+    });
+
     // Finance routes
     Route::prefix('finance')->name('finance.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Finance\DashboardController::class, 'index'])->name('dashboard');
@@ -215,6 +312,54 @@ Route::middleware([
         // Reports
         Route::resource('reports', \App\Http\Controllers\Finance\ReportController::class);
         Route::get('reports/{report}/download', [\App\Http\Controllers\Finance\ReportController::class, 'download'])->name('reports.download');
+    });
+
+    // HR routes
+    Route::prefix('hr')->name('hr.')->middleware('role:admin|staff')->group(function () {
+        // Dashboard
+        Route::get('/', [\App\Http\Controllers\HR\DashboardController::class, 'index'])->name('dashboard');
+
+        // Employees
+        Route::resource('employees', \App\Http\Controllers\HR\EmployeeController::class);
+        Route::post('employees/{employee}/activate', [\App\Http\Controllers\HR\EmployeeController::class, 'activate'])->name('employees.activate');
+        Route::post('employees/{employee}/deactivate', [\App\Http\Controllers\HR\EmployeeController::class, 'deactivate'])->name('employees.deactivate');
+        Route::get('employees/{employee}/documents', [\App\Http\Controllers\HR\EmployeeController::class, 'documents'])->name('employees.documents');
+        Route::post('employees/{employee}/documents', [\App\Http\Controllers\HR\EmployeeController::class, 'uploadDocument'])->name('employees.documents.upload');
+
+        // Departments
+        Route::resource('departments', \App\Http\Controllers\HR\DepartmentController::class);
+        Route::post('departments/{department}/activate', [\App\Http\Controllers\HR\DepartmentController::class, 'activate'])->name('departments.activate');
+        Route::post('departments/{department}/deactivate', [\App\Http\Controllers\HR\DepartmentController::class, 'deactivate'])->name('departments.deactivate');
+
+        // Leave Management
+        Route::resource('leave', \App\Http\Controllers\HR\LeaveController::class);
+        Route::post('leave/{leave}/approve', [\App\Http\Controllers\HR\LeaveController::class, 'approve'])->name('leave.approve');
+        Route::post('leave/{leave}/reject', [\App\Http\Controllers\HR\LeaveController::class, 'reject'])->name('leave.reject');
+        Route::get('leave-types', [\App\Http\Controllers\HR\LeaveController::class, 'leaveTypes'])->name('leave-types.index');
+        Route::post('leave-types', [\App\Http\Controllers\HR\LeaveController::class, 'storeLeaveType'])->name('leave-types.store');
+
+        // Performance Management
+        Route::resource('performance', \App\Http\Controllers\HR\PerformanceController::class);
+        Route::post('performance/{performance}/submit', [\App\Http\Controllers\HR\PerformanceController::class, 'submit'])->name('performance.submit');
+        Route::post('performance/{performance}/approve', [\App\Http\Controllers\HR\PerformanceController::class, 'approve'])->name('performance.approve');
+
+        // Attendance
+        Route::resource('attendance', \App\Http\Controllers\HR\AttendanceController::class);
+        Route::post('attendance/clock-in', [\App\Http\Controllers\HR\AttendanceController::class, 'clockIn'])->name('attendance.clock-in');
+        Route::post('attendance/clock-out', [\App\Http\Controllers\HR\AttendanceController::class, 'clockOut'])->name('attendance.clock-out');
+        Route::get('attendance/reports', [\App\Http\Controllers\HR\AttendanceController::class, 'reports'])->name('attendance.reports');
+
+        // Training & Development
+        Route::resource('training', \App\Http\Controllers\HR\TrainingController::class);
+        Route::post('training/{training}/enroll', [\App\Http\Controllers\HR\TrainingController::class, 'enroll'])->name('training.enroll');
+        Route::post('training/{training}/complete', [\App\Http\Controllers\HR\TrainingController::class, 'complete'])->name('training.complete');
+
+        // Analytics
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\HR\AnalyticsController::class, 'index'])->name('dashboard');
+            Route::get('/reports', [\App\Http\Controllers\HR\AnalyticsController::class, 'reports'])->name('reports');
+            Route::post('/export', [\App\Http\Controllers\HR\AnalyticsController::class, 'export'])->name('export');
+        });
     });
 
     // Support routes
@@ -341,6 +486,16 @@ Route::middleware([
         Route::get('analytics/costs', [\App\Http\Controllers\AI\AnalyticsController::class, 'costs'])->name('analytics.costs');
         Route::get('analytics/performance', [\App\Http\Controllers\AI\AnalyticsController::class, 'performance'])->name('analytics.performance');
         Route::get('analytics/export', [\App\Http\Controllers\AI\AnalyticsController::class, 'export'])->name('analytics.export');
+
+        // Project Planning AI
+        Route::prefix('project-planning')->name('project-planning.')->group(function () {
+            Route::post('generate-milestones', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'generateMilestones'])->name('generate-milestones');
+            Route::post('generate-tasks', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'generateTasks'])->name('generate-tasks');
+            Route::post('estimate-timeline', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'estimateTimeline'])->name('estimate-timeline');
+            Route::post('recommend-resources', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'recommendResources'])->name('recommend-resources');
+            Route::post('prioritize-tasks', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'prioritizeTasks'])->name('prioritize-tasks');
+            Route::post('generate-comprehensive-plan', [\App\Http\Controllers\AI\ProjectPlanningController::class, 'generateComprehensivePlan'])->name('generate-comprehensive-plan');
+        });
     });
 
     // CMS Routes
