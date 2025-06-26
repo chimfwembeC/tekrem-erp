@@ -254,7 +254,7 @@ export default function Index({ tickets, categories, users, filters }: Props) {
         {/* Tickets List */}
         <div className="space-y-4">
           {tickets.data.map((ticket) => (
-            <Card key={ticket.id} className={`hover:shadow-md transition-shadow ${isOverdue(ticket.due_date || '') ? 'border-red-200' : ''}`}>
+            <Card key={ticket.id} className={`hover:shadow-md transition-shadow ${isOverdue(ticket.due_date || '') ? 'border-red-500' : ''}`}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">

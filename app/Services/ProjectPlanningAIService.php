@@ -132,34 +132,33 @@ class ProjectPlanningAIService
         $duration = $this->calculateDuration($projectData);
 
         return "As a project management expert, analyze this project and generate 4-6 appropriate milestones:
+        Project Details:
+        - Name: {$name}
+        - Description: {$description}
+        - Category: {$category}
+        - Priority: {$priority}
+        - Budget: {$budget}
+        - Duration: {$duration}
 
-Project Details:
-- Name: {$name}
-- Description: {$description}
-- Category: {$category}
-- Priority: {$priority}
-- Budget: {$budget}
-- Duration: {$duration}
+        Generate milestones that are:
+        1. Specific and measurable
+        2. Logically sequenced
+        3. Appropriate for the project type and complexity
+        4. Include realistic time estimates
 
-Generate milestones that are:
-1. Specific and measurable
-2. Logically sequenced
-3. Appropriate for the project type and complexity
-4. Include realistic time estimates
+        Return ONLY a JSON array with this exact structure:
+        [
+        {
+            \"name\": \"Milestone Name\",
+            \"description\": \"Detailed description\",
+            \"priority\": \"low|medium|high|critical\",
+            \"estimated_days\": 7,
+            \"order\": 1,
+            \"dependencies\": []
+        }
+        ]
 
-Return ONLY a JSON array with this exact structure:
-[
-  {
-    \"name\": \"Milestone Name\",
-    \"description\": \"Detailed description\",
-    \"priority\": \"low|medium|high|critical\",
-    \"estimated_days\": 7,
-    \"order\": 1,
-    \"dependencies\": []
-  }
-]
-
-Ensure the JSON is valid and complete.";
+        Ensure the JSON is valid and complete.";
     }
 
     /**
@@ -172,31 +171,30 @@ Ensure the JSON is valid and complete.";
         $teamSize = $context['team_size'] ?? 'unknown';
 
         return "As a project management expert, break down this task description into specific, actionable tasks:
+            Task Description: {$description}
+            Project: {$projectName}
+            Milestone: {$milestone}
+            Team Size: {$teamSize}
 
-Task Description: {$description}
-Project: {$projectName}
-Milestone: {$milestone}
-Team Size: {$teamSize}
+            Generate 3-8 specific tasks that:
+            1. Are actionable and clear
+            2. Have appropriate priorities
+            3. Include realistic time estimates
+            4. Consider dependencies
 
-Generate 3-8 specific tasks that:
-1. Are actionable and clear
-2. Have appropriate priorities
-3. Include realistic time estimates
-4. Consider dependencies
+            Return ONLY a JSON array with this exact structure:
+            [
+            {
+                \"title\": \"Task Title\",
+                \"description\": \"Detailed description\",
+                \"type\": \"task|feature|bug|improvement\",
+                \"priority\": \"low|medium|high|critical\",
+                \"estimated_hours\": 8,
+                \"dependencies\": []
+            }
+            ]
 
-Return ONLY a JSON array with this exact structure:
-[
-  {
-    \"title\": \"Task Title\",
-    \"description\": \"Detailed description\",
-    \"type\": \"task|feature|bug|improvement\",
-    \"priority\": \"low|medium|high|critical\",
-    \"estimated_hours\": 8,
-    \"dependencies\": []
-  }
-]
-
-Ensure the JSON is valid and complete.";
+            Ensure the JSON is valid and complete.";
     }
 
     /**
@@ -211,31 +209,31 @@ Ensure the JSON is valid and complete.";
 
         return "As a project management expert, estimate realistic timelines for this project:
 
-Project Details:
-- Name: {$name}
-- Description: {$description}
-- Category: {$category}
-- Team Size: {$teamSize} members
+        Project Details:
+        - Name: {$name}
+        - Description: {$description}
+        - Category: {$category}
+        - Team Size: {$teamSize} members
 
-Provide estimates for:
-1. Total project duration
-2. Key phases
-3. Buffer time recommendations
-4. Risk factors
+        Provide estimates for:
+        1. Total project duration
+        2. Key phases
+        3. Buffer time recommendations
+        4. Risk factors
 
-Return ONLY a JSON object with this exact structure:
-{
-  \"total_days\": 90,
-  \"phases\": [
-    {\"name\": \"Planning\", \"days\": 14},
-    {\"name\": \"Development\", \"days\": 60},
-    {\"name\": \"Testing\", \"days\": 16}
-  ],
-  \"buffer_percentage\": 20,
-  \"risk_factors\": [\"complexity\", \"team_experience\"]
-}
+        Return ONLY a JSON object with this exact structure:
+        {
+        \"total_days\": 90,
+        \"phases\": [
+            {\"name\": \"Planning\", \"days\": 14},
+            {\"name\": \"Development\", \"days\": 60},
+            {\"name\": \"Testing\", \"days\": 16}
+        ],
+        \"buffer_percentage\": 20,
+        \"risk_factors\": [\"complexity\", \"team_experience\"]
+        }
 
-Ensure the JSON is valid and complete.";
+        Ensure the JSON is valid and complete.";
     }
 
     /**
@@ -250,35 +248,35 @@ Ensure the JSON is valid and complete.";
 
         return "As a project management expert, recommend optimal resources for this project:
 
-Project Details:
-- Name: {$name}
-- Description: {$description}
-- Category: {$category}
-- Budget: {$budget}
+        Project Details:
+        - Name: {$name}
+        - Description: {$description}
+        - Category: {$category}
+        - Budget: {$budget}
 
-Recommend:
-1. Team composition and roles
-2. Budget allocation
-3. Tools and technologies
-4. External resources
+        Recommend:
+        1. Team composition and roles
+        2. Budget allocation
+        3. Tools and technologies
+        4. External resources
 
-Return ONLY a JSON object with this exact structure:
-{
-  \"team_roles\": [
-    {\"role\": \"Project Manager\", \"count\": 1, \"priority\": \"critical\"},
-    {\"role\": \"Developer\", \"count\": 2, \"priority\": \"high\"}
-  ],
-  \"budget_allocation\": {
-    \"personnel\": 70,
-    \"tools\": 15,
-    \"infrastructure\": 10,
-    \"contingency\": 5
-  },
-  \"recommended_tools\": [\"tool1\", \"tool2\"],
-  \"external_resources\": [\"consultant\", \"training\"]
-}
+        Return ONLY a JSON object with this exact structure:
+        {
+        \"team_roles\": [
+            {\"role\": \"Project Manager\", \"count\": 1, \"priority\": \"critical\"},
+            {\"role\": \"Developer\", \"count\": 2, \"priority\": \"high\"}
+        ],
+        \"budget_allocation\": {
+            \"personnel\": 70,
+            \"tools\": 15,
+            \"infrastructure\": 10,
+            \"contingency\": 5
+        },
+        \"recommended_tools\": [\"tool1\", \"tool2\"],
+        \"external_resources\": [\"consultant\", \"training\"]
+        }
 
-Ensure the JSON is valid and complete.";
+        Ensure the JSON is valid and complete.";
     }
 
     /**

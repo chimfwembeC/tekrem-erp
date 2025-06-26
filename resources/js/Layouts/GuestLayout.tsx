@@ -15,6 +15,11 @@ interface Props {
   showHeader?: boolean;
 }
 
+interface Setting {
+  site_name: string,
+  font_family: string,
+}
+
 export default function GuestLayout({
   title,
   showHeader = true,
@@ -36,7 +41,7 @@ export default function GuestLayout({
       {/* Header */}
       {showHeader && (
         <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex h-16 items-center">
+          <div className="container mx-auto flex h-16 items-center">
             <div className="flex justify-between w-full">
               {/* Logo */}
               <div className="flex items-center gap-2">
@@ -94,7 +99,7 @@ export default function GuestLayout({
 
       {/* Footer */}
       <footer className="border-t bg-background">
-        <div className="container py-12">
+        <div className="container mx-auto py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-sm font-semibold text-muted-foreground tracking-wider uppercase">About</h3>

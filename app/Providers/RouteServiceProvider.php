@@ -38,7 +38,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
 
-        // Register the role middleware
+        // Register custom middleware
         Route::aliasMiddleware('role', RoleMiddleware::class);
+        Route::aliasMiddleware('permission', \App\Http\Middleware\PermissionMiddleware::class);
+        Route::aliasMiddleware('customer', \App\Http\Middleware\CustomerMiddleware::class);
     }
 }

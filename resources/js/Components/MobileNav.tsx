@@ -17,12 +17,30 @@ export default function MobileNav({ settings }: MobileNavProps) {
   const route = useRoute();
   const { isActive } = useActiveRoute();
   const page = useTypedPage();
-  
+
   const navItems = [
     { href: route('home'), label: 'Home' },
     { href: route('about'), label: 'About' },
     { href: route('services'), label: 'Services' },
-    { href: route('portfolio'), label: 'Portfolio' },
+    {
+      href: '/guest/portfolio',
+      label: 'Portfolio',
+      submenu: [
+        { href: '/guest/portfolio', label: 'View Projects' },
+        { href: '/guest/testimonials', label: 'Testimonials' },
+        { href: '/guest/portfolio/services', label: 'Service Examples' },
+      ]
+    },
+    {
+      href: '/guest/inquiry',
+      label: 'Get Started',
+      submenu: [
+        { href: '/guest/inquiry', label: 'General Inquiry' },
+        { href: '/guest/quote', label: 'Request Quote' },
+        { href: '/guest/project', label: 'Project Consultation' },
+        { href: '/guest/support', label: 'Support Center' },
+      ]
+    },
     { href: route('contact'), label: 'Contact' },
   ];
 
@@ -41,7 +59,7 @@ export default function MobileNav({ settings }: MobileNavProps) {
             <span>{settings.site_name || 'TekRem ERP'}</span>
           </SheetTitle>
         </SheetHeader>
-        
+
         <div className="mt-8 flex flex-col gap-4">
           <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
@@ -58,7 +76,7 @@ export default function MobileNav({ settings }: MobileNavProps) {
               </Link>
             ))}
           </nav>
-          
+
           <div className="border-t border-border pt-4 mt-2">
             <div className="px-4 py-2">
               <h3 className="text-sm font-medium mb-2">Theme</h3>
@@ -71,7 +89,7 @@ export default function MobileNav({ settings }: MobileNavProps) {
               </div>
             </div>
           </div>
-          
+
           <div className="border-t border-border pt-4 mt-2">
             <div className="px-4 py-2">
               {page.props.auth.user ? (

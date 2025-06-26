@@ -81,7 +81,7 @@ export default function About() {
 
       {/* Mission, Vision, Values Section */}
       <div className="bg-muted py-16 sm:py-24">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="text-center">
             <Badge variant="outline" className="mb-2 text-primary">Our Foundation</Badge>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
@@ -155,7 +155,7 @@ export default function About() {
 
       {/* Team Section */}
       <div className="bg-background py-16 sm:py-24">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="text-center">
             <Badge variant="outline" className="mb-2 text-primary">Our Team</Badge>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">

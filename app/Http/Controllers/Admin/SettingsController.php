@@ -17,7 +17,7 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        // $this->authorize('view settings');
+        $this->authorize('view settings');
 
         $settings = Setting::orderBy('group')->orderBy('order')->get();
         $groups = $settings->pluck('group')->unique();

@@ -32,6 +32,44 @@ Route::prefix('guest-chat')->name('guest-chat.')->group(function () {
     Route::get('/messages', [App\Http\Controllers\GuestChatController::class, 'getMessages'])->name('messages');
 });
 
+// Guest Feature Routes (no authentication required)
+Route::prefix('guest')->name('guest.')->group(function () {
+    // General Inquiries
+    Route::get('/inquiry', [\App\Http\Controllers\Guest\InquiryController::class, 'create'])->name('inquiry.create');
+    Route::post('/inquiry', [\App\Http\Controllers\Guest\InquiryController::class, 'store'])->name('inquiry.store');
+    Route::get('/inquiry/status', [\App\Http\Controllers\Guest\InquiryController::class, 'statusForm'])->name('inquiry.status-form');
+    Route::post('/inquiry/status', [\App\Http\Controllers\Guest\InquiryController::class, 'status'])->name('inquiry.status');
+
+    // Quote Requests
+    Route::get('/quote', [\App\Http\Controllers\Guest\QuoteController::class, 'create'])->name('quote.create');
+    Route::post('/quote', [\App\Http\Controllers\Guest\QuoteController::class, 'store'])->name('quote.store');
+    Route::get('/quote/status', [\App\Http\Controllers\Guest\QuoteController::class, 'statusForm'])->name('quote.status-form');
+    Route::post('/quote/status', [\App\Http\Controllers\Guest\QuoteController::class, 'status'])->name('quote.status');
+    Route::post('/quote/accept', [\App\Http\Controllers\Guest\QuoteController::class, 'accept'])->name('quote.accept');
+
+    // Project Inquiries
+    Route::get('/project', [\App\Http\Controllers\Guest\ProjectController::class, 'create'])->name('project.create');
+    Route::post('/project', [\App\Http\Controllers\Guest\ProjectController::class, 'store'])->name('project.store');
+    Route::get('/project/status', [\App\Http\Controllers\Guest\ProjectController::class, 'statusForm'])->name('project.status-form');
+    Route::post('/project/status', [\App\Http\Controllers\Guest\ProjectController::class, 'status'])->name('project.status');
+
+    // Support
+    Route::get('/support', [\App\Http\Controllers\Guest\SupportController::class, 'index'])->name('support.index');
+    Route::get('/support/knowledge-base', [\App\Http\Controllers\Guest\SupportController::class, 'knowledgeBase'])->name('support.knowledge-base');
+    Route::get('/support/article/{slug}', [\App\Http\Controllers\Guest\SupportController::class, 'article'])->name('support.article');
+    Route::post('/support/article/{slug}/rate', [\App\Http\Controllers\Guest\SupportController::class, 'rateArticle'])->name('support.article.rate');
+    Route::get('/support/ticket', [\App\Http\Controllers\Guest\SupportController::class, 'createTicket'])->name('support.ticket.create');
+    Route::post('/support/ticket', [\App\Http\Controllers\Guest\SupportController::class, 'storeTicket'])->name('support.ticket.store');
+    Route::get('/support/ticket/status', [\App\Http\Controllers\Guest\SupportController::class, 'ticketStatusForm'])->name('support.ticket.status-form');
+    Route::post('/support/ticket/status', [\App\Http\Controllers\Guest\SupportController::class, 'ticketStatus'])->name('support.ticket.status');
+
+    // Portfolio
+    Route::get('/portfolio', [\App\Http\Controllers\Guest\PortfolioController::class, 'index'])->name('portfolio.index');
+    Route::get('/portfolio/{id}', [\App\Http\Controllers\Guest\PortfolioController::class, 'show'])->name('portfolio.show');
+    Route::get('/portfolio/services', [\App\Http\Controllers\Guest\PortfolioController::class, 'services'])->name('portfolio.services');
+    Route::get('/testimonials', [\App\Http\Controllers\Guest\PortfolioController::class, 'testimonials'])->name('testimonials');
+});
+
 // AI Service Test Route (for development/testing)
 Route::post('/test-ai-service', function(\Illuminate\Http\Request $request) {
     $aiService = new \App\Services\AIService();
@@ -48,9 +86,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // Notification routes
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -73,10 +109,36 @@ Route::middleware([
         // Settings routes
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+        // User Management
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+
+        // Role Management
+        Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+
+        // Permission Management
+        Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
+
+        // Guest Management
+        Route::prefix('guest')->name('guest.')->group(function () {
+            // Guest Inquiries
+            Route::resource('inquiries', \App\Http\Controllers\Admin\GuestInquiryController::class, [
+                'names' => [
+                    'index' => 'guest-inquiries.index',
+                    'show' => 'guest-inquiries.show',
+                    'update' => 'guest-inquiries.update',
+                    'destroy' => 'guest-inquiries.destroy',
+                ]
+            ])->except(['create', 'store', 'edit']);
+            Route::post('inquiries/{guestInquiry}/assign', [\App\Http\Controllers\Admin\GuestInquiryController::class, 'assign'])->name('guest-inquiries.assign');
+            Route::post('inquiries/{guestInquiry}/mark-responded', [\App\Http\Controllers\Admin\GuestInquiryController::class, 'markResponded'])->name('guest-inquiries.mark-responded');
+            Route::post('inquiries/bulk-update', [\App\Http\Controllers\Admin\GuestInquiryController::class, 'bulkUpdate'])->name('guest-inquiries.bulk-update');
+            Route::get('inquiries/export', [\App\Http\Controllers\Admin\GuestInquiryController::class, 'export'])->name('guest-inquiries.export');
+        });
     });
 
     // CRM routes
-    Route::prefix('crm')->name('crm.')->middleware('role:admin|staff')->group(function () {
+    Route::prefix('crm')->name('crm.')->middleware('permission:view clients')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\CRM\DashboardController::class, 'index'])->name('dashboard');
 
@@ -141,7 +203,7 @@ Route::middleware([
     });
 
     // Projects routes
-    Route::prefix('projects')->name('projects.')->middleware('role:admin|staff')->group(function () {
+    Route::prefix('projects')->name('projects.')->middleware('permission:view projects')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\ProjectController::class, 'dashboard'])->name('dashboard');
         Route::get('/analytics', [\App\Http\Controllers\ProjectController::class, 'analytics'])->name('analytics');
@@ -315,7 +377,7 @@ Route::middleware([
     });
 
     // HR routes
-    Route::prefix('hr')->name('hr.')->middleware('role:admin|staff')->group(function () {
+    Route::prefix('hr')->name('hr.')->middleware('permission:view employees')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\HR\DashboardController::class, 'index'])->name('dashboard');
 
@@ -553,12 +615,17 @@ Route::middleware([
         Route::post('sitemap/generate', [\App\Http\Controllers\CMS\SitemapController::class, 'generate'])->name('sitemap.generate');
     });
 
-    // Customer Support Portal
-    Route::prefix('customer/support')->name('customer.support.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\Customer\SupportController::class, 'create'])->name('create');
-        Route::post('/store', [\App\Http\Controllers\Customer\SupportController::class, 'store'])->name('store');
+    // Customer Portal Routes
+    Route::prefix('customer')->name('customer.')->middleware('customer')->group(function () {
+        // Customer Dashboard
+        Route::get('/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('dashboard');
 
+        // Customer Support Portal
+        Route::prefix('support')->name('support.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Customer\SupportController::class, 'create'])->name('create');
+            Route::post('/store', [\App\Http\Controllers\Customer\SupportController::class, 'store'])->name('store');
+// 
         // Ticket management
         Route::prefix('tickets')->name('tickets.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
@@ -576,8 +643,11 @@ Route::middleware([
             Route::post('{article}/not-helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleNotHelpful'])->name('not-helpful');
         });
 
-        // FAQ
-        Route::get('/faq', [\App\Http\Controllers\Customer\SupportController::class, 'viewFAQ'])->name('faq');
+          
+        });
+
+          // FAQ
+          Route::get('/faq', [\App\Http\Controllers\Customer\SupportController::class, 'viewFAQ'])->name('support.faq');
     });
 
     // Settings routes - Admin only

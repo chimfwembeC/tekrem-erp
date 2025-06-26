@@ -97,17 +97,85 @@ export default function MainNav({ settings }: MainNavProps) {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link
-              href={route('portfolio')}
-              className={cn(
-                navigationMenuTriggerStyle(),
-                isActive(route('portfolio')) ? 'bg-accent text-accent-foreground font-medium' : ''
-              )}
-            >
-              Portfolio
-            </Link>
-          </NavigationMenuLink>
+          <NavigationMenuTrigger
+            className={cn(
+              isActive('/guest/portfolio') ? 'bg-accent text-accent-foreground font-medium' : ''
+            )}
+          >
+            Portfolio
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              <li className="row-span-3">
+                <NavigationMenuLink asChild>
+                  <a
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-purple-500/50 to-purple-600 p-6 no-underline outline-none focus:shadow-md"
+                    href="/guest/portfolio"
+                  >
+                    <div className="mt-4 mb-2 text-lg font-medium text-white">
+                      Our Portfolio
+                    </div>
+                    <p className="text-sm leading-tight text-white/90">
+                      Explore our successful projects and case studies
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+              </li>
+              <ListItem href="/guest/portfolio" title="View Projects">
+                Browse our completed projects and case studies
+              </ListItem>
+              <ListItem href="/guest/testimonials" title="Testimonials">
+                Read what our clients say about us
+              </ListItem>
+              <ListItem href="/guest/portfolio/services" title="Service Examples">
+                See examples of our different service offerings
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <NavigationMenuTrigger
+            className={cn(
+              isActive('/guest/support') || isActive('/guest/inquiry') || isActive('/guest/quote') || isActive('/guest/project') ? 'bg-accent text-accent-foreground font-medium' : ''
+            )}
+          >
+            Get Started
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+              <li className="row-span-3">
+                <NavigationMenuLink asChild>
+                  <a
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-green-500/50 to-green-600 p-6 no-underline outline-none focus:shadow-md"
+                    href="/guest/inquiry"
+                  >
+                    <div className="mt-4 mb-2 text-lg font-medium text-white">
+                      Get Started
+                    </div>
+                    <p className="text-sm leading-tight text-white/90">
+                      Contact us for inquiries, quotes, and support
+                    </p>
+                  </a>
+                </NavigationMenuLink>
+              </li>
+              <ListItem href="/guest/inquiry" title="General Inquiry">
+                Ask questions or get more information
+              </ListItem>
+              <ListItem href="/guest/quote" title="Request Quote">
+                Get a detailed quote for your project
+              </ListItem>
+              <ListItem href="/guest/project" title="Project Consultation">
+                Discuss your project requirements
+              </ListItem>
+              <ListItem href="/guest/support" title="Support Center">
+                Access help articles and submit tickets
+              </ListItem>
+              <ListItem href="/guest/support" title="Support Chat">
+               Chat With Supporting Agents & submit tickets
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
 
         <NavigationMenuItem>

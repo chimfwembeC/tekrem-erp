@@ -62,7 +62,10 @@ class HRSeeder extends Seeder
         ];
 
         foreach ($departments as $deptData) {
-            Department::create($deptData);
+            Department::firstOrCreate(
+                ['code' => $deptData['code']], // Find by unique code
+                $deptData // Create with all data if not found
+            );
         }
 
         // Create Leave Types
@@ -136,7 +139,10 @@ class HRSeeder extends Seeder
         ];
 
         foreach ($leaveTypes as $leaveTypeData) {
-            LeaveType::create($leaveTypeData);
+            LeaveType::firstOrCreate(
+                ['code' => $leaveTypeData['code']], // Find by unique code
+                $leaveTypeData // Create with all data if not found
+            );
         }
 
         // Create Skills
@@ -237,7 +243,10 @@ class HRSeeder extends Seeder
         ];
 
         foreach ($skills as $skillData) {
-            Skill::create($skillData);
+            Skill::firstOrCreate(
+                ['name' => $skillData['name']], // Find by unique name
+                $skillData // Create with all data if not found
+            );
         }
 
         $this->command->info('HR seed data created successfully!');

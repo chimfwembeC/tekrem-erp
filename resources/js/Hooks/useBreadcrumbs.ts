@@ -344,6 +344,21 @@ export default function useBreadcrumbs(): BreadcrumbItem[] {
         }
       }
 
+       // HR Module
+       if (currentRoute.startsWith('customer.')) {
+        breadcrumbs.push({
+          label: t('customer.title', 'Customer'),
+          href: route('customer.dashboard'),
+        });
+
+        if (currentRoute === 'customer.dashboard') {
+          breadcrumbs.push({
+            label: t('navigation.dashboard', 'Dashboard'),
+            isActive: true,
+          });
+        }
+      }
+
       // Projects Module
       if (currentRoute.startsWith('projects.')) {
         breadcrumbs.push({

@@ -102,7 +102,7 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
   };
 
   return (
-    <AppLayout>
+    <AppLayout title='Customer Support'>
       <Head title={t('support.support_portal', 'Support Portal')} />
 
       <div className="space-y-6">
@@ -115,10 +115,10 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
             </p>
           </div>
           <Button asChild>
-            <Link href={route('customer.support.create')}>
+            {/* <Link href={route('customer.support.create')}>
               <Plus className="h-4 w-4 mr-2" />
               {t('support.create_ticket', 'Create Ticket')}
-            </Link>
+            </Link> */}
           </Button>
         </div>
 
@@ -213,10 +213,10 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
                         </p>
                       </div>
                       <Button variant="outline" size="sm" asChild>
-                        <Link href={route('customer.support.tickets.show', ticket.id)}>
+                        {/* <Link href={route('customer.support.tickets.show', ticket.id)}>
                           <Eye className="h-3 w-3 mr-1" />
                           {t('common.view', 'View')}
-                        </Link>
+                        </Link> */}
                       </Button>
                     </div>
                   )) : (
@@ -231,9 +231,9 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
                 {tickets.data.length > 0 && (
                   <div className="mt-4 pt-4 border-t">
                     <Button variant="outline" className="w-full" asChild>
-                      <Link href={route('customer.support.tickets.index')}>
+                      {/* <Link href={route('customer.support.tickets.index')}>
                         {t('support.view_all_tickets', 'View All Tickets')}
-                      </Link>
+                      </Link> */}
                     </Button>
                   </div>
                 )}
@@ -250,27 +250,28 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full" asChild>
-                  <Link href={route('customer.support.create')}>
+                  {/* <Link href={route('customer.support.create')}>
                     <Plus className="h-4 w-4 mr-2" />
                     {t('support.create_ticket', 'Create New Ticket')}
-                  </Link>
+                  </Link> */}
                 </Button>
                 
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href={route('customer.support.knowledge-base')}>
+                  {/* <Link href={route('customer.support.knowledge-base.index')}>
                     <Search className="h-4 w-4 mr-2" />
                     {t('support.search_help', 'Search Help Articles')}
-                  </Link>
+                  </Link> */}
                 </Button>
                 
                 <Button variant="outline" className="w-full" asChild>
-                  <Link href={route('customer.support.faq')}>
+                  {/* <Link href={route('customer.support.faq')}>
                     <HelpCircle className="h-4 w-4 mr-2" />
                     {t('support.view_faq', 'View FAQ')}
-                  </Link>
+                  </Link> */}
                 </Button>
               </CardContent>
             </Card>
+            {/*  */}
 
             {/* Popular Articles */}
             <Card>
@@ -282,7 +283,9 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
                   {popularArticles.map((article) => (
                     <div key={article.id} className="border-b last:border-b-0 pb-3 last:pb-0">
                       <Link
-                        href={route('customer.support.articles.show', article.id)}
+                        // href={route('customer.support.articles.show', article.id)}
+                        href={""}
+
                         className="block hover:text-primary"
                       >
                         <h4 className="font-medium text-sm leading-tight mb-1">
@@ -326,9 +329,9 @@ export default function Dashboard({ tickets, popularArticles, featuredFAQs, tick
                   
                   <div className="mt-4 pt-4 border-t">
                     <Button variant="outline" size="sm" className="w-full" asChild>
-                      <Link href={route('customer.support.faq')}>
+                      {/* <Link href={route('customer.support.faq')}>
                         {t('support.view_all_faqs', 'View All FAQs')}
-                      </Link>
+                      </Link> */}
                     </Button>
                   </div>
                 </CardContent>

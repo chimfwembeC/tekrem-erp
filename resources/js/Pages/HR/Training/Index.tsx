@@ -166,7 +166,7 @@ export default function Index({ trainings, categories, filters }: TrainingIndexP
     <AppLayout
       title={t('hr.training_programs', 'Training Programs')}
       renderHeader={() => (
-        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 className="font-semibold text-xl text-gray-400 leading-tight">
           {t('hr.training_programs', 'Training Programs')}
         </h2>
       )}

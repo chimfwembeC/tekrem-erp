@@ -51,20 +51,21 @@ interface PromptTemplate {
 }
 
 interface PaginatedData {
-    data: PromptTemplate[];
-    links: Array<{
-        url: string | null;
-        label: string;
-        active: boolean;
-    }>;
-    meta: {
+    data: {
+        templates: PromptTemplate[];
         current_page: number;
         last_page: number;
         per_page: number;
         total: number;
         from: number;
         to: number;
-    };
+    }
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
+   
 }
 
 interface Props {
@@ -256,7 +257,7 @@ export default function Index({ templates, filters }: Props) {
                     </Card>
 
                     {/* Templates Grid */}
-                    {templates.data.length === 0 ? (
+                    {templates.data.templates?.length === 0 ? (
                         <Card>
                             <CardContent className="text-center py-12">
                                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -276,7 +277,7 @@ export default function Index({ templates, filters }: Props) {
                         </Card>
                     ) : (
                         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                            {templates.data.map((template) => (
+                            {templates.data.templates?.map((template) => (
                                 <Card key={template.id} className="relative hover:shadow-lg transition-shadow">
                                     <CardHeader>
                                         <div className="flex items-start justify-between">
@@ -442,10 +443,10 @@ export default function Index({ templates, filters }: Props) {
                     )}
 
                     {/* Pagination */}
-                    {templates.meta.last_page > 1 && (
+                    {templates.last_page > 1 && (
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-700">
-                                {t('Showing')} {templates.meta.from} {t('to')} {templates.meta.to} {t('of')} {templates.meta.total} {t('results')}
+                                {t('Showing')} {templates.from} {t('to')} {templates.to} {t('of')} {templates.total} {t('results')}
                             </div>
                             <div className="flex space-x-1">
                                 {templates.links.map((link, index) => (

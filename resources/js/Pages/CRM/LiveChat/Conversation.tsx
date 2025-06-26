@@ -633,372 +633,373 @@ export default function ConversationView({
           </div>
         )}
 
-        <div className={isFullScreen ? "flex-1 flex overflow-hidden" : "flex h-full"}>
-        {/* Main Chat Area */}
-        <div className={`flex flex-col transition-all duration-300 ease-in-out relative ${
-          sidebarOpen ? 'flex-1' : 'w-full'
-        }`}>
-          {/* Floating Sidebar Toggle Button (when sidebar is hidden) */}
-          {!sidebarOpen && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSidebarOpen(true)}
-              title="Show sidebar"
-              className="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border-gray-300 dark:border-gray-600"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          )}
-          {/* Shuffleable Pinned Messages */}
-          <PinnedMessages
-            pinnedMessages={pinnedMessages}
-            onRefresh={handleRefresh}
-          />
-
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {conversation.messages?.map((msg) => (
-              <div
-                key={msg.id}
-                id={`message-${msg.id}`}
-                className={`group flex ${
-                  isCurrentUser(msg.user_id) ? 'justify-end' :
-                  isGuestMessage(msg) ? 'justify-start' :
-                  'justify-start'
-                } transition-colors duration-500`}
+        <div className={isFullScreen ? "flex-1 flex overflow-hidden" : "flex h-full w-full"}>
+          {/* Main Chat Area */}
+          <div className={`flex flex-col transition-all duration-300 ease-in-out relative ${sidebarOpen ? 'flex-1' : 'w-full'
+            }`}>
+            {/* Floating Sidebar Toggle Button (when sidebar is hidden) */}
+            {!sidebarOpen && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSidebarOpen(true)}
+                title="Show sidebar"
+                className="absolute top-4 right-4 z-20 bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border-gray-300 dark:border-gray-600"
               >
-                <div className={`flex gap-2 max-w-[70%] ${
-                  isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'
-                }`}>
-                  <Avatar className={`h-8 w-8 ${
-                    isAIMessage(msg) ? 'bg-purple-100 border-purple-200' :
-                    isGuestMessage(msg) ? 'bg-blue-100 border-blue-200' :
-                    ''
-                  }`}>
-                    <AvatarImage src={msg.user?.profile_photo_url || undefined} />
-                    <AvatarFallback className={
-                      isAIMessage(msg) ? 'bg-purple-100 text-purple-600' :
-                      isGuestMessage(msg) ? 'bg-blue-100 text-blue-600' :
-                      ''
-                    }>
-                      {getMessageSenderInitials(msg)}
-                    </AvatarFallback>
-                  </Avatar>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+            {/* Shuffleable Pinned Messages */}
+            <PinnedMessages
+              pinnedMessages={pinnedMessages}
+              onRefresh={handleRefresh}
+            />
 
-                  <div className={`space-y-1 ${isCurrentUser(msg.user_id) ? 'items-end' : 'items-start'} flex flex-col`}>
-                    {/* Pin indicator */}
-                    {msg.is_pinned && (
-                      <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
-                        <Pin className="h-3 w-3" />
-                        <span>Pinned message</span>
-                      </div>
-                    )}
-                    {/* Reply indicator */}
-                    {msg.reply_to && (
-                      <div className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 rounded p-2 mb-1">
-                        <div className="flex items-center gap-1 mb-1">
-                          <Reply className="h-3 w-3" />
-                          <span>Replying to {msg.reply_to.user?.name}</span>
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {conversation.messages?.map((msg) => (
+                <div
+                  key={msg.id}
+                  id={`message-${msg.id}`}
+                  className={`group flex ${isCurrentUser(msg.user_id) ? 'justify-end' :
+                    isGuestMessage(msg) ? 'justify-start' :
+                      'justify-start'
+                    } transition-colors duration-500`}
+                >
+                  <div className={`flex gap-2 max-w-[70%] ${isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'
+                    }`}>
+                    <Avatar className={`h-8 w-8 ${isAIMessage(msg) ? 'bg-purple-100 border-purple-200' :
+                      isGuestMessage(msg) ? 'bg-blue-100 border-blue-200' :
+                        ''
+                      }`}>
+                      <AvatarImage src={msg.user?.profile_photo_url || undefined} />
+                      <AvatarFallback className={
+                        isAIMessage(msg) ? 'bg-purple-100 text-purple-600' :
+                          isGuestMessage(msg) ? 'bg-blue-100 text-blue-600' :
+                            ''
+                      }>
+                        {getMessageSenderInitials(msg)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className={`space-y-1 ${isCurrentUser(msg.user_id) ? 'items-end' : 'items-start'} flex flex-col`}>
+                      {/* Pin indicator */}
+                      {msg.is_pinned && (
+                        <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                          <Pin className="h-3 w-3" />
+                          <span>Pinned message</span>
                         </div>
-                        <p className="truncate">{msg.reply_to.message.substring(0, 50)}...</p>
-                      </div>
-                    )}
+                      )}
+                      {/* Reply indicator */}
+                      {msg.reply_to && (
+                        <div className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 rounded p-2 mb-1">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Reply className="h-3 w-3" />
+                            <span>Replying to {msg.reply_to.user?.name}</span>
+                          </div>
+                          <p className="truncate">{msg.reply_to.message.substring(0, 50)}...</p>
+                        </div>
+                      )}
 
-                    {/* Message bubble with WhatsApp-style reactions */}
-                    <div className="relative">
-                      <div
-                        className={`rounded-lg px-3 py-2 ${
-                          isCurrentUser(msg.user_id)
+                      {/* Message bubble with WhatsApp-style reactions */}
+                      <div className="relative">
+                        <div
+                          className={`rounded-lg px-3 py-2 ${isCurrentUser(msg.user_id)
                             ? 'bg-blue-600 text-white'
                             : isAIMessage(msg)
-                            ? 'bg-purple-50 border border-purple-200 text-gray-900'
-                            : isGuestMessage(msg)
-                            ? 'bg-blue-50 border border-blue-200 text-gray-900'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                        }`}
-                      >
-                        {/* Message sender header for non-current user messages */}
-                        {!isCurrentUser(msg.user_id) && (
-                          <div className="flex items-center gap-1 mb-1">
-                            {isAIMessage(msg) ? (
-                              <>
-                                <Sparkles className="w-3 h-3 text-purple-600" />
-                                <span className="text-xs font-medium text-purple-600">TekRem AI Assistant</span>
-                              </>
-                            ) : isGuestMessage(msg) ? (
-                              <>
-                                <User className="w-3 h-3 text-blue-600" />
-                                <span className="text-xs font-medium text-blue-600">{getMessageSender(msg)}</span>
-                              </>
-                            ) : (
-                              <>
-                                <User className="w-3 h-3 text-gray-600" />
-                                <span className="text-xs font-medium text-gray-600">{msg.user?.name || 'Agent'}</span>
-                              </>
-                            )}
-                          </div>
-                        )}
+                              ? 'bg-purple-50 border border-purple-200 text-gray-900'
+                              : isGuestMessage(msg)
+                                ? 'bg-blue-50 border border-blue-200 text-gray-900'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                            }`}
+                        >
+                          {/* Message sender header for non-current user messages */}
+                          {!isCurrentUser(msg.user_id) && (
+                            <div className="flex items-center gap-1 mb-1">
+                              {isAIMessage(msg) ? (
+                                <>
+                                  <Sparkles className="w-3 h-3 text-purple-600" />
+                                  <span className="text-xs font-medium text-purple-600">TekRem AI Assistant</span>
+                                </>
+                              ) : isGuestMessage(msg) ? (
+                                <>
+                                  <User className="w-3 h-3 text-blue-600" />
+                                  <span className="text-xs font-medium text-blue-600">{getMessageSender(msg)}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <User className="w-3 h-3 text-gray-600" />
+                                  <span className="text-xs font-medium text-gray-600">{msg.user?.name || 'Agent'}</span>
+                                </>
+                              )}
+                            </div>
+                          )}
 
-                        {/* Internal note indicator */}
-                        {msg.is_internal_note && (
-                          <div className="text-xs opacity-75 mb-1">
-                            🔒 Internal Note
-                          </div>
-                        )}
+                          {/* Internal note indicator */}
+                          {msg.is_internal_note && (
+                            <div className="text-xs opacity-75 mb-1">
+                              🔒 Internal Note
+                            </div>
+                          )}
 
-                        <p className="whitespace-pre-wrap">{msg.message}</p>
+                          <p className="whitespace-pre-wrap">{msg.message}</p>
 
-                        {/* Edit indicator */}
-                        {msg.is_edited && (
-                          <div className="text-xs opacity-75 mt-1">
-                            <span className="italic">edited</span>
-                            {msg.edited_at && (
-                              <span className="ml-1">
-                                {new Date(msg.edited_at).toLocaleTimeString('en-US', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                          {/* Edit indicator */}
+                          {msg.is_edited && (
+                            <div className="text-xs opacity-75 mt-1">
+                              <span className="italic">edited</span>
+                              {msg.edited_at && (
+                                <span className="ml-1">
+                                  {new Date(msg.edited_at).toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
+                              )}
+                            </div>
+                          )}
 
-                        {/* Attachments */}
-                        {msg.attachments && msg.attachments.length > 0 && (
-                          <div className="mt-2 space-y-2">
-                            {msg.attachments.map((attachment, index) => {
-                              const isImage = attachment.mime_type?.startsWith('image/');
+                          {/* Attachments */}
+                          {msg.attachments && msg.attachments.length > 0 && (
+                            <div className="mt-2 space-y-2">
+                              {msg.attachments.map((attachment, index) => {
+                                const isImage = attachment.mime_type?.startsWith('image/');
 
-                              if (isImage) {
-                                return (
-                                  <div key={index} className="max-w-xs">
-                                    <div className="relative group">
-                                      <img
-                                        src={attachment.url}
-                                        alt={attachment.name}
-                                        className="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                                        onClick={() => {
-                                          // Open image in new tab for now
-                                          window.open(attachment.url, '_blank');
-                                        }}
-                                      />
-                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors flex items-center justify-center">
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          className="opacity-0 group-hover:opacity-100 transition-opacity text-white bg-black/50 hover:bg-black/70"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
+                                if (isImage) {
+                                  return (
+                                    <div key={index} className="max-w-xs">
+                                      <div className="relative group">
+                                        <img
+                                          src={attachment.url}
+                                          alt={attachment.name}
+                                          className="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                          onClick={() => {
+                                            // Open image in new tab for now
                                             window.open(attachment.url, '_blank');
                                           }}
-                                        >
-                                          <ZoomIn className="h-4 w-4" />
-                                        </Button>
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors flex items-center justify-center">
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-white bg-black/50 hover:bg-black/70"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              window.open(attachment.url, '_blank');
+                                            }}
+                                          >
+                                            <ZoomIn className="h-4 w-4" />
+                                          </Button>
+                                        </div>
                                       </div>
+                                      <p className="text-xs text-gray-500 mt-1 truncate">{attachment.name}</p>
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1 truncate">{attachment.name}</p>
-                                  </div>
-                                );
-                              } else {
-                                return (
-                                  <div key={index} className="flex items-center gap-2 p-2 bg-white/10 rounded text-sm">
-                                    {getFileIcon(attachment.name)}
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium truncate">{attachment.name}</p>
-                                      <p className="text-xs opacity-75">
-                                        {attachment.size ? formatFileSize(attachment.size) : 'Unknown size'}
-                                      </p>
+                                  );
+                                } else {
+                                  return (
+                                    <div key={index} className="flex items-center gap-2 p-2 bg-white/10 rounded text-sm">
+                                      {getFileIcon(attachment.name)}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium truncate">{attachment.name}</p>
+                                        <p className="text-xs opacity-75">
+                                          {attachment.size ? formatFileSize(attachment.size) : 'Unknown size'}
+                                        </p>
+                                      </div>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-6 w-6 p-0"
+                                        onClick={() => window.open(attachment.url, '_blank')}
+                                      >
+                                        <Download className="h-3 w-3" />
+                                      </Button>
                                     </div>
-                                    <Button
-                                      size="sm"
-                                      variant="ghost"
-                                      className="h-6 w-6 p-0"
-                                      onClick={() => window.open(attachment.url, '_blank')}
-                                    >
-                                      <Download className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                );
-                              }
-                            })}
-                          </div>
-                        )}
+                                  );
+                                }
+                              })}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* WhatsApp-style reactions positioned over the message bubble */}
+                        <MessageReactions
+                          messageId={msg.id}
+                          reactions={msg.reactions || []}
+                          currentUserId={conversation.creator?.id || 0}
+                          onRefresh={handleRefresh}
+                          style="whatsapp"
+                          position={isCurrentUser(msg.user_id) ? 'right' : 'left'}
+                        />
                       </div>
 
-                      {/* WhatsApp-style reactions positioned over the message bubble */}
-                      <MessageReactions
-                        messageId={msg.id}
-                        reactions={msg.reactions || []}
-                        currentUserId={conversation.creator?.id || 0}
-                        onRefresh={handleRefresh}
-                        style="whatsapp"
-                        position={isCurrentUser(msg.user_id) ? 'right' : 'left'}
-                      />
-                    </div>
+                      {/* Message metadata and actions */}
+                      <div className={`flex items-center gap-2 text-xs text-gray-500 mt-1 ${isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <div className="flex items-center gap-1">
+                          <span>{formatMessageTime(msg.created_at)}</span>
+                          {isCurrentUser(msg.user_id) && getMessageStatusIcon(msg)}
+                        </div>
 
-                    {/* Message metadata and actions */}
-                    <div className={`flex items-center gap-2 text-xs text-gray-500 mt-1 ${isCurrentUser(msg.user_id) ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className="flex items-center gap-1">
-                        <span>{formatMessageTime(msg.created_at)}</span>
-                        {isCurrentUser(msg.user_id) && getMessageStatusIcon(msg)}
+                        {/* Message Actions - includes reactions, comments, edit, etc. */}
+                        <MessageActions
+                          message={msg}
+                          currentUserId={conversation.creator?.id || 0}
+                          onReply={handleReply}
+                          onShowComments={handleShowComments}
+                          onEdit={handleEdit}
+                          onShowEditHistory={handleShowEditHistory}
+                          onRefresh={handleRefresh}
+                        />
                       </div>
-
-                      {/* Message Actions - includes reactions, comments, edit, etc. */}
-                      <MessageActions
-                        message={msg}
-                        currentUserId={conversation.creator?.id || 0}
-                        onReply={handleReply}
-                        onShowComments={handleShowComments}
-                        onEdit={handleEdit}
-                        onShowEditHistory={handleShowEditHistory}
-                        onRefresh={handleRefresh}
-                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {/* Typing indicator */}
-            {typingUsers.length > 0 && (
-              <div className="flex justify-start">
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
-                  <div className="flex items-center gap-2">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              {/* Typing indicator */}
+              {typingUsers.length > 0 && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-500">
-                      {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
-                    </span>
                   </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Reply indicator */}
+            {replyTo && (
+              <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-t">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Reply className="h-4 w-4" />
+                    <span>Replying to {replyTo.user?.name}</span>
+                    <span className="text-gray-500">"{replyTo.message.substring(0, 30)}..."</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setReplyTo(null)}
+                  >
+                    ×
+                  </Button>
                 </div>
               </div>
             )}
 
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Reply indicator */}
-          {replyTo && (
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-t">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <Reply className="h-4 w-4" />
-                  <span>Replying to {replyTo.user?.name}</span>
-                  <span className="text-gray-500">"{replyTo.message.substring(0, 30)}..."</span>
+            {/* Selected Images Preview */}
+            {selectedImages.length > 0 && (
+              <div className="px-4 py-2 border-t bg-gray-50 dark:bg-gray-900">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Images to send:</span>
                 </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setReplyTo(null)}
-                >
-                  ×
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Selected Images Preview */}
-          {selectedImages.length > 0 && (
-            <div className="px-4 py-2 border-t bg-gray-50 dark:bg-gray-900">
-              <div className="mb-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Images to send:</span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {selectedImages.map((image, index) => (
-                  <div key={index} className="relative group">
-                    <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                      <img
-                        src={URL.createObjectURL(image)}
-                        alt={image.name}
-                        className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => openImagePreview(index)}
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeSelectedImage(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                    <div className="absolute bottom-1 left-1 right-1">
-                      <div className="bg-black/50 text-white text-xs px-1 py-0.5 rounded truncate">
-                        {image.name}
+                <div className="grid grid-cols-4 gap-2">
+                  {selectedImages.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt={image.name}
+                          className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                          onClick={() => openImagePreview(index)}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removeSelectedImage(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                      <div className="absolute bottom-1 left-1 right-1">
+                        <div className="bg-black/50 text-white text-xs px-1 py-0.5 rounded truncate">
+                          {image.name}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Selected Files Preview */}
-          {selectedFiles.length > 0 && (
-            <div className="px-4 py-2 border-t bg-gray-50 dark:bg-gray-900">
-              <div className="mb-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Files to send:</span>
-              </div>
-              <div className="space-y-2">
-                {selectedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-sm">
-                    {getFileIcon(file.name)}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{file.name}</p>
-                      <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+            {/* Selected Files Preview */}
+            {selectedFiles.length > 0 && (
+              <div className="px-4 py-2 border-t bg-gray-50 dark:bg-gray-900">
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Files to send:</span>
+                </div>
+                <div className="space-y-2">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg px-3 py-2 text-sm">
+                      {getFileIcon(file.name)}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{file.name}</p>
+                        <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => removeSelectedFile(index)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={() => removeSelectedFile(index)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Message Input */}
-          <div className="p-4 border-t relative">
-            <form onSubmit={handleSendMessage} className="space-y-3">
-              <div className="flex gap-2">
-                {/* Image Upload Button */}
+            {/* Message Input */}
+            <div className="p-4 border-t relative">
+              <form
+                onSubmit={handleSendMessage}
+                className="rounded-full px-3 py-1.5 flex items-center gap-2 shadow-md"
+              >
+                {/* Image Upload */}
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="unstyled"
+                  size="icon"
                   onClick={handleImageUpload}
                   title="Send images"
+                  className="text-gray-400 hover:text-white"
                 >
                   <Image className="h-4 w-4" />
                 </Button>
 
-                {/* File Upload Button */}
+                {/* File Upload */}
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="unstyled"
+                  size="icon"
                   onClick={handleFileUpload}
                   title="Send files"
+                  className="text-gray-400 hover:text-white"
                 >
                   <Paperclip className="h-4 w-4" />
                 </Button>
 
+                {/* Textarea Input */}
                 <div className="flex-1 relative">
-                  <Textarea
+                  <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="min-h-[40px] max-h-[120px] resize-none pr-10"
+                    placeholder="Type a message..."
+                    className="w-full text-white bg-transparent border-none outline-none focus:outline-none focus:ring-0 resize-none text-sm pt-3"
+                    rows={1}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -1007,295 +1008,303 @@ export default function ConversationView({
                     }}
                   />
 
-                  {/* Emoji Button */}
-                  <Button
+              
+                </div>
+    {/* Emoji Button (inside textarea wrapper) */}
+    <Button
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-2 h-6 w-6 p-0"
+                    variant="unstyled"
+                    size="icon"
+                    className="text-gray-400 hover:text-white"
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   >
                     <Smile className="h-4 w-4" />
                   </Button>
-                </div>
-
+                {/* Send Button */}
                 <Button
                   type="submit"
-                  disabled={!message.trim() && selectedFiles.length === 0 && selectedImages.length === 0}
+                  variant="ghost"
+                  size="icon"
+                  disabled={
+                    !message.trim() &&
+                    selectedFiles.length === 0 &&
+                    selectedImages.length === 0
+                  }
+                  className="hover:bg-blue-700  disabled:opacity-50"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
-              </div>
-            </form>
+              </form>
 
-            {/* Emoji Picker */}
-            {showEmojiPicker && (
-              <div
-                ref={emojiPickerRef}
-                className="absolute bottom-full right-4 mb-2 bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-4 z-50 w-[100%]"
-              >
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-sm font-medium">Choose an emoji</h4>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0"
-                    onClick={() => setShowEmojiPicker(false)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-10 gap-1 max-h-48 overflow-y-auto">
-                  {commonEmojis.map((emoji, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className="text-lg hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-1 transition-colors"
-                      onClick={() => addEmoji(emoji)}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {/* Hidden File Inputs */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.mp4,.avi,.mov,.mp3,.wav"
-              className="hidden"
-              onChange={handleFileChange}
-            />
 
-            <input
-              ref={imageInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={handleImageChange}
-            />
-          </div>
-        </div>
-
-        {/* Toggleable Sidebar with Tabs */}
-        <div className={`border-l bg-gray-50 dark:bg-gray-900 transition-all duration-300 ease-in-out overflow-hidden ${
-          sidebarOpen ? 'w-80 lg:w-80 md:w-72 sm:w-64 opacity-100' : 'w-0 opacity-0'
-        } ${sidebarOpen ? 'lg:relative md:absolute md:right-0 md:top-0 md:h-full md:z-30 md:shadow-lg' : ''}`}>
-          {sidebarOpen && (
-            <>
-              {/* Mobile Overlay */}
-              <div
-                className="lg:hidden fixed inset-0 bg-black/50 z-20"
-                onClick={() => setSidebarOpen(false)}
-              />
-              <Tabs defaultValue="info" className="h-full w-80 lg:w-80 md:w-72 sm:w-64 relative z-30">
-              {/* Mobile Close Button */}
-              <div className="lg:hidden flex justify-between items-center p-3 border-b bg-white dark:bg-gray-800">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">Chat Details</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSidebarOpen(false)}
-                  className="h-8 w-8 p-0"
+              {/* Emoji Picker */}
+              {showEmojiPicker && (
+                <div
+                  ref={emojiPickerRef}
+                  className="absolute bottom-full right-4 mb-2 bg-white dark:bg-gray-800 border rounded-lg shadow-lg p-4 z-50 w-[100%]"
                 >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <TabsList className={`grid w-full ${isProjectChat ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                <TabsTrigger value="info" className="flex items-center gap-1">
-                  <Info className="h-3 w-3" />
-                  Info
-                </TabsTrigger>
-                {isProjectChat && (
-                  <TabsTrigger value="team" className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    Team
-                  </TabsTrigger>
-                )}
-                <TabsTrigger value="files" className="flex items-center gap-1">
-                  <Paperclip className="h-3 w-3" />
-                  Files
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="flex items-center gap-1">
-                  <StickyNote className="h-3 w-3" />
-                  Notes
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="info" className="p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm">Conversation Details</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <label className="text-xs font-medium text-gray-500">Status</label>
-                      <p className="text-sm">{conversation.status}</p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-gray-500">Priority</label>
-                      <p className="text-sm">{conversation.priority}</p>
-                    </div>
-                    {conversation.assignee && (
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Assigned to</label>
-                        <p className="text-sm">{conversation.assignee.name}</p>
-                      </div>
-                    )}
-                    {conversation.conversable && (
-                      <div>
-                        <label className="text-xs font-medium text-gray-500">Contact</label>
-                        <p className="text-sm">{conversation.conversable.name}</p>
-                        <p className="text-xs text-gray-500">{conversation.conversable.email}</p>
-                      </div>
-                    )}
-                    <div>
-                      <label className="text-xs font-medium text-gray-500">Created</label>
-                      <p className="text-sm">{new Date(conversation.created_at).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-gray-500">Last Activity</label>
-                      <p className="text-sm">
-                        {conversation.last_message_at
-                          ? new Date(conversation.last_message_at).toLocaleDateString()
-                          : 'No messages yet'
-                        }
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {isProjectChat && (
-                <TabsContent value="team" className="p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-sm">Project Team</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {teamMembers.map((member) => (
-                        <div key={member.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={member.profile_photo_url} />
-                            <AvatarFallback>
-                              {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{member.name}</p>
-                            <p className="text-xs text-gray-500 truncate">{member.email}</p>
-                          </div>
-                          {member.id === project?.manager_id && (
-                            <Badge variant="secondary" className="text-xs">
-                              Manager
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                      {teamMembers.length === 0 && (
-                        <p className="text-sm text-gray-500">No team members assigned</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-medium">Choose an emoji</h4>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={() => setShowEmojiPicker(false)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-10 gap-1 max-h-48 overflow-y-auto">
+                    {commonEmojis.map((emoji, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        className="text-lg hover:bg-gray-100 dark:hover:bg-gray-700 rounded p-1 transition-colors"
+                        onClick={() => addEmoji(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
 
-              <TabsContent value="files" className="p-4 h-[calc(100%-3rem)] overflow-y-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm">Shared Files</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {conversation.messages?.filter(msg => msg.attachments && msg.attachments.length > 0).length === 0 ? (
-                        <p className="text-sm text-gray-500">No files shared yet</p>
-                      ) : (
-                        conversation.messages
-                          ?.filter(msg => msg.attachments && msg.attachments.length > 0)
-                          .map(msg =>
-                            msg.attachments?.map((attachment, index) => (
-                              <div key={`${msg.id}-${index}`} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded border">
-                                <Paperclip className="h-4 w-4 text-gray-400" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">{attachment.name}</p>
-                                  <p className="text-xs text-gray-500">
-                                    Shared by {msg.user?.name} • {new Date(msg.created_at).toLocaleDateString()}
-                                  </p>
-                                </div>
-                                <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
-                                  <Download className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ))
-                          )
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              {/* Hidden File Inputs */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.mp4,.avi,.mov,.mp3,.wav"
+                className="hidden"
+                onChange={handleFileChange}
+              />
 
-              <TabsContent value="notes" className="p-4 h-[calc(100%-3rem)] overflow-y-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-sm">Internal Notes</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Add Note Form */}
-                    {userRole !== 'customer' && (
-                      <div className="space-y-2">
-                        <Textarea
-                          value={newNote}
-                          onChange={(e) => setNewNote(e.target.value)}
-                          placeholder="Add an internal note..."
-                          className="min-h-[60px] text-sm"
-                        />
-                        <Button
-                          size="sm"
-                          onClick={handleAddNote}
-                          disabled={!newNote.trim()}
-                          className="w-full"
-                        >
-                          <Plus className="h-3 w-3 mr-1" />
-                          Add Note
-                        </Button>
-                      </div>
+              <input
+                ref={imageInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </div>
+          </div>
+
+          {/* Toggleable Sidebar with Tabs */}
+          <div className={`border-l transition-all duration-300 ease-in-out overflow-hidden ${sidebarOpen ? 'w-80 lg:w-80 md:w-72 sm:w-64 opacity-100' : 'w-0 opacity-0'
+            } ${sidebarOpen ? 'lg:relative md:absolute md:right-0 md:top-0 md:h-full md:z-30 md:shadow-lg' : ''}`}>
+            {sidebarOpen && (
+              <>
+                {/* Mobile Overlay */}
+                <div
+                  className="lg:hidden fixed inset-0 bg-black/50 z-20"
+                  onClick={() => setSidebarOpen(false)}
+                />
+                <Tabs defaultValue="info" className="h-full w-80 lg:w-80 md:w-72 sm:w-64 relative z-30">
+                  {/* Mobile Close Button */}
+                  <div className="lg:hidden flex justify-between items-center p-3 border-b bg-white dark:bg-gray-800">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">Chat Details</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSidebarOpen(false)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <TabsList className={`grid w-full dark:bg-black/0 rounded-none ${isProjectChat ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                    <TabsTrigger value="info" className="flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      Info
+                    </TabsTrigger>
+                    {isProjectChat && (
+                      <TabsTrigger value="team" className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        Team
+                      </TabsTrigger>
                     )}
+                    <TabsTrigger value="files" className="flex items-center gap-1">
+                      <Paperclip className="h-3 w-3" />
+                      Files
+                    </TabsTrigger>
+                    <TabsTrigger value="notes" className="flex items-center gap-1">
+                      <StickyNote className="h-3 w-3" />
+                      Notes
+                    </TabsTrigger>
+                  </TabsList>
 
-                    {/* Existing Notes */}
-                    <div className="space-y-2">
-                      {conversation.messages?.filter(msg => msg.is_internal_note).length === 0 ? (
-                        <p className="text-sm text-gray-500">No internal notes yet</p>
-                      ) : (
-                        conversation.messages
-                          ?.filter(msg => msg.is_internal_note)
-                          .map(note => (
-                            <div key={note.id} className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded">
-                              <div className="flex items-start gap-2">
-                                <StickyNote className="h-4 w-4 text-yellow-600 mt-0.5" />
-                                <div className="flex-1">
-                                  <p className="text-sm">{note.message}</p>
-                                  <p className="text-xs text-gray-500 mt-1">
-                                    {note.user?.name} • {new Date(note.created_at).toLocaleDateString()}
-                                  </p>
-                                </div>
+                  <TabsContent value="info" className="p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-sm">Conversation Details</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <label className="text-xs font-medium text-gray-500">Status</label>
+                          <p className="text-sm">{conversation.status}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-gray-500">Priority</label>
+                          <p className="text-sm">{conversation.priority}</p>
+                        </div>
+                        {conversation.assignee && (
+                          <div>
+                            <label className="text-xs font-medium text-gray-500">Assigned to</label>
+                            <p className="text-sm">{conversation.assignee.name}</p>
+                          </div>
+                        )}
+                        {conversation.conversable && (
+                          <div>
+                            <label className="text-xs font-medium text-gray-500">Contact</label>
+                            <p className="text-sm">{conversation.conversable.name}</p>
+                            <p className="text-xs text-gray-500">{conversation.conversable.email}</p>
+                          </div>
+                        )}
+                        <div>
+                          <label className="text-xs font-medium text-gray-500">Created</label>
+                          <p className="text-sm">{new Date(conversation.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-gray-500">Last Activity</label>
+                          <p className="text-sm">
+                            {conversation.last_message_at
+                              ? new Date(conversation.last_message_at).toLocaleDateString()
+                              : 'No messages yet'
+                            }
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {isProjectChat && (
+                    <TabsContent value="team" className="p-4 space-y-4 h-[calc(100%-3rem)] overflow-y-auto">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-sm">Project Team</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {teamMembers.map((member) => (
+                            <div key={member.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={member.profile_photo_url} />
+                                <AvatarFallback>
+                                  {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{member.name}</p>
+                                <p className="text-xs text-gray-500 truncate">{member.email}</p>
                               </div>
+                              {member.id === project?.manager_id && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Manager
+                                </Badge>
+                              )}
                             </div>
-                          ))
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-            </>
-          )}
-        </div>
+                          ))}
+                          {teamMembers.length === 0 && (
+                            <p className="text-sm text-gray-500">No team members assigned</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  )}
+
+                  <TabsContent value="files" className="p-4 h-[calc(100%-3rem)] overflow-y-auto">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-sm">Shared Files</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          {conversation.messages?.filter(msg => msg.attachments && msg.attachments.length > 0).length === 0 ? (
+                            <p className="text-sm text-gray-500">No files shared yet</p>
+                          ) : (
+                            conversation.messages
+                              ?.filter(msg => msg.attachments && msg.attachments.length > 0)
+                              .map(msg =>
+                                msg.attachments?.map((attachment, index) => (
+                                  <div key={`${msg.id}-${index}`} className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded border">
+                                    <Paperclip className="h-4 w-4 text-gray-400" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium truncate">{attachment.name}</p>
+                                      <p className="text-xs text-gray-500">
+                                        Shared by {msg.user?.name} • {new Date(msg.created_at).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                    <Button size="sm" variant="ghost" className="h-6 w-6 p-0">
+                                      <Download className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                ))
+                              )
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  <TabsContent value="notes" className="p-4 h-[calc(100%-3rem)] overflow-y-auto">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-sm">Internal Notes</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {/* Add Note Form */}
+                        {userRole !== 'customer' && (
+                          <div className="space-y-2">
+                            <Textarea
+                              value={newNote}
+                              onChange={(e) => setNewNote(e.target.value)}
+                              placeholder="Add an internal note..."
+                              className="min-h-[60px] text-sm"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={handleAddNote}
+                              disabled={!newNote.trim()}
+                              className="w-full"
+                            >
+                              <Plus className="h-3 w-3 mr-1" />
+                              Add Note
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Existing Notes */}
+                        <div className="space-y-2">
+                          {conversation.messages?.filter(msg => msg.is_internal_note).length === 0 ? (
+                            <p className="text-sm text-gray-500">No internal notes yet</p>
+                          ) : (
+                            conversation.messages
+                              ?.filter(msg => msg.is_internal_note)
+                              .map(note => (
+                                <div key={note.id} className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded">
+                                  <div className="flex items-start gap-2">
+                                    <StickyNote className="h-4 w-4 text-yellow-600 mt-0.5" />
+                                    <div className="flex-1">
+                                      <p className="text-sm">{note.message}</p>
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        {note.user?.name} • {new Date(note.created_at).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

@@ -9,11 +9,11 @@ import { Head } from '@inertiajs/react'
 
 export default function SupportChatbot() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="min-h-screen bg-gray-900 p-4">
             <Head title="Support Agent" />
             <div className="container mx-auto max-w-4xl">
                 <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Support Assistant</h1>
+                    <h1 className="text-3xl font-bold text-gray-400 mb-2">Support Assistant</h1>
                     <p className="text-gray-600">Get instant help with your questions and issues</p>
                 </div>
 

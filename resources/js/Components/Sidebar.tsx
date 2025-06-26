@@ -43,6 +43,10 @@ import {
   Calendar,
   Clock,
   GraduationCap,
+  Shield,
+  Key,
+  UserCog,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
 import useRoute from '@/Hooks/useRoute';
@@ -406,27 +410,67 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
+  // Admin navigation items - only visible to admin users
+  const adminItems = hasAnyRole(['admin']) ? [
+    {
+      href: route('admin.users.index'),
+      label: t('admin.users', 'User Management'),
+      icon: <UserCog className="h-5 w-5" />,
+      active: route().current('admin.users.*')
+    },
+    {
+      href: route('admin.roles.index'),
+      label: t('admin.roles', 'Role Management'),
+      icon: <Shield className="h-5 w-5" />,
+      active: route().current('admin.roles.*')
+    },
+    {
+      href: route('admin.permissions.index'),
+      label: t('admin.permissions', 'Permission Management'),
+      icon: <Key className="h-5 w-5" />,
+      active: route().current('admin.permissions.*')
+    },
+    {
+      href: route('admin.settings.index'),
+      label: t('admin.settings', 'System Settings'),
+      icon: <Settings className="h-5 w-5" />,
+      active: route().current('admin.settings.*')
+    },
+  ] : [];
+
   // Customer-only navigation
-  // const customerItems = hasAnyRole(['customer']) ? [
-  //   {
-  //     href: route('customer.orders'),
-  //     label: t('customer.orders', 'My Orders'),
-  //     icon: <Receipt className="h-5 w-5" />,
-  //     active: route().current('customer.orders')
-  //   },
-  //   {
-  //     href: route('customer.support'),
-  //     label: t('customer.support', 'Support'),
-  //     icon: <LifeBuoy className="h-5 w-5" />,
-  //     active: route().current('customer.support')
-  //   },
-  //   {
-  //     href: route('customer.billing'),
-  //     label: t('customer.billing', 'Billing'),
-  //     icon: <CreditCard className="h-5 w-5" />,
-  //     active: route().current('customer.billing')
-  //   },
-  // ] : [];
+  const customerItems = hasAnyRole(['customer']) ? [
+    {
+      href: route('customer.dashboard'),
+      label: t('customer.dashboard', 'My Dashboard'),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      active: route().current('customer.dashboard')
+    },
+    {
+      href: route('customer.support.index'),
+      label: t('customer.support', 'My Tickets'),
+      icon: <Ticket className="h-5 w-5" />,
+      active: route().current('customer.support.*')
+    },
+    {
+      href: route('customer.support.create'),
+      label: t('customer.support.create', 'Create Ticket'),
+      icon: <Plus className="h-5 w-5" />,
+      active: route().current('customer.support.create')
+    },
+    {
+      href: route('customer.support.knowledge-base.index'),
+      label: t('customer.knowledge_base', 'Knowledge Base'),
+      icon: <BookOpen className="h-5 w-5" />,
+      active: route().current('customer.support.knowledge-base.*')
+    },
+    {
+      href: route('customer.support.support.faq'),
+      label: t('customer.faq', 'FAQ'),
+      icon: <HelpCircle className="h-5 w-5" />,
+      active: route().current('customer.support.support.faq')
+    },
+  ] : [];
 
 
   // Sidebar content component to avoid duplication
@@ -700,9 +744,44 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
+        {/* Admin Navigation - Only visible to admin users */}
+        {hasAnyRole(['admin']) && (
+          <Collapsible className="mt-4 pt-4 border-t border-border">
+            <CollapsibleTrigger className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
+              route().current('admin.*')
+                ? "bg-primary/10 text-primary font-semibold"
+                : "text-foreground/70 hover:text-foreground hover:bg-accent"
+            )}>
+              <div className="flex items-center gap-3">
+                <UserCog className="h-5 w-5" />
+                <span>{t('admin.title', 'Administration')}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-4 mt-1 space-y-1">
+              {adminItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    item.active
+                      ? "bg-primary/10 text-primary font-semibold"
+                      : "text-foreground/70 hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+
         {/* Settings Navigation - Only visible to admin users */}
         {hasAnyRole(['admin']) && (
-          <div className="mt-4 pt-4 border-t border-border">
+          <div className="mt-2">
             <Link
               href={route('settings.index')}
               className={cn(
@@ -719,7 +798,7 @@ export default function Sidebar({ settings }: SidebarProps) {
         )}
 
         {/* Customer Navigation - Only visible to customers */}
-        {/* {hasAnyRole(['customer']) && (
+        {hasAnyRole(['customer']) && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -728,8 +807,8 @@ export default function Sidebar({ settings }: SidebarProps) {
                 : "text-foreground/70 hover:text-foreground hover:bg-accent"
             )}>
               <div className="flex items-center gap-3">
-                <UserPlus className="h-5 w-5" />
-                <span>{t('customer.title', 'Customer')}</span>
+                <User className="h-5 w-5" />
+                <span>{t('customer.title', 'Customer Portal')}</span>
               </div>
               <ChevronRight className="h-4 w-4 transition-transform data-[state=open]:rotate-90" />
             </CollapsibleTrigger>
@@ -751,7 +830,7 @@ export default function Sidebar({ settings }: SidebarProps) {
               ))}
             </CollapsibleContent>
           </Collapsible>
-        )} */}
+        )}
 
       </div>
     </div>

@@ -121,14 +121,17 @@ class TagSeeder extends Seeder
         ];
 
         foreach ($tags as $tagData) {
-            Tag::create([
-                'name' => $tagData['name'],
-                'color' => $tagData['color'],
-                'type' => $tagData['type'],
-                'description' => $tagData['description'],
-                'created_by' => $adminUser->id,
-                'is_active' => true,
-            ]);
+            Tag::firstOrCreate(
+                ['name' => $tagData['name']], // Find by unique name
+                [
+                    'name' => $tagData['name'],
+                    'color' => $tagData['color'],
+                    'type' => $tagData['type'],
+                    'description' => $tagData['description'],
+                    'created_by' => $adminUser->id,
+                    'is_active' => true,
+                ]
+            );
         }
 
         $this->command->info('Tags seeded successfully!');

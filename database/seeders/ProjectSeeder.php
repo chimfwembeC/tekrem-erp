@@ -19,7 +19,7 @@ class ProjectSeeder extends Seeder
         // Get users and clients for relationships
         $users = User::all();
         $clients = Client::all();
-        
+
         if ($users->isEmpty() || $clients->isEmpty()) {
             $this->command->warn('No users or clients found. Please run UserSeeder and ClientSeeder first.');
             return;
@@ -164,7 +164,7 @@ class ProjectSeeder extends Seeder
                 'progress' => 35,
                 'client_id' => $clients->random()->id,
                 'manager_id' => $users->random()->id,
-                'team_members' => $users->random(3)->pluck('id')->toArray(),
+                'team_members' => $users->random(min(3, $users->count()))->pluck('id')->toArray(),
                 'tags' => ['ERP', 'Enhancement', 'Web Development'],
             ],
             [
@@ -180,7 +180,7 @@ class ProjectSeeder extends Seeder
                 'progress' => 20,
                 'client_id' => $clients->random()->id,
                 'manager_id' => $users->random()->id,
-                'team_members' => $users->random(4)->pluck('id')->toArray(),
+                'team_members' => $users->random(min(4, $users->count()))->pluck('id')->toArray(),
                 'tags' => ['Mobile', 'CRM', 'React Native'],
             ],
             [
@@ -196,7 +196,7 @@ class ProjectSeeder extends Seeder
                 'progress' => 0,
                 'client_id' => $clients->random()->id,
                 'manager_id' => $users->random()->id,
-                'team_members' => $users->random(2)->pluck('id')->toArray(),
+                'team_members' => $users->random(min(2, $users->count()))->pluck('id')->toArray(),
                 'tags' => ['AI', 'Chatbot', 'Machine Learning'],
             ],
             [
@@ -213,7 +213,7 @@ class ProjectSeeder extends Seeder
                 'progress' => 100,
                 'client_id' => $clients->random()->id,
                 'manager_id' => $users->random()->id,
-                'team_members' => $users->random(5)->pluck('id')->toArray(),
+                'team_members' => $users->random(min(5, $users->count()))->pluck('id')->toArray(),
                 'tags' => ['E-commerce', 'Laravel', 'React'],
             ],
             [
@@ -229,7 +229,7 @@ class ProjectSeeder extends Seeder
                 'progress' => 40,
                 'client_id' => $clients->random()->id,
                 'manager_id' => $users->random()->id,
-                'team_members' => $users->random(3)->pluck('id')->toArray(),
+                'team_members' => $users->random(min(3, $users->count()))->pluck('id')->toArray(),
                 'tags' => ['Analytics', 'Dashboard', 'BI'],
             ],
         ];
@@ -301,10 +301,10 @@ class ProjectSeeder extends Seeder
                 'status' => $milestoneData['status'],
                 'order' => $milestoneData['order'],
                 'assigned_to' => $users->random()->id,
-                'due_date' => $project->deadline ? 
-                    $project->start_date?->addDays($milestoneData['order'] * 15) : 
+                'due_date' => $project->deadline ?
+                    $project->start_date?->addDays($milestoneData['order'] * 15) :
                     now()->addDays($milestoneData['order'] * 15),
-                'completion_date' => $milestoneData['status'] === 'completed' ? 
+                'completion_date' => $milestoneData['status'] === 'completed' ?
                     now()->subDays(rand(1, 30)) : null,
             ]);
         }
