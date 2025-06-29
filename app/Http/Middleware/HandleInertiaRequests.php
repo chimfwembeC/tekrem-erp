@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Setting;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -51,6 +52,13 @@ class HandleInertiaRequests extends Middleware
                     ->get(),
                 'unreadCount' => $request->user()->unreadNotifications()->count(),
             ] : null,
+            'recaptcha' => [
+                'enabled' => Setting::get('recaptcha.recaptcha_enabled', false) && !app()->environment('local', 'development', 'dev'),
+                'site_key' => Setting::get('recaptcha.recaptcha_site_key', ''),
+                'theme' => Setting::get('recaptcha.recaptcha_theme', 'light'),
+                'size' => Setting::get('recaptcha.recaptcha_size', 'normal'),
+                'development_mode' => app()->environment('local', 'development', 'dev'),
+            ],
         ];
     }
 }

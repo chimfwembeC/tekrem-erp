@@ -1,22 +1,21 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/Layouts/AppLayout';
+import CustomerLayout from '@/Layouts/CustomerLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { 
-  Ticket, 
-  FolderOpen, 
-  FileText, 
-  CreditCard, 
-  Plus, 
+import {
+  Ticket,
+  FolderOpen,
+  FileText,
+  CreditCard,
+  Plus,
   Eye,
   Clock,
   CheckCircle,
   AlertCircle,
   DollarSign
 } from 'lucide-react';
-import { useTranslate } from '@/Hooks/useTranslate';
 import useRoute from '@/Hooks/useRoute';
 
 interface TicketData {
@@ -92,9 +91,6 @@ interface Props {
 }
 
 export default function CustomerDashboard({ tickets, projects, invoices, payments, stats }: Props) {
-  const { t } = useTranslate();
-  const route = useRoute();
-
   const getStatusBadge = (status: string, type: 'ticket' | 'project' | 'invoice') => {
     const variants: Record<string, string> = {
       // Ticket statuses
@@ -115,19 +111,19 @@ export default function CustomerDashboard({ tickets, projects, invoices, payment
     return variants[status] || 'outline';
   };
 
+  const route = useRoute();
   return (
-    <AppLayout
-      title="Customer Dashboard"
-      renderHeader={() => (
-        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          Customer Dashboard
-        </h2>
-      )}
-    >
+    <CustomerLayout>
       <Head title="Customer Dashboard" />
 
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
+          <p className="text-muted-foreground">
+            Here's what's happening with your account today.
+          </p>
+        </div>
           
           {/* Stats Overview */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -311,7 +307,7 @@ export default function CustomerDashboard({ tickets, projects, invoices, payment
                     Browse Knowledge Base
                   </Button>
                 </Link>
-                <Link href={route('customer.support.support.faq')}>
+                <Link href={route('customer.support.faq')}>
                   <Button className="w-full" variant="outline">
                     <AlertCircle className="h-4 w-4 mr-2" />
                     View FAQ
@@ -321,7 +317,6 @@ export default function CustomerDashboard({ tickets, projects, invoices, payment
             </CardContent>
           </Card>
         </div>
-      </div>
-    </AppLayout>
+    </CustomerLayout>
   );
 }

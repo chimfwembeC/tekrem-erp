@@ -24,6 +24,15 @@ Route::get('/portfolio', [WebsiteController::class, 'portfolio'])->name('portfol
 
 Route::get('/contact', [WebsiteController::class, 'contact'])->name('contact');
 
+// Guest Help & FAQ Routes
+Route::get('/help', [WebsiteController::class, 'help'])->name('help');
+Route::get('/faq', [WebsiteController::class, 'faq'])->name('faq');
+
+// Direct Quote Request Route (alias to guest.quote.create)
+Route::get('/quote-request', function() {
+    return redirect()->route('guest.quote.create');
+})->name('quote-request');
+
 // Guest Chat Routes (no authentication required)
 Route::prefix('guest-chat')->name('guest-chat.')->group(function () {
     Route::post('/initialize', [App\Http\Controllers\GuestChatController::class, 'initializeSession'])->name('initialize');
@@ -115,9 +124,17 @@ Route::middleware([
 
         // Role Management
         Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class);
+        Route::get('roles-matrix', [\App\Http\Controllers\Admin\RoleController::class, 'permissionMatrix'])->name('roles.matrix');
+        Route::post('roles-matrix', [\App\Http\Controllers\Admin\RoleController::class, 'updatePermissionMatrix'])->name('roles.matrix.update');
+        Route::get('user-assignment', [\App\Http\Controllers\Admin\RoleController::class, 'userAssignment'])->name('roles.user-assignment');
+        Route::post('bulk-assign-users', [\App\Http\Controllers\Admin\RoleController::class, 'bulkAssignUsers'])->name('roles.bulk-assign-users');
+        Route::get('user-role-history/{user}', [\App\Http\Controllers\Admin\RoleController::class, 'userRoleHistory'])->name('roles.user-history');
 
         // Permission Management
         Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class);
+        Route::post('permissions/bulk-assign-roles', [\App\Http\Controllers\Admin\PermissionController::class, 'bulkAssignRoles'])->name('permissions.bulk-assign-roles');
+        Route::delete('permissions/bulk-delete', [\App\Http\Controllers\Admin\PermissionController::class, 'bulkDelete'])->name('permissions.bulk-delete');
+        Route::post('permissions/generate-module', [\App\Http\Controllers\Admin\PermissionController::class, 'generateModulePermissions'])->name('permissions.generate-module');
 
         // Guest Management
         Route::prefix('guest')->name('guest.')->group(function () {
@@ -138,7 +155,7 @@ Route::middleware([
     });
 
     // CRM routes
-    Route::prefix('crm')->name('crm.')->middleware('permission:view clients')->group(function () {
+    Route::prefix('crm')->name('crm.')->middleware('permission:view crm')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\CRM\DashboardController::class, 'index'])->name('dashboard');
 
@@ -300,7 +317,7 @@ Route::middleware([
     });
 
     // Finance routes
-    Route::prefix('finance')->name('finance.')->group(function () {
+    Route::prefix('finance')->name('finance.')->middleware('permission:view finance')->group(function () {
         Route::get('/', [\App\Http\Controllers\Finance\DashboardController::class, 'index'])->name('dashboard');
 
         // Accounts
@@ -377,7 +394,7 @@ Route::middleware([
     });
 
     // HR routes
-    Route::prefix('hr')->name('hr.')->middleware('permission:view employees')->group(function () {
+    Route::prefix('hr')->name('hr.')->middleware('permission:view hr')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\HR\DashboardController::class, 'index'])->name('dashboard');
 
@@ -425,7 +442,7 @@ Route::middleware([
     });
 
     // Support routes
-    Route::prefix('support')->name('support.')->group(function () {
+    Route::prefix('support')->name('support.')->middleware('permission:view support')->group(function () {
         // Dashboard
         Route::get('/', [\App\Http\Controllers\Support\DashboardController::class, 'index'])->name('dashboard');
 
@@ -561,7 +578,7 @@ Route::middleware([
     });
 
     // CMS Routes
-    Route::prefix('cms')->name('cms.')->middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('cms')->name('cms.')->middleware(['auth', 'verified', 'permission:view cms'])->group(function () {
         // Pages Management
         Route::resource('pages', \App\Http\Controllers\CMS\PageController::class);
         Route::post('pages/{page}/publish', [\App\Http\Controllers\CMS\PageController::class, 'publish'])->name('pages.publish');
@@ -620,34 +637,90 @@ Route::middleware([
         // Customer Dashboard
         Route::get('/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('dashboard');
 
+        // Customer Profile Management
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\ProfileController::class, 'show'])->name('show');
+            Route::get('/edit', [\App\Http\Controllers\Customer\ProfileController::class, 'edit'])->name('edit');
+            Route::put('/update', [\App\Http\Controllers\Customer\ProfileController::class, 'update'])->name('update');
+            Route::put('/password', [\App\Http\Controllers\Customer\ProfileController::class, 'updatePassword'])->name('password.update');
+            Route::put('/notifications', [\App\Http\Controllers\Customer\ProfileController::class, 'updateNotifications'])->name('notifications.update');
+            Route::post('/photo', [\App\Http\Controllers\Customer\ProfileController::class, 'updatePhoto'])->name('photo.update');
+            Route::delete('/photo', [\App\Http\Controllers\Customer\ProfileController::class, 'deletePhoto'])->name('photo.delete');
+            Route::get('/delete-account', [\App\Http\Controllers\Customer\ProfileController::class, 'deleteAccount'])->name('delete-account');
+            Route::delete('/delete-account', [\App\Http\Controllers\Customer\ProfileController::class, 'destroyAccount'])->name('destroy-account');
+        });
+
+        // Customer Projects
+        Route::prefix('projects')->name('projects.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\ProjectController::class, 'index'])->name('index');
+            Route::get('{project}', [\App\Http\Controllers\Customer\ProjectController::class, 'show'])->name('show');
+            Route::get('{project}/tasks', [\App\Http\Controllers\Customer\ProjectController::class, 'tasks'])->name('tasks');
+            Route::get('{project}/milestones', [\App\Http\Controllers\Customer\ProjectController::class, 'milestones'])->name('milestones');
+            Route::get('{project}/time-tracking', [\App\Http\Controllers\Customer\ProjectController::class, 'timeTracking'])->name('time-tracking');
+            Route::get('{project}/files', [\App\Http\Controllers\Customer\ProjectController::class, 'files'])->name('files');
+            Route::get('{project}/files/{attachment}/download', [\App\Http\Controllers\Customer\ProjectController::class, 'downloadFile'])->name('files.download');
+        });
+
+        // Customer Finance
+        Route::prefix('finance')->name('finance.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\FinanceController::class, 'index'])->name('index');
+
+            // Invoices
+            Route::get('/invoices', [\App\Http\Controllers\Customer\FinanceController::class, 'invoices'])->name('invoices');
+            Route::get('/invoices/{invoice}', [\App\Http\Controllers\Customer\FinanceController::class, 'showInvoice'])->name('invoices.show');
+            Route::get('/invoices/{invoice}/download', [\App\Http\Controllers\Customer\FinanceController::class, 'downloadInvoice'])->name('invoices.download');
+
+            // Payments
+            Route::get('/payments', [\App\Http\Controllers\Customer\FinanceController::class, 'payments'])->name('payments');
+            Route::get('/payments/{payment}', [\App\Http\Controllers\Customer\FinanceController::class, 'showPayment'])->name('payments.show');
+
+            // Quotations
+            Route::get('/quotations', [\App\Http\Controllers\Customer\FinanceController::class, 'quotations'])->name('quotations');
+            Route::get('/quotations/{quotation}', [\App\Http\Controllers\Customer\FinanceController::class, 'showQuotation'])->name('quotations.show');
+            Route::post('/quotations/{quotation}/accept', [\App\Http\Controllers\Customer\FinanceController::class, 'acceptQuotation'])->name('quotations.accept');
+            Route::get('/quotations/{quotation}/download', [\App\Http\Controllers\Customer\FinanceController::class, 'downloadQuotation'])->name('quotations.download');
+        });
+
+        // Customer Communications
+        Route::prefix('communications')->name('communications.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Customer\CommunicationController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Customer\CommunicationController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Customer\CommunicationController::class, 'store'])->name('store');
+            Route::get('/{communication}', [\App\Http\Controllers\Customer\CommunicationController::class, 'show'])->name('show');
+            Route::get('/{communication}/attachments/{attachment}/download', [\App\Http\Controllers\Customer\CommunicationController::class, 'downloadAttachment'])->name('attachments.download');
+
+            // Chat functionality
+            Route::get('/chats', [\App\Http\Controllers\Customer\CommunicationController::class, 'chats'])->name('chats');
+            Route::get('/chats/{chat}', [\App\Http\Controllers\Customer\CommunicationController::class, 'showChat'])->name('chats.show');
+            Route::post('/chats/{chat}/messages', [\App\Http\Controllers\Customer\CommunicationController::class, 'sendMessage'])->name('chats.messages.store');
+        });
+
         // Customer Support Portal
         Route::prefix('support')->name('support.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
             Route::get('/create', [\App\Http\Controllers\Customer\SupportController::class, 'create'])->name('create');
             Route::post('/store', [\App\Http\Controllers\Customer\SupportController::class, 'store'])->name('store');
-// 
-        // Ticket management
-        Route::prefix('tickets')->name('tickets.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
-            Route::get('{ticket}', [\App\Http\Controllers\Customer\SupportController::class, 'show'])->name('show');
-            Route::post('{ticket}/comments', [\App\Http\Controllers\Customer\SupportController::class, 'addComment'])->name('comments.store');
-            Route::post('{ticket}/close', [\App\Http\Controllers\Customer\SupportController::class, 'close'])->name('close');
-            Route::post('{ticket}/reopen', [\App\Http\Controllers\Customer\SupportController::class, 'reopen'])->name('reopen');
-        });
 
-        // Knowledge Base
-        Route::prefix('knowledge-base')->name('knowledge-base.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'searchKnowledgeBase'])->name('index');
-            Route::get('{article}', [\App\Http\Controllers\Customer\SupportController::class, 'viewArticle'])->name('show');
-            Route::post('{article}/helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleHelpful'])->name('helpful');
-            Route::post('{article}/not-helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleNotHelpful'])->name('not-helpful');
-        });
+            // Ticket management
+            Route::prefix('tickets')->name('tickets.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'index'])->name('index');
+                Route::get('{ticket}', [\App\Http\Controllers\Customer\SupportController::class, 'show'])->name('show');
+                Route::post('{ticket}/comments', [\App\Http\Controllers\Customer\SupportController::class, 'addComment'])->name('comments.store');
+                Route::post('{ticket}/close', [\App\Http\Controllers\Customer\SupportController::class, 'close'])->name('close');
+                Route::post('{ticket}/reopen', [\App\Http\Controllers\Customer\SupportController::class, 'reopen'])->name('reopen');
+            });
 
-          
-        });
+            // Knowledge Base
+            Route::prefix('knowledge-base')->name('knowledge-base.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Customer\SupportController::class, 'searchKnowledgeBase'])->name('index');
+                Route::get('{article}', [\App\Http\Controllers\Customer\SupportController::class, 'viewArticle'])->name('show');
+                Route::post('{article}/helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleHelpful'])->name('helpful');
+                Route::post('{article}/not-helpful', [\App\Http\Controllers\Customer\SupportController::class, 'markArticleNotHelpful'])->name('not-helpful');
+            });
 
-          // FAQ
-          Route::get('/faq', [\App\Http\Controllers\Customer\SupportController::class, 'viewFAQ'])->name('support.faq');
+            // FAQ
+            Route::get('/faq', [\App\Http\Controllers\Customer\SupportController::class, 'viewFAQ'])->name('faq');
+        });
     });
 
     // Settings routes - Admin only
@@ -666,9 +739,16 @@ Route::middleware([
         Route::put('/advanced/security', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateSecurity'])->name('advanced.security.update');
         Route::put('/advanced/performance', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updatePerformance'])->name('advanced.performance.update');
         Route::put('/advanced/integrations', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateIntegrations'])->name('advanced.integrations.update');
+        Route::put('/advanced/notifications', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateNotifications'])->name('advanced.notifications.update');
         Route::put('/advanced/social-platforms', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateSocialPlatforms'])->name('advanced.social-platforms.update');
         Route::put('/advanced/ai-services', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'updateAIServices'])->name('advanced.ai-services.update');
         Route::post('/advanced/test-connection', [\App\Http\Controllers\Settings\AdvancedSettingsController::class, 'testConnection'])->name('advanced.test-connection');
+
+        // reCAPTCHA Settings
+        Route::get('/recaptcha', [\App\Http\Controllers\Settings\RecaptchaController::class, 'index'])->name('recaptcha.index');
+        Route::put('/recaptcha', [\App\Http\Controllers\Settings\RecaptchaController::class, 'update'])->name('recaptcha.update');
+        Route::post('/recaptcha/verify', [\App\Http\Controllers\Settings\RecaptchaController::class, 'verify'])->name('recaptcha.verify');
+        Route::post('/recaptcha/test', [\App\Http\Controllers\Settings\RecaptchaController::class, 'test'])->name('recaptcha.test');
 
         // System Maintenance
         Route::post('/maintenance/cache-clear', [\App\Http\Controllers\Settings\MaintenanceController::class, 'clearCache'])->name('maintenance.cache.clear');

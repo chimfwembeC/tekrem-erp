@@ -73,9 +73,33 @@ export default function Sidebar({ settings }: SidebarProps) {
   const { t } = useTranslate();
   const { hasAnyRole, hasAnyPermission } = usePermissions();
 
-  // Check if user has access to CRM
+  // Permission-based access checks
   const hasCrmAccess = (): boolean => {
-    return hasAnyRole(['admin', 'staff']);
+    return hasAnyPermission(['view crm']);
+  };
+
+  const hasFinanceAccess = (): boolean => {
+    return hasAnyPermission(['view finance']);
+  };
+
+  const hasProjectsAccess = (): boolean => {
+    return hasAnyPermission(['view projects']);
+  };
+
+  const hasHrAccess = (): boolean => {
+    return hasAnyPermission(['view hr']);
+  };
+
+  const hasSupportAccess = (): boolean => {
+    return hasAnyPermission(['view support']);
+  };
+
+  const hasCmsAccess = (): boolean => {
+    return hasAnyPermission(['view cms']);
+  };
+
+  const hasAiAccess = (): boolean => {
+    return hasAnyPermission(['view ai']);
   };
 
   // Define navigation items
@@ -128,8 +152,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // Finance navigation items - only visible to admin and staff
-  const financeItems = hasCrmAccess() ? [
+  // Finance navigation items - only visible to users with finance permission
+  const financeItems = hasFinanceAccess() ? [
     {
       href: route('finance.dashboard'),
       label: t('finance.dashboard', 'Dashboard'),
@@ -192,8 +216,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // Support navigation items - only visible to admin and staff
-  const supportItems = hasCrmAccess() ? [
+  // Support navigation items - only visible to users with support permission
+  const supportItems = hasSupportAccess() ? [
     {
       href: route('support.dashboard'),
       label: t('support.dashboard', 'Dashboard'),
@@ -232,8 +256,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // CMS navigation items - only visible to admin and staff
-  const cmsItems = hasCrmAccess() ? [
+  // CMS navigation items - only visible to users with cms permission
+  const cmsItems = hasCmsAccess() ? [
     {
       href: route('cms.dashboard'),
       label: t('cms.dashboard', 'Dashboard'),
@@ -278,8 +302,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // Projects navigation items - only visible to admin and staff
-  const projectsItems = hasCrmAccess() ? [
+  // Projects navigation items - only visible to users with projects permission
+  const projectsItems = hasProjectsAccess() ? [
     {
       href: route('projects.dashboard'),
       label: t('projects.dashboard', 'Dashboard'),
@@ -318,8 +342,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // HR navigation items - only visible to admin and staff
-  const hrItems = hasCrmAccess() ? [
+  // HR navigation items - only visible to users with hr permission
+  const hrItems = hasHrAccess() ? [
     {
       href: route('hr.dashboard'),
       label: t('hr.dashboard', 'Dashboard'),
@@ -370,8 +394,8 @@ export default function Sidebar({ settings }: SidebarProps) {
     },
   ] : [];
 
-  // AI navigation items - only visible to admin and staff
-  const aiItems = hasCrmAccess() ? [
+  // AI navigation items - only visible to users with ai permission
+  const aiItems = hasAiAccess() ? [
     {
       href: route('ai.dashboard'),
       label: t('ai.dashboard', 'Dashboard'),
@@ -465,10 +489,10 @@ export default function Sidebar({ settings }: SidebarProps) {
       active: route().current('customer.support.knowledge-base.*')
     },
     {
-      href: route('customer.support.support.faq'),
+      href: route('customer.support.faq'),
       label: t('customer.faq', 'FAQ'),
       icon: <HelpCircle className="h-5 w-5" />,
-      active: route().current('customer.support.support.faq')
+      active: route().current('customer.support.faq')
     },
   ] : [];
 
@@ -534,8 +558,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* Finance Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* Finance Navigation - Only visible to users with finance permission */}
+        {hasFinanceAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -569,8 +593,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* Projects Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* Projects Navigation - Only visible to users with projects permission */}
+        {hasProjectsAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -604,8 +628,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* HR Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* HR Navigation - Only visible to users with hr permission */}
+        {hasHrAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -639,8 +663,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* Support Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* Support Navigation - Only visible to users with support permission */}
+        {hasSupportAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -674,8 +698,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* AI Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* AI Navigation - Only visible to users with ai permission */}
+        {hasAiAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",
@@ -709,8 +733,8 @@ export default function Sidebar({ settings }: SidebarProps) {
           </Collapsible>
         )}
 
-        {/* CMS Navigation - Only visible to admin and staff */}
-        {hasCrmAccess() && (
+        {/* CMS Navigation - Only visible to users with cms permission */}
+        {hasCmsAccess() && (
           <Collapsible className="mt-2">
             <CollapsibleTrigger className={cn(
               "w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors",

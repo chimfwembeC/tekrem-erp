@@ -239,105 +239,304 @@ export default function Home({ canLogin, canRegister }: Props) {
         </div>
       </div>
 
-      {/* Testimonials Section */}
+      {/* Organizational Chart Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="lg:text-center mb-12">
+            <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Team</h2>
+            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              Meet Our Leadership
+            </p>
+            <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 lg:mx-auto">
+              Our experienced team of technology professionals is dedicated to delivering exceptional results.
+            </p>
+          </div>
+
+          {/* Organizational Chart */}
+          <div className="relative">
+            {/* CEO Level */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 max-w-sm">
+                <div className="flex flex-col items-center">
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center mb-4">
+                    <span className="text-white font-bold text-2xl">JM</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">John Mwanza</h3>
+                  <p className="text-blue-600 font-medium">Chief Executive Officer</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-2 text-center">
+                    15+ years in technology leadership and business strategy
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Connection Line */}
+            <div className="flex justify-center mb-8">
+              <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+            </div>
+
+            {/* Department Heads Level */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              {/* CTO */}
+              <div className="flex justify-center">
+                <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 max-w-sm">
+                  <div className="flex flex-col items-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-r from-green-500 to-teal-600 flex items-center justify-center mb-4">
+                      <span className="text-white font-bold text-lg">SK</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Sarah Kabwe</h3>
+                    <p className="text-blue-600 font-medium text-sm">Chief Technology Officer</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-2 text-center">
+                      Software architecture & development
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* COO */}
+              <div className="flex justify-center">
+                <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 max-w-sm">
+                  <div className="flex flex-col items-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center mb-4">
+                      <span className="text-white font-bold text-lg">DN</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">David Nyirenda</h3>
+                    <p className="text-blue-600 font-medium text-sm">Chief Operations Officer</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-2 text-center">
+                      Operations & project management
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Head of Sales */}
+              <div className="flex justify-center">
+                <div className="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 max-w-sm">
+                  <div className="flex flex-col items-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center mb-4">
+                      <span className="text-white font-bold text-lg">MP</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Mary Phiri</h3>
+                    <p className="text-blue-600 font-medium text-sm">Head of Sales & Marketing</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-2 text-center">
+                      Business development & client relations
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Connection Lines for Department Heads */}
+            <div className="hidden md:block absolute top-32 left-1/2 transform -translate-x-1/2 w-3/4 h-px bg-gray-300 dark:bg-gray-600"></div>
+            <div className="hidden md:block absolute top-32 left-1/6 w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="hidden md:block absolute top-32 left-1/2 w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="hidden md:block absolute top-32 right-1/6 w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Testimonials Section */}
       <div className="bg-white dark:bg-gray-900 py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center">
+          <div className="lg:text-center mb-12">
             <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Testimonials</h2>
             <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               What Our Clients Say
             </p>
+            <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 lg:mx-auto">
+              Don't just take our word for it - hear from our satisfied clients about their experience working with us.
+            </p>
           </div>
+
           <div className="mt-10">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {/* Testimonial 1 */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-xl">ZB</span>
+              {/* Enhanced Testimonial 1 */}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center mb-6">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-xl">ZB</span>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">Zambia Bank</h4>
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-white">Zambia Bank</h4>
                     <p className="text-gray-600 dark:text-gray-400">Financial Services</p>
+                    <div className="flex mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                        </svg>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">
+                <blockquote className="text-gray-700 dark:text-gray-300 italic text-lg leading-relaxed">
                   "TekRem helped us modernize our digital banking platform, resulting in a 40% increase in online transactions and significantly improved customer satisfaction."
-                </p>
+                </blockquote>
+                <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                  — Michael Banda, IT Director
+                </div>
               </div>
 
-              {/* Testimonial 2 */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-xl">LR</span>
+              {/* Enhanced Testimonial 2 */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center mb-6">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-xl">LR</span>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">Lusaka Retail</h4>
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-white">Lusaka Retail</h4>
                     <p className="text-gray-600 dark:text-gray-400">Retail Chain</p>
+                    <div className="flex mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                        </svg>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">
+                <blockquote className="text-gray-700 dark:text-gray-300 italic text-lg leading-relaxed">
                   "The inventory management system developed by TekRem has streamlined our operations and reduced stockouts by 60%. Their team was professional and delivered on time."
-                </p>
+                </blockquote>
+                <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                  — Grace Mulenga, Operations Manager
+                </div>
               </div>
 
-              {/* Testimonial 3 */}
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-xl">ZH</span>
+              {/* Enhanced Testimonial 3 */}
+              <div className="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center mb-6">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-xl">ZH</span>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">Zambia Healthcare</h4>
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-white">Zambia Healthcare</h4>
                     <p className="text-gray-600 dark:text-gray-400">Healthcare Provider</p>
+                    <div className="flex mt-1">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                        </svg>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400">
+                <blockquote className="text-gray-700 dark:text-gray-300 italic text-lg leading-relaxed">
                   "TekRem's patient management system has revolutionized how we deliver care. The mobile app for patients has been particularly well-received."
-                </p>
+                </blockquote>
+                <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                  — Dr. James Tembo, Chief Medical Officer
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-    {/* Partners Section */}
-<div className="bg-gray-50 dark:bg-gray-800 py-16">
+    {/* Enhanced Partners Section with Infinite Carousel */}
+<div className="bg-gray-50 dark:bg-gray-800 py-16 overflow-hidden">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="lg:text-center mb-10">
+    <div className="lg:text-center mb-12">
       <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">Our Partners</h2>
       <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
         Trusted by Leading Organizations
       </p>
+      <p className="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-400 lg:mx-auto">
+        We collaborate with industry leaders to deliver cutting-edge solutions.
+      </p>
     </div>
 
-    <div className="overflow-hidden group space-y-8">
-      {/* Row 1 */}
-      <div className="flex whitespace-nowrap space-x-6 group-hover:animate-scroll">
-        {[
-          "Google", "Microsoft", "Amazon", "Apple", "IBM",
-          "Salesforce", "Oracle", "Meta", "Adobe", "Intel"
-        ].map((name, i) => (
-          <div key={i} className="partner-logo">
-            <span>{name}</span>
-          </div>
-        ))}
+    {/* Infinite Carousel Container */}
+    <div className="relative">
+      {/* First Row - Left to Right */}
+      <div className="flex overflow-hidden mb-8">
+        <div className="flex animate-scroll-left space-x-8 min-w-full">
+          {[
+            { name: "Google", logo: "🔍", color: "from-blue-500 to-green-500" },
+            { name: "Microsoft", logo: "🪟", color: "from-blue-600 to-cyan-500" },
+            { name: "Amazon", logo: "📦", color: "from-orange-500 to-yellow-500" },
+            { name: "Apple", logo: "🍎", color: "from-gray-700 to-gray-900" },
+            { name: "IBM", logo: "💼", color: "from-blue-700 to-indigo-600" },
+            { name: "Salesforce", logo: "☁️", color: "from-blue-500 to-teal-500" },
+            { name: "Oracle", logo: "🔴", color: "from-red-600 to-orange-600" },
+            { name: "Meta", logo: "📘", color: "from-blue-600 to-purple-600" },
+            { name: "Adobe", logo: "🎨", color: "from-red-500 to-pink-500" },
+            { name: "Intel", logo: "💻", color: "from-blue-600 to-indigo-700" }
+          ].map((partner, i) => (
+            <div key={i} className="flex-shrink-0 group">
+              <div className={`bg-gradient-to-r ${partner.color} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-w-[200px]`}>
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-3xl">{partner.logo}</span>
+                  <span className="text-white font-bold text-lg">{partner.name}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {/* Duplicate for seamless loop */}
+          {[
+            { name: "Google", logo: "🔍", color: "from-blue-500 to-green-500" },
+            { name: "Microsoft", logo: "🪟", color: "from-blue-600 to-cyan-500" },
+            { name: "Amazon", logo: "📦", color: "from-orange-500 to-yellow-500" },
+            { name: "Apple", logo: "🍎", color: "from-gray-700 to-gray-900" },
+            { name: "IBM", logo: "💼", color: "from-blue-700 to-indigo-600" }
+          ].map((partner, i) => (
+            <div key={`dup1-${i}`} className="flex-shrink-0 group">
+              <div className={`bg-gradient-to-r ${partner.color} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-w-[200px]`}>
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-3xl">{partner.logo}</span>
+                  <span className="text-white font-bold text-lg">{partner.name}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Row 2 (reverse) */}
-      <div className="flex whitespace-nowrap space-x-6 group-hover:animate-scroll-reverse">
-        {[
-          "Netflix", "Cisco", "Tesla", "Spotify", "NVIDIA",
-          "Shopify", "Zoom", "Slack", "Dropbox", "Atlassian"
-        ].map((name, i) => (
-          <div key={i} className="partner-logo">
-            <span>{name}</span>
-          </div>
-        ))}
+      {/* Second Row - Right to Left */}
+      <div className="flex overflow-hidden">
+        <div className="flex animate-scroll-right space-x-8 min-w-full">
+          {[
+            { name: "Netflix", logo: "🎬", color: "from-red-600 to-red-800" },
+            { name: "Cisco", logo: "🌐", color: "from-blue-600 to-blue-800" },
+            { name: "Tesla", logo: "⚡", color: "from-red-500 to-gray-800" },
+            { name: "Spotify", logo: "🎵", color: "from-green-500 to-green-700" },
+            { name: "NVIDIA", logo: "🎮", color: "from-green-600 to-black" },
+            { name: "Shopify", logo: "🛒", color: "from-green-500 to-teal-600" },
+            { name: "Zoom", logo: "📹", color: "from-blue-500 to-blue-700" },
+            { name: "Slack", logo: "💬", color: "from-purple-500 to-pink-500" },
+            { name: "Dropbox", logo: "📁", color: "from-blue-500 to-blue-600" },
+            { name: "Atlassian", logo: "🔧", color: "from-blue-600 to-indigo-700" }
+          ].map((partner, i) => (
+            <div key={i} className="flex-shrink-0 group">
+              <div className={`bg-gradient-to-r ${partner.color} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-w-[200px]`}>
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-3xl">{partner.logo}</span>
+                  <span className="text-white font-bold text-lg">{partner.name}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {/* Duplicate for seamless loop */}
+          {[
+            { name: "Netflix", logo: "🎬", color: "from-red-600 to-red-800" },
+            { name: "Cisco", logo: "🌐", color: "from-blue-600 to-blue-800" },
+            { name: "Tesla", logo: "⚡", color: "from-red-500 to-gray-800" },
+            { name: "Spotify", logo: "🎵", color: "from-green-500 to-green-700" },
+            { name: "NVIDIA", logo: "🎮", color: "from-green-600 to-black" }
+          ].map((partner, i) => (
+            <div key={`dup2-${i}`} className="flex-shrink-0 group">
+              <div className={`bg-gradient-to-r ${partner.color} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 min-w-[200px]`}>
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-3xl">{partner.logo}</span>
+                  <span className="text-white font-bold text-lg">{partner.name}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </div>
+
 </div>
 
 

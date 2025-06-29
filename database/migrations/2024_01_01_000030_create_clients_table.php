@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->string('status')->default('active');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('converted_from_lead_id')->nullable();
+            $table->unsignedBigInteger('converted_from_lead_id')->nullable(); // Will be constrained later
             $table->timestamps();
         });
     }

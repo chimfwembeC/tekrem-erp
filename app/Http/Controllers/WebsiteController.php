@@ -54,4 +54,14 @@ class WebsiteController extends Controller
     {
         return inertia('Website/Services/CloudServices');
     }
+
+    public function help()
+    {
+        return inertia('Website/Help');
+    }
+
+    public function faq()
+    {
+        return inertia('Website/FAQ');
+    }
 }

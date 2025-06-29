@@ -23,4 +23,10 @@ class Role extends SpatieRole
         'name',
         'description',
     ];
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'model_has_roles', 'role_id', 'model_id')
+            ->where('model_type', \App\Models\User::class);
+    }
 }

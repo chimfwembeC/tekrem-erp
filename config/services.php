@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'recaptcha' => [
+    'site' => env('RECAPTCHA_SITE_KEY'),
+    'secret' => env('RECAPTCHA_SECRET_KEY'),
+    ],
+
     'openai' => [
         'api_key' => env('OPENAI_API_KEY'),
         'api_url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'),

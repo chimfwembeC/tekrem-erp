@@ -1,26 +1,47 @@
 import { Link, useForm, Head } from '@inertiajs/react';
-import React from 'react';
+import React, { useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
 import { AuthCard, FormInput, FormCheckbox, AuthButton, LinkButton } from '@/Components/Auth';
+import ReCaptcha from '@/Components/ReCaptcha';
 
 export default function Register() {
   const page = useTypedPage();
   const route = useRoute();
+  const [recaptchaToken, setRecaptchaToken] = useState<string>('');
+  const recaptcha = page.props.recaptcha;
   const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
     terms: false,
+    recaptcha_token: '',
   });
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Set reCAPTCHA token if enabled
+    if (recaptcha?.enabled && recaptchaToken) {
+      form.setData('recaptcha_token', recaptchaToken);
+    }
+
     form.post(route('register'), {
-      onFinish: () => form.reset('password', 'password_confirmation'),
+      onFinish: () => {
+        form.reset('password', 'password_confirmation');
+        setRecaptchaToken('');
+      },
     });
   }
+
+  const handleRecaptchaVerify = (token: string) => {
+    setRecaptchaToken(token);
+  };
+
+  const handleRecaptchaExpired = () => {
+    setRecaptchaToken('');
+  };
 
   return (
     <AuthCard title="Register" description="Create a new account to get started.">
@@ -104,6 +125,19 @@ export default function Register() {
               <p className="text-sm font-medium text-destructive">{form.errors.terms}</p>
             )}
           </div>
+        )}
+
+        {recaptcha?.enabled && (
+          <ReCaptcha
+            siteKey={recaptcha.site_key}
+            theme={recaptcha.theme as 'light' | 'dark'}
+            size={recaptcha.size as 'normal' | 'compact'}
+            onVerify={handleRecaptchaVerify}
+            onExpired={handleRecaptchaExpired}
+            error={form.errors.recaptcha_token}
+            label="Security Verification"
+            required
+          />
         )}
 
         <div className="flex flex-col space-y-4 pt-2">

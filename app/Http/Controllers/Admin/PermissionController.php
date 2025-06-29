@@ -24,16 +24,42 @@ class PermissionController extends Controller
     /**
      * Display a listing of permissions.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $permissions = Permission::with('roles')
-            ->orderBy('name')
+        $query = Permission::with('roles');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Apply module filter
+        if ($request->filled('module') && $request->get('module') !== 'all') {
+            $module = $request->get('module');
+            $query->where('name', 'like', "{$module}.%");
+        }
+
+        // Apply role filter
+        if ($request->filled('role') && $request->get('role') !== 'all') {
+            $role = $request->get('role');
+            $query->whereHas('roles', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
+        }
+
+        $permissions = $query->orderBy('name')
             ->get()
             ->map(function ($permission) {
                 return [
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'description' => $permission->description ?? '',
+                    'module' => explode('.', $permission->name)[0] ?? 'system',
+                    'action' => explode('.', $permission->name)[1] ?? '',
                     'roles' => $permission->roles->map(function ($role) {
                         return [
                             'id' => $role->id,
@@ -46,8 +72,24 @@ class PermissionController extends Controller
                 ];
             });
 
+        // Get all roles for filters
+        $allRoles = Role::orderBy('name')->get(['id', 'name']);
+
+        // Get modules from permissions
+        $modules = Permission::select('name')
+            ->get()
+            ->map(function ($permission) {
+                return explode('.', $permission->name)[0] ?? 'system';
+            })
+            ->unique()
+            ->sort()
+            ->values();
+
         return Inertia::render('Admin/Permissions/Index', [
             'permissions' => $permissions,
+            'roles' => $allRoles,
+            'modules' => $modules,
+            'filters' => $request->only(['search', 'module', 'role']),
         ]);
     }
 
@@ -212,5 +254,129 @@ class PermissionController extends Controller
 
         return redirect()->route('admin.permissions.index')
             ->with('success', 'Permission deleted successfully.');
+    }
+
+    /**
+     * Bulk assign permissions to roles.
+     */
+    public function bulkAssignRoles(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'permission_ids' => 'required|array',
+            'permission_ids.*' => 'exists:permissions,id',
+            'role_ids' => 'required|array',
+            'role_ids.*' => 'exists:roles,id',
+            'action' => 'required|in:assign,remove',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $permissions = Permission::whereIn('id', $request->permission_ids)->get();
+        $roles = Role::whereIn('id', $request->role_ids)->get();
+
+        foreach ($permissions as $permission) {
+            if ($request->action === 'assign') {
+                $permission->assignRole($roles);
+            } else {
+                $permission->removeRole($roles);
+            }
+        }
+
+        $action = $request->action === 'assign' ? 'assigned to' : 'removed from';
+        $message = count($request->permission_ids) . ' permission(s) ' . $action . ' ' . count($request->role_ids) . ' role(s) successfully.';
+
+        return redirect()->route('admin.permissions.index')
+            ->with('success', $message);
+    }
+
+    /**
+     * Bulk delete permissions.
+     */
+    public function bulkDelete(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'permission_ids' => 'required|array',
+            'permission_ids.*' => 'exists:permissions,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Prevent deletion of critical admin permissions
+        $permissions = Permission::whereIn('id', $request->permission_ids)->get();
+        $criticalPermissions = $permissions->filter(function ($permission) {
+            return str_contains($permission->name, 'admin.') ||
+                   str_contains($permission->name, 'settings.manage') ||
+                   in_array($permission->name, ['view users', 'manage roles', 'manage permissions']);
+        });
+
+        if ($criticalPermissions->count() > 0) {
+            return redirect()->back()
+                ->withErrors(['permission_ids' => 'Cannot delete critical system permissions.']);
+        }
+
+        Permission::whereIn('id', $request->permission_ids)->delete();
+
+        return redirect()->route('admin.permissions.index')
+            ->with('success', count($request->permission_ids) . ' permission(s) deleted successfully.');
+    }
+
+    /**
+     * Generate permissions for a module.
+     */
+    public function generateModulePermissions(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'module' => 'required|string|max:50',
+            'actions' => 'required|array',
+            'actions.*' => 'string|in:view,create,edit,delete,manage,export,import',
+            'assign_to_roles' => 'array',
+            'assign_to_roles.*' => 'exists:roles,name',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $module = strtolower($request->module);
+        $createdPermissions = [];
+
+        foreach ($request->actions as $action) {
+            $permissionName = "{$module}.{$action}";
+
+            // Check if permission already exists
+            if (Permission::where('name', $permissionName)->exists()) {
+                continue;
+            }
+
+            $permission = Permission::create([
+                'name' => $permissionName,
+                'description' => "Allow {$action} access to {$module} module",
+            ]);
+
+            $createdPermissions[] = $permission;
+        }
+
+        // Assign to roles if specified
+        if ($request->has('assign_to_roles') && count($createdPermissions) > 0) {
+            $roles = Role::whereIn('name', $request->assign_to_roles)->get();
+            foreach ($createdPermissions as $permission) {
+                $permission->assignRole($roles);
+            }
+        }
+
+        $message = count($createdPermissions) . ' permission(s) created for ' . $module . ' module.';
+
+        return redirect()->route('admin.permissions.index')
+            ->with('success', $message);
     }
 }

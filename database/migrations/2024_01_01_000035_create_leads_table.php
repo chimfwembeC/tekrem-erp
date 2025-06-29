@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('status')->default('new');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->boolean('converted_to_client')->default(false);
-            $table->foreignId('converted_to_client_id')->nullable();
+            $table->foreignId('converted_to_client_id')->nullable()->constrained('clients')->onDelete('set null');
             $table->timestamp('converted_at')->nullable();
             $table->timestamps();
         });

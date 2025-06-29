@@ -60,6 +60,14 @@ class KnowledgeBaseCategory extends Model
     }
 
     /**
+     * Get the FAQs for the category.
+     */
+    public function faqs(): HasMany
+    {
+        return $this->hasMany(FAQ::class, 'category_id');
+    }
+
+    /**
      * Get the parent category.
      */
     public function parent()

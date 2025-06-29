@@ -18,55 +18,73 @@ declare global {
        * @example cy.loginAsAdmin()
        */
       loginAsAdmin(): Chainable<void>
-      
+
       /**
        * Custom command to login as staff user
        * @example cy.loginAsStaff()
        */
       loginAsStaff(): Chainable<void>
-      
+
       /**
        * Custom command to login with custom credentials
        * @example cy.loginAs('user@example.com', 'password')
        */
       loginAs(email: string, password: string): Chainable<void>
-      
+
+      /**
+       * Custom command to login with user object
+       * @example cy.login(userObject)
+       */
+      login(user: any): Chainable<void>
+
       /**
        * Custom command to logout
        * @example cy.logout()
        */
       logout(): Chainable<void>
-      
+
+      /**
+       * Custom command to run Laravel artisan commands
+       * @example cy.artisan('migrate:fresh --seed')
+       */
+      artisan(command: string): Chainable<void>
+
+      /**
+       * Custom command to create Laravel models
+       * @example cy.create('App\\Models\\User', { name: 'Test', email: 'test@example.com' })
+       */
+      create(model: string, attributes: Record<string, any>): Chainable<any>
+
       /**
        * Custom command to navigate to AI module pages
        * @example cy.visitAIPage('models')
        */
       visitAIPage(page: 'dashboard' | 'models' | 'services' | 'conversations' | 'prompt-templates'): Chainable<void>
-      
+
       /**
        * Custom command to wait for page to load
        * @example cy.waitForPageLoad()
        */
       waitForPageLoad(): Chainable<void>
-      
+
       /**
        * Custom command to check if element has data-testid
        * @example cy.getByTestId('submit-button')
        */
       getByTestId(testId: string): Chainable<JQuery<HTMLElement>>
-      
+
       /**
        * Custom command to fill form fields
        * @example cy.fillForm({ name: 'Test', email: 'test@example.com' })
        */
       fillForm(fields: Record<string, string>): Chainable<void>
-      
+
       /**
        * Custom command to check toast notifications
        * @example cy.checkToast('success', 'Item created successfully')
        */
       checkToast(type: 'success' | 'error' | 'warning' | 'info', message?: string): Chainable<void>
-      
+
       /**
        * Custom command to wait for API request
        * @example cy.waitForAPI('POST', '/api/ai/models')
@@ -96,6 +114,36 @@ Cypress.Commands.add('loginAs', (email: string, password: string) => {
     cy.url().should('not.include', '/login');
     cy.get('body').should('not.contain', 'These credentials do not match our records');
   });
+});
+
+// Login with user object
+Cypress.Commands.add('login', (user: any) => {
+  cy.session([user.email, user.id], () => {
+    cy.visit('/login');
+    cy.get('input[name="email"]').type(user.email);
+    cy.get('input[name="password"]').type('password'); // Default password for test users
+    cy.get('button[type="submit"]').click();
+    cy.url().should('not.include', '/login');
+  });
+});
+
+// Run Laravel artisan commands
+Cypress.Commands.add('artisan', (command: string) => {
+  cy.exec(`php artisan ${command}`, { failOnNonZeroExit: false });
+});
+
+// Create Laravel models
+Cypress.Commands.add('create', (model: string, attributes: Record<string, any>) => {
+  const attributesJson = JSON.stringify(attributes).replace(/"/g, '\\"');
+  return cy.exec(`php artisan tinker --execute="echo json_encode(${model}::factory()->create(json_decode('${attributesJson}', true))->toArray());"`)
+    .then((result) => {
+      try {
+        return JSON.parse(result.stdout);
+      } catch (e) {
+        cy.log('Failed to parse model creation result:', result.stdout);
+        return attributes; // Fallback to provided attributes
+      }
+    });
 });
 
 // Logout

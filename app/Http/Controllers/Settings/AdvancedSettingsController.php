@@ -537,6 +537,49 @@ class AdvancedSettingsController extends Controller
     }
 
     /**
+     * Update notification settings.
+     */
+    public function updateNotifications(Request $request): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email_notifications' => 'boolean',
+            'push_notifications' => 'boolean',
+            'sms_notifications' => 'boolean',
+            'slack_notifications' => 'boolean',
+            'webhook_notifications' => 'boolean',
+            'notification_frequency' => 'required|string|in:immediate,hourly,daily,weekly',
+            'admin_alerts' => 'boolean',
+            'system_alerts' => 'boolean',
+            'security_alerts' => 'boolean',
+            'backup_alerts' => 'boolean',
+            'error_alerts' => 'boolean',
+            'performance_alerts' => 'boolean',
+            'webhook_url' => 'nullable|url',
+            'slack_webhook_url' => 'nullable|url',
+            'email_from_name' => 'nullable|string|max:255',
+            'email_from_address' => 'nullable|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validated = $validator->validated();
+
+        // Save notification settings
+        foreach ($validated as $key => $value) {
+            Setting::set("notifications.{$key}", $value);
+        }
+
+        session()->flash('flash', [
+            'bannerStyle' => 'success',
+            'banner' => 'Notification settings updated successfully!'
+        ]);
+
+        return redirect()->back();
+    }
+
+    /**
      * Update configuration settings.
      */
     private function updateConfigSettings(string $category, array $settings): void

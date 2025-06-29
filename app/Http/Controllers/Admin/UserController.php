@@ -163,7 +163,7 @@ class UserController extends Controller
                         'description' => $permission->description ?? '',
                     ];
                 }),
-                'all_permissions' => $user->getAllPermissions()->map(function ($permission) {
+                'all_permissions' => $user->getAllPermissions()->map(function ($permission) use ($user) {
                     return [
                         'id' => $permission->id,
                         'name' => $permission->name,

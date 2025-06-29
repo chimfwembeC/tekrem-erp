@@ -19,5 +19,13 @@
   </head>
   <body class="font-sans antialiased">
     @inertia
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {{-- <form action="{{ route('settings.recaptcha.test') }}" method="POST">
+      @csrf
+      <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+      <br>
+      <button type="submit">Submit</button>
+  </form> --}}
   </body>
 </html>

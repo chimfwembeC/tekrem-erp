@@ -34,7 +34,11 @@ import {
   Eye,
   EyeOff,
   TestTube,
-  Loader2
+  Loader2,
+  Bell,
+  Mail,
+  Smartphone,
+  Webhook
 } from 'lucide-react';
 import { toast } from 'sonner';
 import useRoute from '@/Hooks/useRoute';
@@ -62,6 +66,26 @@ export default function AdvancedSettings({
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
   const [connectionStatus, setConnectionStatus] = useState<Record<string, string>>({});
   const [testingConnection, setTestingConnection] = useState<Record<string, boolean>>({});
+
+  // Notification settings form
+  const notificationForm = useForm({
+    email_notifications: true,
+    push_notifications: true,
+    sms_notifications: false,
+    slack_notifications: false,
+    webhook_notifications: false,
+    notification_frequency: 'immediate',
+    admin_alerts: true,
+    system_alerts: true,
+    security_alerts: true,
+    backup_alerts: true,
+    error_alerts: true,
+    performance_alerts: false,
+    webhook_url: '',
+    slack_webhook_url: '',
+    email_from_name: 'TekRem ERP',
+    email_from_address: 'noreply@tekrem.com',
+  });
 
   // System settings form
   const systemForm = useForm(systemSettings);
@@ -149,6 +173,22 @@ export default function AdvancedSettings({
       },
       onError: () => {
         toast.error('Failed to update integration settings', {
+          description: 'Please check the form for errors and try again.'
+        });
+      }
+    });
+  };
+
+  const handleNotificationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    notificationForm.put(route('settings.advanced.notifications.update'), {
+      onSuccess: () => {
+        toast.success('Notification settings updated!', {
+          description: 'Notification preferences have been saved successfully.'
+        });
+      },
+      onError: () => {
+        toast.error('Failed to update notification settings', {
           description: 'Please check the form for errors and try again.'
         });
       }
@@ -452,7 +492,7 @@ export default function AdvancedSettings({
 
         {/* Advanced Settings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="system" className="flex items-center gap-2">
               <Server className="h-4 w-4" />
               System
@@ -464,6 +504,10 @@ export default function AdvancedSettings({
             <TabsTrigger value="performance" className="flex items-center gap-2">
               <Zap className="h-4 w-4" />
               Performance
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
+              <Bell className="h-4 w-4" />
+              Notifications
             </TabsTrigger>
             <TabsTrigger value="integrations" className="flex items-center gap-2">
               <Plug className="h-4 w-4" />
@@ -702,6 +746,282 @@ export default function AdvancedSettings({
                 </form>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Notification Settings Tab */}
+          <TabsContent value="notifications">
+            <div className="space-y-6">
+              {/* Email Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Mail className="h-5 w-5" />
+                    Email Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Configure email notification settings and preferences
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleNotificationSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="email_notifications" className="text-sm font-medium">
+                            Email Notifications
+                          </Label>
+                          <Switch
+                            id="email_notifications"
+                            checked={notificationForm.data.email_notifications}
+                            onCheckedChange={(checked) => notificationForm.setData('email_notifications', checked)}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="admin_alerts" className="text-sm font-medium">
+                            Admin Alerts
+                          </Label>
+                          <Switch
+                            id="admin_alerts"
+                            checked={notificationForm.data.admin_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('admin_alerts', checked)}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="system_alerts" className="text-sm font-medium">
+                            System Alerts
+                          </Label>
+                          <Switch
+                            id="system_alerts"
+                            checked={notificationForm.data.system_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('system_alerts', checked)}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="security_alerts" className="text-sm font-medium">
+                            Security Alerts
+                          </Label>
+                          <Switch
+                            id="security_alerts"
+                            checked={notificationForm.data.security_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('security_alerts', checked)}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="backup_alerts" className="text-sm font-medium">
+                            Backup Alerts
+                          </Label>
+                          <Switch
+                            id="backup_alerts"
+                            checked={notificationForm.data.backup_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('backup_alerts', checked)}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="error_alerts" className="text-sm font-medium">
+                            Error Alerts
+                          </Label>
+                          <Switch
+                            id="error_alerts"
+                            checked={notificationForm.data.error_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('error_alerts', checked)}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor="performance_alerts" className="text-sm font-medium">
+                            Performance Alerts
+                          </Label>
+                          <Switch
+                            id="performance_alerts"
+                            checked={notificationForm.data.performance_alerts}
+                            onCheckedChange={(checked) => notificationForm.setData('performance_alerts', checked)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="notification_frequency" className="text-sm font-medium">
+                            Notification Frequency
+                          </Label>
+                          <Select
+                            value={notificationForm.data.notification_frequency}
+                            onValueChange={(value) => notificationForm.setData('notification_frequency', value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select frequency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="immediate">Immediate</SelectItem>
+                              <SelectItem value="hourly">Hourly</SelectItem>
+                              <SelectItem value="daily">Daily</SelectItem>
+                              <SelectItem value="weekly">Weekly</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="email_from_name" className="text-sm font-medium">
+                          From Name
+                        </Label>
+                        <Input
+                          id="email_from_name"
+                          value={notificationForm.data.email_from_name}
+                          onChange={(e) => notificationForm.setData('email_from_name', e.target.value)}
+                          placeholder="TekRem ERP"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="email_from_address" className="text-sm font-medium">
+                          From Email Address
+                        </Label>
+                        <Input
+                          id="email_from_address"
+                          type="email"
+                          value={notificationForm.data.email_from_address}
+                          onChange={(e) => notificationForm.setData('email_from_address', e.target.value)}
+                          placeholder="noreply@tekrem.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button type="submit" disabled={notificationForm.processing}>
+                        {notificationForm.processing ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Email Settings'
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* Push & SMS Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Smartphone className="h-5 w-5" />
+                    Push & SMS Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Configure push notifications and SMS alert settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm font-medium">Push Notifications</Label>
+                          <p className="text-xs text-muted-foreground">Browser push notifications for real-time alerts</p>
+                        </div>
+                        <Switch
+                          checked={notificationForm.data.push_notifications}
+                          onCheckedChange={(checked) => notificationForm.setData('push_notifications', checked)}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm font-medium">SMS Notifications</Label>
+                          <p className="text-xs text-muted-foreground">SMS alerts for critical system events</p>
+                        </div>
+                        <Switch
+                          checked={notificationForm.data.sms_notifications}
+                          onCheckedChange={(checked) => notificationForm.setData('sms_notifications', checked)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Webhook Notifications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Webhook className="h-5 w-5" />
+                    Webhook & Integration Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    Configure webhook endpoints and third-party notification integrations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm font-medium">Webhook Notifications</Label>
+                          <p className="text-xs text-muted-foreground">Send notifications to external webhooks</p>
+                        </div>
+                        <Switch
+                          checked={notificationForm.data.webhook_notifications}
+                          onCheckedChange={(checked) => notificationForm.setData('webhook_notifications', checked)}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label className="text-sm font-medium">Slack Notifications</Label>
+                          <p className="text-xs text-muted-foreground">Send alerts to Slack channels</p>
+                        </div>
+                        <Switch
+                          checked={notificationForm.data.slack_notifications}
+                          onCheckedChange={(checked) => notificationForm.setData('slack_notifications', checked)}
+                        />
+                      </div>
+                    </div>
+
+                    {notificationForm.data.webhook_notifications && (
+                      <div className="space-y-2">
+                        <Label htmlFor="webhook_url" className="text-sm font-medium">
+                          Webhook URL
+                        </Label>
+                        <Input
+                          id="webhook_url"
+                          type="url"
+                          value={notificationForm.data.webhook_url}
+                          onChange={(e) => notificationForm.setData('webhook_url', e.target.value)}
+                          placeholder="https://your-webhook-endpoint.com/notifications"
+                        />
+                      </div>
+                    )}
+
+                    {notificationForm.data.slack_notifications && (
+                      <div className="space-y-2">
+                        <Label htmlFor="slack_webhook_url" className="text-sm font-medium">
+                          Slack Webhook URL
+                        </Label>
+                        <Input
+                          id="slack_webhook_url"
+                          type="url"
+                          value={notificationForm.data.slack_webhook_url}
+                          onChange={(e) => notificationForm.setData('slack_webhook_url', e.target.value)}
+                          placeholder="https://hooks.slack.com/services/..."
+                        />
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Integration Settings Tab */}
@@ -1124,6 +1444,70 @@ export default function AdvancedSettings({
                         )}
                       </div>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* reCAPTCHA Integration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    reCAPTCHA Integration
+                  </CardTitle>
+                  <CardDescription>
+                    Configure Google reCAPTCHA to protect forms from spam and abuse
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium">reCAPTCHA Protection</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Enable reCAPTCHA verification for enhanced security
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          Available
+                        </Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(route('settings.recaptcha.index'), '_blank')}
+                        >
+                          Configure reCAPTCHA
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Login Protection</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Registration Protection</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Password Reset Protection</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Contact Form Protection</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>Guest Chat Protection</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span>v2 & v3 Support</span>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

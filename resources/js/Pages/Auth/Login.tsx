@@ -1,7 +1,9 @@
 import { Link, useForm, Head } from '@inertiajs/react';
-import React from 'react';
+import React, { useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
+import useTypedPage from '@/Hooks/useTypedPage';
 import { AuthCard, FormInput, FormCheckbox, AuthButton, LinkButton } from '@/Components/Auth';
+import ReCaptcha from '@/Components/ReCaptcha';
 
 interface Props {
   canResetPassword: boolean;
@@ -10,18 +12,39 @@ interface Props {
 
 export default function Login({ canResetPassword, status }: Props) {
   const route = useRoute();
+  const page = useTypedPage();
+  const [recaptchaToken, setRecaptchaToken] = useState<string>('');
+  const recaptcha = page.props.recaptcha;
   const form = useForm({
     email: '',
     password: '',
     remember: false,
+    recaptcha_token: '',
   });
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Set reCAPTCHA token if enabled
+    if (recaptcha?.enabled && recaptchaToken) {
+      form.setData('recaptcha_token', recaptchaToken);
+    }
+
     form.post(route('login'), {
-      onFinish: () => form.reset('password'),
+      onFinish: () => {
+        form.reset('password');
+        setRecaptchaToken('');
+      },
     });
   }
+
+  const handleRecaptchaVerify = (token: string) => {
+    setRecaptchaToken(token);
+  };
+
+  const handleRecaptchaExpired = () => {
+    setRecaptchaToken('');
+  };
 
   return (
     <AuthCard title="Login" description="Welcome back! Please sign in to your account.">
@@ -62,6 +85,19 @@ export default function Login({ canResetPassword, status }: Props) {
           checked={form.data.remember}
           onChange={(checked) => form.setData('remember', checked)}
         />
+
+        {recaptcha?.enabled && (
+          <ReCaptcha
+            siteKey={recaptcha.site_key}
+            theme={recaptcha.theme as 'light' | 'dark'}
+            size={recaptcha.size as 'normal' | 'compact'}
+            onVerify={handleRecaptchaVerify}
+            onExpired={handleRecaptchaExpired}
+            error={form.errors.recaptcha_token}
+            label="Security Verification"
+            required
+          />
+        )}
 
         <div className="flex flex-col space-y-4">
           <AuthButton

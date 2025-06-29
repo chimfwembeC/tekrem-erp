@@ -42,5 +42,6 @@ class RouteServiceProvider extends ServiceProvider
         Route::aliasMiddleware('role', RoleMiddleware::class);
         Route::aliasMiddleware('permission', \App\Http\Middleware\PermissionMiddleware::class);
         Route::aliasMiddleware('customer', \App\Http\Middleware\CustomerMiddleware::class);
+        Route::aliasMiddleware('recaptcha', \App\Http\Middleware\RecaptchaMiddleware::class);
     }
 }

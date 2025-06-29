@@ -18,6 +18,16 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create comprehensive permissions
         $permissions = [
+            // ========== MODULE ACCESS PERMISSIONS ==========
+            // High-level module access permissions for route protection
+            'view crm',
+            'view finance',
+            'view projects',
+            'view hr',
+            'view support',
+            'view cms',
+            'view ai',
+
             // ========== SYSTEM ADMINISTRATION ==========
             // User Management
             'view users',
@@ -436,6 +446,9 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         $managerPermissions = [
+            // Module Access
+            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai',
+
             // User Management (limited)
             'view users',
             'view user activity',
@@ -517,6 +530,9 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         $staffPermissions = [
+            // Module Access
+            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai',
+
             // User Management (view only)
             'view users',
 

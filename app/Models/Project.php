@@ -82,6 +82,14 @@ class Project extends Model
     }
 
     /**
+     * Alias for team() method for backward compatibility.
+     */
+    public function teamMembers(): BelongsToMany
+    {
+        return $this->team();
+    }
+
+    /**
      * Get team members from the JSON array.
      */
     public function getTeamMembersUsersAttribute()
