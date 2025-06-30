@@ -36,6 +36,11 @@ class Lead extends Model
         'converted_to_client',
         'converted_to_client_id',
         'converted_at',
+        'facebook_lead_id',
+        'facebook_ad_id',
+        'facebook_campaign_id',
+        'facebook_form_id',
+        'facebook_created_time',
     ];
 
     /**
@@ -46,6 +51,7 @@ class Lead extends Model
     protected $casts = [
         'converted_to_client' => 'boolean',
         'converted_at' => 'datetime',
+        'facebook_created_time' => 'datetime',
     ];
 
     /**
@@ -86,5 +92,13 @@ class Lead extends Model
     public function chats(): MorphMany
     {
         return $this->morphMany(Chat::class, 'chattable');
+    }
+
+    /**
+     * Get the Facebook lead data for this lead.
+     */
+    public function facebookLead(): HasOne
+    {
+        return $this->hasOne(\App\Models\SocialMedia\FacebookLead::class);
     }
 }

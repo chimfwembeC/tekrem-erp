@@ -58,8 +58,8 @@ class PermissionController extends Controller
                     'id' => $permission->id,
                     'name' => $permission->name,
                     'description' => $permission->description ?? '',
-                    'module' => explode('.', $permission->name)[0] ?? 'system',
-                    'action' => explode('.', $permission->name)[1] ?? '',
+                    'module' => $this->extractModuleFromPermission($permission->name),
+                    'action' => $this->extractActionFromPermission($permission->name),
                     'roles' => $permission->roles->map(function ($role) {
                         return [
                             'id' => $role->id,
@@ -79,7 +79,7 @@ class PermissionController extends Controller
         $modules = Permission::select('name')
             ->get()
             ->map(function ($permission) {
-                return explode('.', $permission->name)[0] ?? 'system';
+                return $this->extractModuleFromPermission($permission->name);
             })
             ->unique()
             ->sort()
@@ -378,5 +378,86 @@ class PermissionController extends Controller
 
         return redirect()->route('admin.permissions.index')
             ->with('success', $message);
+    }
+
+    /**
+     * Extract module name from permission name
+     */
+    private function extractModuleFromPermission(string $permissionName): string
+    {
+        // Handle both dot notation (module.action) and space notation (action module)
+        if (strpos($permissionName, '.') !== false) {
+            // Dot notation: crm.view -> crm
+            return explode('.', $permissionName)[0];
+        } else {
+            // Space notation: view crm -> crm, create clients -> clients
+            $parts = explode(' ', $permissionName);
+            if (count($parts) >= 2) {
+                // Get the last part as the module (e.g., "view crm" -> "crm")
+                $lastPart = end($parts);
+
+                // Map common permission patterns to modules
+                $moduleMap = [
+                    'users' => 'admin',
+                    'roles' => 'admin',
+                    'permissions' => 'admin',
+                    'clients' => 'crm',
+                    'leads' => 'crm',
+                    'communications' => 'crm',
+                    'livechat' => 'crm',
+                    'invoices' => 'finance',
+                    'payments' => 'finance',
+                    'quotations' => 'finance',
+                    'transactions' => 'finance',
+                    'expenses' => 'finance',
+                    'budgets' => 'finance',
+                    'reports' => 'finance',
+                    'employees' => 'hr',
+                    'departments' => 'hr',
+                    'leave' => 'hr',
+                    'performance' => 'hr',
+                    'attendance' => 'hr',
+                    'training' => 'hr',
+                    'projects' => 'projects',
+                    'milestones' => 'projects',
+                    'tasks' => 'projects',
+                    'tickets' => 'support',
+                    'knowledge' => 'support',
+                    'faq' => 'support',
+                    'pages' => 'cms',
+                    'posts' => 'cms',
+                    'categories' => 'cms',
+                    'tags' => 'cms',
+                    'media' => 'cms',
+                    'menus' => 'cms',
+                    'models' => 'ai',
+                    'prompts' => 'ai',
+                    'services' => 'ai',
+                    'notifications' => 'system',
+                    'settings' => 'system',
+                    'portal' => 'customer',
+                ];
+
+                return $moduleMap[$lastPart] ?? $lastPart;
+            }
+            return 'system';
+        }
+    }
+
+    /**
+     * Extract action from permission name
+     */
+    private function extractActionFromPermission(string $permissionName): string
+    {
+        // Handle both dot notation (module.action) and space notation (action module)
+        if (strpos($permissionName, '.') !== false) {
+            // Dot notation: crm.view -> view
+            $parts = explode('.', $permissionName);
+            return $parts[1] ?? '';
+        } else {
+            // Space notation: view crm -> view, create clients -> create
+            $parts = explode(' ', $permissionName);
+            return $parts[0] ?? '';
+        }
     }
 }

@@ -87,7 +87,7 @@ class SupportController extends Controller
             ->limit(3)
             ->get(['id', 'title', 'excerpt']);
 
-        return Inertia::render('Customer/Support/CreateTicket', [
+        return Inertia::render('Customer/Support/Create', [
             'categories' => $categories,
             'suggestedArticles' => $suggestedArticles,
         ]);

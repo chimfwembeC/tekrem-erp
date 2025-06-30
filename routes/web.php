@@ -136,6 +136,14 @@ Route::middleware([
         Route::delete('permissions/bulk-delete', [\App\Http\Controllers\Admin\PermissionController::class, 'bulkDelete'])->name('permissions.bulk-delete');
         Route::post('permissions/generate-module', [\App\Http\Controllers\Admin\PermissionController::class, 'generateModulePermissions'])->name('permissions.generate-module');
 
+        // Integration Verification
+        Route::prefix('integration-verification')->name('integration-verification.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\IntegrationVerificationController::class, 'index'])->name('index');
+            Route::post('/test-all', [\App\Http\Controllers\Admin\IntegrationVerificationController::class, 'testAllIntegrations'])->name('test-all');
+            Route::post('/test-integration', [\App\Http\Controllers\Admin\IntegrationVerificationController::class, 'testIntegration'])->name('test-integration');
+            Route::get('/configuration-status', [\App\Http\Controllers\Admin\IntegrationVerificationController::class, 'getConfigurationStatus'])->name('configuration-status');
+        });
+
         // Guest Management
         Route::prefix('guest')->name('guest.')->group(function () {
             // Guest Inquiries
@@ -756,4 +764,57 @@ Route::middleware([
         Route::post('/maintenance/backup', [\App\Http\Controllers\Settings\MaintenanceController::class, 'createBackup'])->name('maintenance.backup');
         Route::get('/maintenance/system-info', [\App\Http\Controllers\Settings\MaintenanceController::class, 'systemInfo'])->name('maintenance.system-info');
     });
+
+    // Social Media Routes
+    Route::prefix('social-media')->name('social-media.')->middleware('permission:view social_media')->group(function () {
+        // Unified Dashboard
+        Route::get('/', [\App\Http\Controllers\SocialMedia\SocialMediaDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/cross-platform-post', [\App\Http\Controllers\SocialMedia\SocialMediaDashboardController::class, 'createCrossPlatformPost'])->name('cross-platform-post');
+        Route::get('/analytics-summary', [\App\Http\Controllers\SocialMedia\SocialMediaDashboardController::class, 'getAnalyticsSummary'])->name('analytics-summary');
+        Route::post('/sync-all', [\App\Http\Controllers\SocialMedia\SocialMediaDashboardController::class, 'syncAllPlatforms'])->name('sync-all');
+        // Facebook Integration
+        Route::prefix('facebook')->name('facebook.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'index'])->name('index');
+            Route::post('/sync-pages', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'syncPages'])->name('sync-pages');
+            Route::post('/subscribe-webhooks', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'subscribeWebhooks'])->name('subscribe-webhooks');
+            Route::post('/sync-leads', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'syncLeads'])->name('sync-leads');
+            Route::post('/posts', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'createPost'])->name('posts.create');
+            Route::post('/posts/{post}/publish', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'publishPost'])->name('posts.publish');
+            Route::get('/insights', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'getInsights'])->name('insights');
+            Route::get('/test-connection', [\App\Http\Controllers\SocialMedia\FacebookController::class, 'testConnection'])->name('test-connection');
+        });
+
+        // Instagram Integration
+        Route::prefix('instagram')->name('instagram.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'index'])->name('index');
+            Route::post('/sync-accounts', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'syncAccounts'])->name('sync-accounts');
+            Route::post('/sync-media', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'syncMedia'])->name('sync-media');
+            Route::post('/search-hashtags', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'searchHashtags'])->name('search-hashtags');
+            Route::post('/hashtag-info', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'getHashtagInfo'])->name('hashtag-info');
+            Route::post('/posts', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'createPost'])->name('posts.create');
+            Route::post('/posts/{post}/publish', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'publishPost'])->name('posts.publish');
+            Route::get('/insights', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'getInsights'])->name('insights');
+            Route::get('/test-connection', [\App\Http\Controllers\SocialMedia\InstagramController::class, 'testConnection'])->name('test-connection');
+        });
+
+        // LinkedIn Integration
+        Route::prefix('linkedin')->name('linkedin.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'index'])->name('index');
+            Route::post('/sync-companies', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'syncCompanies'])->name('sync-companies');
+            Route::post('/search-leads', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'searchLeads'])->name('search-leads');
+            Route::post('/import-lead', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'importLead'])->name('import-lead');
+            Route::post('/posts', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'createPost'])->name('posts.create');
+            Route::post('/posts/{post}/publish', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'publishPost'])->name('posts.publish');
+            Route::get('/analytics', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'getAnalytics'])->name('analytics');
+            Route::get('/test-connection', [\App\Http\Controllers\SocialMedia\LinkedInController::class, 'testConnection'])->name('test-connection');
+        });
+    });
 });
+
+// Social Media Webhooks (no auth required)
+Route::get('/webhooks/facebook', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'verifyFacebookWebhook'])->name('webhooks.facebook.verify');
+Route::post('/webhooks/facebook', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'handleFacebookWebhook'])->name('webhooks.facebook.handle');
+Route::get('/webhooks/instagram', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'verifyInstagramWebhook'])->name('webhooks.instagram.verify');
+Route::post('/webhooks/instagram', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'handleInstagramWebhook'])->name('webhooks.instagram.handle');
+Route::get('/webhooks/linkedin', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'verifyLinkedInWebhook'])->name('webhooks.linkedin.verify');
+Route::post('/webhooks/linkedin', [\App\Http\Controllers\SocialMedia\WebhookController::class, 'handleLinkedInWebhook'])->name('webhooks.linkedin.handle');

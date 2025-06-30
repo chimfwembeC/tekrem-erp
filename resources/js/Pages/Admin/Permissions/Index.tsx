@@ -48,6 +48,8 @@ interface Permission {
   id: number;
   name: string;
   description: string;
+  module: string;
+  action: string;
   roles: Role[];
   created_at: string;
   updated_at: string;
@@ -180,7 +182,7 @@ export default function PermissionsIndex({ permissions, roles, modules, filters 
       const matchesSearch = permission.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           permission.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesModule = selectedModule === 'all' || permission.name.startsWith(selectedModule + '.');
+      const matchesModule = selectedModule === 'all' || permission.module === selectedModule;
 
       const matchesRole = selectedRole === 'all' ||
                          permission.roles.some(role => role.name === selectedRole);
@@ -194,8 +196,7 @@ export default function PermissionsIndex({ permissions, roles, modules, filters 
     const groups: { [key: string]: Permission[] } = {};
 
     filteredPermissions.forEach(permission => {
-      const parts = permission.name.split('.');
-      const module = parts.length > 1 ? parts[0] : 'system';
+      const module = permission.module || 'system';
 
       if (!groups[module]) {
         groups[module] = [];
@@ -736,7 +737,7 @@ export default function PermissionsIndex({ permissions, roles, modules, filters 
                               </tr>
                             ) : (
                               filteredPermissions.map((permission) => {
-                                const module = permission.name.split('.')[0] || 'system';
+                                const module = permission.module || 'system';
                                 return (
                                   <tr key={permission.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                     <td className="px-6 py-4 whitespace-nowrap">

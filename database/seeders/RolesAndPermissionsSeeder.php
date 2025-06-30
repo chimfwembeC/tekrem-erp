@@ -27,6 +27,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view support',
             'view cms',
             'view ai',
+            'view social_media',
 
             // ========== SYSTEM ADMINISTRATION ==========
             // User Management
@@ -447,7 +448,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $managerPermissions = [
             // Module Access
-            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai',
+            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai', 'view social_media',
 
             // User Management (limited)
             'view users',
@@ -531,7 +532,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $staffPermissions = [
             // Module Access
-            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai',
+            'view crm', 'view finance', 'view projects', 'view hr', 'view support', 'view cms', 'view ai', 'view social_media',
 
             // User Management (view only)
             'view users',
