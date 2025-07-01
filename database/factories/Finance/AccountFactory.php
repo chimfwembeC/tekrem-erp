@@ -20,13 +20,23 @@ class AccountFactory extends Factory
      */
     public function definition(): array
     {
-        $accountTypes = ['checking', 'savings', 'business', 'credit_card', 'investment', 'loan', 'other'];
+        $accountTypes = ['checking', 'savings', 'business', 'credit_card', 'investment', 'loan', 'other', 'header', 'detail'];
+        $accountCategories = ['assets', 'liabilities', 'equity', 'income', 'expenses'];
         $currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY'];
         $initialBalance = $this->faker->randomFloat(2, 0, 10000);
 
         return [
             'name' => $this->faker->words(2, true) . ' Account',
+            'account_code' => $this->faker->numerify('####'),
             'type' => $this->faker->randomElement($accountTypes),
+            'account_category' => $this->faker->randomElement($accountCategories),
+            'account_subcategory' => $this->faker->optional()->word(),
+            'parent_account_id' => null,
+            'level' => 0,
+            'normal_balance' => $this->faker->randomElement(['debit', 'credit']),
+            'is_system_account' => false,
+            'allow_manual_entries' => true,
+            'account_settings' => null,
             'account_number' => $this->faker->numerify('##########'),
             'bank_name' => $this->faker->company . ' Bank',
             'initial_balance' => $initialBalance,
@@ -119,6 +129,60 @@ class AccountFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_id' => $user->id,
+        ]);
+    }
+
+    /**
+     * Create a header account (for Chart of Accounts).
+     */
+    public function header(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'header',
+            'allow_manual_entries' => false,
+        ]);
+    }
+
+    /**
+     * Create a detail account (for Chart of Accounts).
+     */
+    public function detail(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'detail',
+            'allow_manual_entries' => true,
+        ]);
+    }
+
+    /**
+     * Create a system account.
+     */
+    public function systemAccount(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_system_account' => true,
+        ]);
+    }
+
+    /**
+     * Create an account with a specific category.
+     */
+    public function category(string $category): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'account_category' => $category,
+        ]);
+    }
+
+    /**
+     * Create a child account with a parent.
+     */
+    public function childOf(Account $parent): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'parent_account_id' => $parent->id,
+            'level' => $parent->level + 1,
+            'account_category' => $parent->account_category,
         ]);
     }
 }

@@ -331,6 +331,50 @@ Route::middleware([
         // Accounts
         Route::resource('accounts', \App\Http\Controllers\Finance\AccountController::class);
 
+        // Chart of Accounts
+        Route::prefix('chart-of-accounts')->name('chart-of-accounts.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'store'])->name('store');
+            Route::get('/tree', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'tree'])->name('tree');
+            Route::get('/{account}', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'show'])->name('show');
+            Route::get('/{account}/edit', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'edit'])->name('edit');
+            Route::put('/{account}', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'update'])->name('update');
+            Route::delete('/{account}', [\App\Http\Controllers\Finance\ChartOfAccountsController::class, 'destroy'])->name('destroy');
+        });
+
+        // Bank Statements
+        Route::prefix('bank-statements')->name('bank-statements.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Finance\BankStatementController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Finance\BankStatementController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Finance\BankStatementController::class, 'store'])->name('store');
+            Route::post('/import', [\App\Http\Controllers\Finance\BankStatementController::class, 'import'])->name('import');
+            Route::post('/preview', [\App\Http\Controllers\Finance\BankStatementController::class, 'preview'])->name('preview');
+            Route::get('/{bankStatement}', [\App\Http\Controllers\Finance\BankStatementController::class, 'show'])->name('show');
+            Route::get('/{bankStatement}/edit', [\App\Http\Controllers\Finance\BankStatementController::class, 'edit'])->name('edit');
+            Route::put('/{bankStatement}', [\App\Http\Controllers\Finance\BankStatementController::class, 'update'])->name('update');
+            Route::delete('/{bankStatement}', [\App\Http\Controllers\Finance\BankStatementController::class, 'destroy'])->name('destroy');
+            Route::get('/{bankStatement}/download', [\App\Http\Controllers\Finance\BankStatementController::class, 'downloadFile'])->name('download');
+            Route::post('/{bankStatement}/reprocess', [\App\Http\Controllers\Finance\BankStatementController::class, 'reprocess'])->name('reprocess');
+        });
+
+        // Bank Reconciliation
+        Route::prefix('bank-reconciliation')->name('bank-reconciliation.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'store'])->name('store');
+            Route::get('/{bankReconciliation}', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'show'])->name('show');
+            Route::delete('/{bankReconciliation}', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'destroy'])->name('destroy');
+            Route::post('/{bankReconciliation}/auto-match', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'autoMatch'])->name('auto-match');
+            Route::post('/{bankReconciliation}/manual-match', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'manualMatch'])->name('manual-match');
+            Route::post('/{bankReconciliation}/unmatch', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'unmatch'])->name('unmatch');
+            Route::post('/{bankReconciliation}/complete', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'complete'])->name('complete');
+            Route::post('/{bankReconciliation}/review', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'review'])->name('review');
+            Route::post('/{bankReconciliation}/approve', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'approve'])->name('approve');
+            Route::get('/{bankReconciliation}/suggested-matches', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'getSuggestedMatches'])->name('suggested-matches');
+            Route::get('/{bankReconciliation}/export', [\App\Http\Controllers\Finance\BankReconciliationController::class, 'export'])->name('export');
+        });
+
         // Transactions
         Route::resource('transactions', \App\Http\Controllers\Finance\TransactionController::class);
         Route::post('transactions/ai-suggestions', [\App\Http\Controllers\Finance\TransactionController::class, 'aiSuggestions'])->name('transactions.ai-suggestions');
@@ -399,6 +443,13 @@ Route::middleware([
         // Reports
         Route::resource('reports', \App\Http\Controllers\Finance\ReportController::class);
         Route::get('reports/{report}/download', [\App\Http\Controllers\Finance\ReportController::class, 'download'])->name('reports.download');
+
+        // Specific Report Types
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('chart-of-accounts', [\App\Http\Controllers\Finance\ReportController::class, 'chartOfAccounts'])->name('chart-of-accounts');
+            Route::get('trial-balance', [\App\Http\Controllers\Finance\ReportController::class, 'trialBalance'])->name('trial-balance');
+            Route::get('reconciliation-summary', [\App\Http\Controllers\Finance\ReportController::class, 'reconciliationSummary'])->name('reconciliation-summary');
+        });
     });
 
     // HR routes

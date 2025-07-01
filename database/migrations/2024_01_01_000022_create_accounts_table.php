@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type'); // checking, savings, business, credit_card, cash
+            $table->string('type'); // checking, savings, business, credit_card, cash, asset, liability, equity, income, expense
             $table->string('account_number')->nullable();
             $table->string('bank_name')->nullable();
             $table->decimal('balance', 15, 2)->default(0);
